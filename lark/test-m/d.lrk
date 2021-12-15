@@ -1,0 +1,61 @@
+GLOBAL {
+FROM StdIO	IMPORT WriteS, WriteNl;
+FROM Strings	IMPORT tString, Char;
+FROM Idents	IMPORT tIdent, GetString;
+
+TYPE tParsAttribute = RECORD Scan: Scanner.tScanAttribute; END;
+
+PROCEDURE IsUpper (Ident: tIdent): BOOLEAN;
+   VAR Name	: tString;
+   BEGIN
+      GetString (Ident, Name);
+      RETURN ('A' <= Char (Name, 1)) AND (Char (Name, 1) <= 'Z');
+   END IsUpper;
+
+# define YYDEBUG
+}
+
+BEGIN { yyDebug := TRUE; }
+
+TOKEN
+   IDENTIFIER	= 1
+   '('		= 2
+   ')'		= 3
+   '++'		= 4
+   ';'		= 5
+   '['		= 6
+   ']'		= 7
+   '{'		= 8
+   '}'		= 9
+
+RULE
+
+compound_statement	: '{' declaration_list statement_list '}'
+			.
+declaration_list	:
+			| declaration_list declaration
+			.
+statement_list		:
+			| statement_list statement
+			.
+declaration		: ? declaration declaration_specifier declarator ';'
+			.
+declaration_specifier	: TYPEDEFname [ WriteS ("trial action"); WriteNl; ]
+				      { WriteS ("final action"); WriteNl; }
+			.
+declarator		: IDENTIFIER  [ WriteS ("trial action"); WriteNl; ]
+				      { WriteS ("final action"); WriteNl; }
+			| '(' declarator ')'
+			| declarator '[' ']'
+			| compound_statement
+			.
+statement		: expression ';'
+			.
+expression		: expression '++'
+			| TYPEDEFname '(' expression ')'	/* cast */
+			| IDENTIFIER  '(' expression ')'	/* call */
+			| IDENTIFIER
+			.
+TYPEDEFname		: IDENTIFIER$i ? { IsUpper ($i.Scan.Ident) }
+			| IDENTIFIER ? IDENTIFIER
+			.

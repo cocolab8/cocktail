@@ -1,0 +1,219 @@
+DynArray starts
+K=1
+K=2
+K=3
+K=4
+K=5
+K=6
+K=7
+K=8
+K=9
+K=1
+K=2
+K=3
+K=4
+K=5
+K=6
+K=7
+K=8
+K=9
+DynArray ends
+IODrv starts
+write(923)
+"923"
+"923"
+
+write(95735,15)
+"          95735"
+"          95735"
+
+write(1234567890,35)
+"                         1234567890"
+"                         1234567890"
+
+write(7492,4)
+"7492"
+"7492"
+
+write(0)
+"0"
+"0"
+
+write(0,0)
+"0"
+"0"
+
+write(0,1)
+"0"
+"0"
+
+write(0,2)
+" 0"
+" 0"
+
+write(-923)
+"-923"
+"-923"
+
+write(-95735,15)
+"         -95735"
+"         -95735"
+
+write(-1234567890,35)
+"                        -1234567890"
+"                        -1234567890"
+
+write(-742,4)
+"-742"
+"-742"
+
+write(12.345, 3, 4, 0)
+" 12.3450"
+
+write(12.345, 1, 2, 2)
+"1.23E+1"
+
+write(12.345, 1, 3, 2)
+"1.235E+1"
+
+write(12.345, 2, 12, 3)
+" 1.234500000000E+01"
+
+write(12.345, 2, 3 , 2)
+" 1.235E+1"
+
+write(12.345, 4, 3 , 1)
+"   1.235E+1"
+
+write(12.345, 8, 3 , 0)
+"      12.345"
+
+write(12.345, 8, 1 , 0)
+"      12.3"
+
+write(12.345, 8, 0 , 0)
+"      12.3"
+
+write(123.45678, 3, 4, 0)
+"123.4568"
+
+write(123.45678, 1, 2, 2)
+"1.23E+2"
+
+write(123.45678, 1, 3, 2)
+"1.235E+2"
+
+write(123.45678, 2, 12, 3)
+" 1.234567800000E+02"
+
+write(123.45678, 2, 3 , 2)
+" 1.235E+2"
+
+write(123.45678, 4, 3 , 1)
+"   1.235E+2"
+
+write(123.45678, 8, 3 , 0)
+"     123.457"
+
+write(123.45678, 8, 1 , 0)
+"     123.5"
+
+write(123.45678, 8, 0 , 0)
+"     123.5"
+
+write(0.012345, 3, 4, 0)
+"  0.0123"
+
+write(0.012345, 1, 2, 2)
+"1.23E-2"
+
+write(0.012345, 1, 3, 2)
+"1.235E-2"
+
+write(0.012345, 2, 12, 3)
+" 1.234500000000E-02"
+
+write(0.012345, 2, 3 , 2)
+" 1.235E-2"
+
+write(0.012345, 4, 3 , 1)
+"   1.235E-2"
+
+write(0.012345, 8, 3 , 0)
+"       0.012"
+
+write(0.012345, 8, 1 , 0)
+"       0.0"
+
+write(0.012345, 8, 0 , 0)
+"       0.0"
+
+write(1.2345E7, 3, 4, 0)
+"12345000.0000"
+
+write(1.2345E7, 1, 2, 2)
+"1.23E+7"
+
+write(1.2345E7, 1, 3, 2)
+"1.235E+7"
+
+write(1.2345E7, 2, 12, 3)
+" 1.234500000000E+07"
+
+write(1.2345E7, 2, 3 , 2)
+" 1.235E+7"
+
+write(1.2345E7, 4, 3 , 1)
+"   1.235E+7"
+
+write(1.2345E7, 8, 3 , 0)
+"12345000.000"
+
+write(1.2345E7, 8, 1 , 0)
+"12345000.0"
+
+write(1.2345E7, 8, 0 , 0)
+"12345000.0"
+
+inBuffer: 0 faults
+IODrv ends
+IdentDrv begins
+IdentDrv ends
+Restriction Integer  R : 1
+   6,  7: Error       cannot open parse table
+   7, 11: Error       Position   :    7, 11
+   7, 11: Error       Nothing    
+   8, 15: Error       Short    E : 2
+   8, 15: Warning     Long     W : 3
+   8, 15: Repair      Real     Rp: 4.0
+   8, 15: Note        Boolean  N : false
+   8, 15: Information CharacterI : a
+   8, 15: Error       String     : abc
+   8, 15: Error       Ident      : def
+   8, 15: Error       Position   :    8, 15
+  10,  5: Error       found/expected : end/one two
+ 390, 75: Error       parse table mismatch: A long message which will  ...
+
+verbose
+Restriction Integer  R : 1
+   6,  7: Error       cannot open parse table
+   7, 11: Error       Position   :    7, 11
+   7, 11: Error       Nothing    
+   8, 15: Error       Short    E : 2
+   8, 15: Warning     Long     W : 3
+   8, 15: Repair      Real     Rp: 4.0
+   8, 15: Note        Boolean  N : false
+   8, 15: Information CharacterI : a
+   8, 15: Error       String     : abc
+   8, 15: Error       Ident      : def
+   8, 15: Error       Position   :    8, 15
+  10,  5: Error       syntax error
+  10,  5: Error       token found    : end
+  10,  5: Information expected tokens: one two
+  10,  5: Note        restart point:    8,  2
+  10,  5: Error       token inserted : three
+  10,  5: Error       cannot read parse table
+ 390, 75: Error       parse table mismatch: A long message which will  ...
+
+An empty error table...
+... end

@@ -1,0 +1,49 @@
+CT_LIB	= "$(CT_DIR)"\lib
+INCDIR	= $(CT_LIB)\include
+CC	= cl /nologo
+#
+#	Makefile for occam recogniser - pjmp @ hrc 22/7/86
+#
+
+#
+# This work is in the public domain.
+# It was written by Peter Polkinghorne in 1986 & 1989 at
+# GEC Hirst Research Centre, Wembley, England.
+# No liability is accepted or warranty given by the Author,
+# still less my employers.
+#
+
+CFLAGS	= /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /O /I$(INCDIR)
+LFLAGS	= -cdis
+
+all:		occam2 occam
+
+occam:		occam.obj occamlex.obj
+		link /nologo /incremental:no /out:occam.exe occam.obj occamlex.obj $(CT_LIB)\libreuse.lib
+
+occam.c:        occam.lrk
+		lark $(LFLAGS) occam.lrk
+		awk -f lex.awk < occam.lrk > lex.h
+		ren Parser.c occam.c
+
+occam2:		occam2.obj occam2lx.obj
+		link /nologo /incremental:no /out:occam2.exe occam2.obj occam2lx.obj $(CT_LIB)\libreuse.lib
+
+occam2.c:       occam2.lrk
+		lark $(LFLAGS) occam2.lrk
+		awk -f lex.awk < occam2.lrk > lex2.h
+		ren Parser.c occam2.c
+
+try:		occam
+		time occam < test1
+		time occam < test2
+		time occam < test3
+		time occam < test4
+
+clean:
+	del /F *.obj occam2.c occam.c lex2.h lex.h Parser.h occam occam2
+
+.SUFFIXES: .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

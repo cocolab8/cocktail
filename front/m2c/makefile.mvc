@@ -1,0 +1,172 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= $(REUSE_LIB) $(WIBU_LIB)
+
+all:	libfront.lib
+
+# HEAD
+
+# all	: Drv.exe
+# all	: Pars.exe
+
+Actions.obj	: Actions.c	\
+	Actions.h	\
+	WriteTok.h	\
+	TokenTab.h	\
+	Errors.h	\
+	SysError.h	\
+	Listing.h
+
+Characte.obj	: Characte.c	\
+	Characte.h
+
+Checks.obj	: Checks.c	\
+	Checks.h	\
+	Errors.h	\
+	TokenTab.h	\
+	Listing.h	\
+	SysError.h
+
+Errors.obj	: Errors.c	\
+	Errors.h	\
+	TokenTab.h	\
+	SysError.h	\
+	Listing.h
+
+Drv.obj	: Drv.c
+
+Listing.obj	: Listing.c	\
+	Listing.h
+
+Oper.obj	: Oper.c	\
+	Oper.h	\
+	Errors.h	\
+	SysError.h	\
+	Listing.h	\
+	TokenTab.h
+
+Pars.obj	: Pars.c	\
+	TokenTab.h	\
+	Scanner.h	\
+	Rules.h	\
+	Parser.h	\
+	Tokens.h	\
+	Oper.h	\
+	Actions.h	\
+	Errors.h	\
+	SysError.h	\
+	Listing.h	\
+	Checks.h	\
+	Path.h	\
+	Characte.h	\
+	WriteTok.h
+
+Parser.obj	: Parser.c	\
+	Parser.h	\
+	WriteTok.h	\
+	Rules.h	\
+	Tokens.h	\
+	TokenTab.h	\
+	Oper.h	\
+	Actions.h	\
+	Errors.h	\
+	SysError.h	\
+	Listing.h	\
+	Scanner.h	\
+	Checks.h
+
+Path.obj	: Path.c	\
+	Path.h
+
+Rules.obj	: Rules.c	\
+	Rules.h	\
+	Errors.h	\
+	SysError.h	\
+	Listing.h	\
+	TokenTab.h
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h	\
+	Errors.h	\
+	TokenTab.h	\
+	SysError.h	\
+	Listing.h	\
+	WriteTok.h	\
+	Checks.h	\
+	Rules.h
+
+SysError.obj	: SysError.c	\
+	SysError.h	\
+	Errors.h	\
+	TokenTab.h	\
+	Listing.h
+
+TokenTab.obj	: TokenTab.c	\
+	TokenTab.h	\
+	Errors.h	\
+	SysError.h	\
+	Listing.h
+
+Tokens.obj	: Tokens.c	\
+	Tokens.h	\
+	Errors.h	\
+	SysError.h	\
+	Listing.h	\
+	TokenTab.h
+
+WriteTok.obj	: WriteTok.c	\
+	WriteTok.h	\
+	TokenTab.h	\
+	Errors.h	\
+	SysError.h	\
+	Listing.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+Drv_OBJS =	\
+	Drv.obj
+
+Drv.exe	: $(Drv_OBJS) $(SYSTEM)
+	$(CC) /nologo $(Drv_OBJS) $(SYSTEM) /link /out:Drv.exe $(LDFLAGS)
+
+OBJS	=	\
+	TokenTab.obj	\
+	Scanner.obj	\
+	Rules.obj	\
+	Parser.obj	\
+	Tokens.obj	\
+	Oper.obj	\
+	Actions.obj	\
+	Errors.obj	\
+	SysError.obj	\
+	Listing.obj	\
+	Checks.obj	\
+	Path.obj	\
+	Characte.obj	\
+	WriteTok.obj
+
+Pars_OBJS = Pars.obj $(OBJS)
+
+Pars.exe	: $(Pars_OBJS) $(SYSTEM)
+	$(CC) /nologo $(Pars_OBJS) $(SYSTEM) /link /out:Pars.exe $(LDFLAGS)
+
+install:
+	if not exist "%ct_dir%"\lib\lalr\ mkdir "%ct_dir%"\lib\lalr
+	copy errortab	    "%ct_dir%"\lib\lalr
+	copy ..\doc\bnf.cat "%ct_dir%"\lib\lalr
+	copy ..\doc\bnf.syn "%ct_dir%"\lib\lalr
+
+# TAIL
+
+libfront.lib: $(OBJS)
+	link.exe -lib /nologo /out:libfront.lib $(OBJS)
+
+clean:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

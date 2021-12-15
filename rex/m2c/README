@@ -1,0 +1,9 @@
+Scanner Generator Rex
+=====================
+
+Rex makes use of a library of reusable Modula-2 modules (MLIB=reuse).
+This library must be compiled before Rex itself.
+
+To generate Rex use:
+
+   make install BIN=... LIB=... OPT=...

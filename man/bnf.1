@@ -1,0 +1,25 @@
+.TH BNF 1 "" "CoCoLab Germany"
+.SH NAME
+bnf \- convert a grammar from EBNF to BNF
+.SH SYNOPSIS
+bnf [-c|-m|-eiffel] [-h][-l][-g] <file>
+.SH DESCRIPTION
+Bnf translates a context-free grammar in EBNF into an equivalent grammar
+in BNF, which is written to standard output.
+The result can be used as input for the parser generator lark.
+.SH OPTIONS
+.IP c 
+the target language is C
+.IP m 
+the target language is Modula-2 (default)
+.IP eiffel 
+the target language is Eiffel
+.IP h
+print further help information
+.IP l 
+print complete (error) listing
+.IP g
+generate # line directives
+.SH SEE\ ALSO
+J. Grosch: "The Parser Generator Ell",
+CoCoLab Germany, Document No. 8

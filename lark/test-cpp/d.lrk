@@ -1,0 +1,56 @@
+EXPORT {
+typedef struct { tScanAttribute Scan; } tParsAttribute;
+}
+
+GLOBAL {
+# include <ctype.h>
+# include "Idents.h"
+}
+
+LOCAL  { char name [256]; }
+
+BEGIN  { yyDebug = rtrue; }
+
+TOKEN
+   IDENTIFIER	= 1
+   '('		= 2
+   ')'		= 3
+   '++'		= 4
+   ';'		= 5
+   '['		= 6
+   ']'		= 7
+   '{'		= 8
+   '}'		= 9
+
+RULE
+
+compound_statement	: '{' declaration_list statement_list '}'
+			.
+declaration_list	:
+			| declaration_list declaration
+			.
+statement_list		:
+			| statement_list statement
+			.
+declaration		: ? declaration declaration_specifier declarator ';'
+			.
+declaration_specifier	: TYPEDEFname [ (void) printf ("trial action\n"); ]
+				      { (void) printf ("final action\n"); }
+			.
+declarator		: IDENTIFIER  [ (void) printf ("trial action\n"); ]
+				      { (void) printf ("final action\n"); }
+			| '(' declarator ')'
+			| declarator '[' ']'
+			| compound_statement
+			.
+statement		: expression ';'
+			.
+expression		: expression '++'
+			| TYPEDEFname '(' expression ')'	/* cast */
+			| IDENTIFIER  '(' expression ')'	/* call */
+			| IDENTIFIER
+			.
+TYPEDEFname		: IDENTIFIER$i ?
+			  { isupper (gIdents.GetCStr ($i.Scan.Ident) [0]) != 0 }
+			| IDENTIFIER ? IDENTIFIER
+			.

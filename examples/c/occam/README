@@ -1,0 +1,38 @@
+Adapted to lalr by J. Grosch, April 1990.
+Adapted to lark by J. Grosch, May 1994. Original README follows:
+
+These are two Occam recognisers, defined with yacc & handcrafted lexers.
+The Occam recogniser was developed as a lex & yacc learning exercise.
+The one for Occam is unambiguous. The one for Occam2 is ambiguous and requires
+work to tidy up the syntax. This is mainly because the Occam2 definition is a
+rather unsuited for yacc, as defined by the Occam2 Language definition by David
+May.
+
+The most original part of this is the lex routines which deal with Occam's
+indentation features. These recognisers are offered because periodically
+I see people on the net asking for an Occam lex & yacc definition.
+
+To build a compiler from this requires a LOT more work. I hope someone
+finds this useful, however I do not intend to maintain it. Hence I am
+placing this in the public domain.
+
+Files supplied:
+
+README		- this file!
+Makefile	- simple UNIX makefile
+
+occam.y		- Occam yacc specification
+occamlex.c	- Occam lexer
+
+occam2.y	- Occam2 yacc specification
+occam2lex.c	- Occam2 lexer
+
+test1		)
+test2		)- set of Occam test files for occam.
+test3		)
+test4		)
+
+Have fun!
+
+Peter Polkinghorne ( pjmp@uk.co.gec-rl-hrc or ...!mcvax!ukc!hrc63!pjmp )
+GEC Hirst Research Centre, East Lane, Wembley, Middlesex, UK

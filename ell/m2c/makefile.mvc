@@ -1,0 +1,162 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: ell.exe
+
+ArgCheck.obj	: ArgCheck.c	\
+	ArgCheck.h	\
+	Scanner.h
+
+CodeC.obj	: CodeC.c	\
+	CodeC.h	\
+	Types.h	\
+	Scanner.h	\
+	Codes.h	\
+	ArgCheck.h	\
+	Tree.h
+
+CodeM2.obj	: CodeM2.c	\
+	CodeM2.h	\
+	Types.h	\
+	Scanner.h	\
+	Codes.h	\
+	ArgCheck.h	\
+	Tree.h
+
+Codes.obj	: Codes.c	\
+	Codes.h	\
+	ArgCheck.h	\
+	Scanner.h
+
+Derivabl.obj	: Derivabl.c	\
+	Derivabl.h	\
+	Types.h	\
+	Tree.h	\
+	Table.h
+
+First.obj	: First.c	\
+	First.h	\
+	Tree.h	\
+	Types.h	\
+	Table.h	\
+	Stack.h	\
+	Scanner.h	\
+	ArgCheck.h	\
+	Derivabl.h
+
+Follow.obj	: Follow.c	\
+	Follow.h	\
+	Types.h	\
+	Tree.h	\
+	Table.h	\
+	Stack.h	\
+	Scanner.h	\
+	ArgCheck.h
+
+Nullable.obj	: Nullable.c	\
+	Nullable.h	\
+	Types.h	\
+	Tree.h	\
+	Table.h
+
+Parser.obj	: Parser.c	\
+	Parser.h	\
+	Scanner.h	\
+	ArgCheck.h	\
+	Tree.h
+
+Reachabl.obj	: Reachabl.c	\
+	Reachabl.h	\
+	Types.h	\
+	Table.h	\
+	Tree.h
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h	\
+	ArgCheck.h
+
+Semantic.obj	: Semantic.c	\
+	Semantic.h	\
+	Types.h	\
+	Table.h	\
+	Scanner.h	\
+	Reachabl.h	\
+	Follow.h	\
+	Stack.h	\
+	First.h	\
+	Derivabl.h	\
+	Codes.h	\
+	ArgCheck.h	\
+	Tree.h
+
+Stack.obj	: Stack.c	\
+	Stack.h
+
+Table.obj	: Table.c	\
+	Table.h	\
+	Types.h	\
+	Tree.h
+
+Tree.obj	: Tree.c	\
+	Tree.h
+
+Types.obj	: Types.c	\
+	Types.h
+
+ell.obj	: ell.c	\
+	Semantic.h	\
+	Types.h	\
+	Table.h	\
+	Scanner.h	\
+	Reachabl.h	\
+	Follow.h	\
+	Stack.h	\
+	First.h	\
+	Derivabl.h	\
+	Codes.h	\
+	Tree.h	\
+	Parser.h	\
+	CodeM2.h	\
+	CodeC.h	\
+	ArgCheck.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+ell_OBJS =	\
+	ell.obj	\
+	Semantic.obj	\
+	Types.obj	\
+	Table.obj	\
+	Scanner.obj	\
+	Reachabl.obj	\
+	Follow.obj	\
+	Stack.obj	\
+	First.obj	\
+	Derivabl.obj	\
+	Codes.obj	\
+	Tree.obj	\
+	Parser.obj	\
+	CodeM2.obj	\
+	CodeC.obj	\
+	ArgCheck.obj
+
+ell.exe	: $(ell_OBJS) $(SYSTEM)
+	$(CC) /nologo $(ell_OBJS) $(SYSTEM) /link /out:ell.exe $(LDFLAGS)
+
+install:
+	copy ell.exe "%ct_dir%"\bin
+
+# TAIL
+
+clean:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

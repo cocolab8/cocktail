@@ -1,0 +1,388 @@
+EXPORT {
+# define lex_interface
+# define yacc_interface
+}
+
+GLOBAL {
+/* 
+ *
+ *		OCCAM yacc specification
+ *
+ *		Peter Polkinghorne - GEC Research
+ *
+ */
+/*
+ * This work is in the public domain.
+ * It was written by Peter Polkinghorne in 1986 & 1989 at
+ * GEC Hirst Research Centre, Wembley, England.
+ * No liability is accepted or warranty given by the Author,
+ * still less my employers.
+ */
+/* revision history
+	0.0	initial attempt				pjmp	22/7/86
+	0.1	add in COMMA so that yylex can cope with
+		comma differentiation for PROC decls	pjmp	4/8/86
+	0.2	add in main - since BSD does not have -ly
+							pjmp	8/3/89
+
+end revisions */
+
+# define tParsAttribute	YYSTYPE
+# define yySynAttribute	yyval
+# define yyTerminal	yychar
+# define yyclearin
+# define yyerrok
+# ifndef YYMAXDEPTH
+# define YYMAXDEPTH	150
+# endif
+# ifndef YYSTYPE
+# define YYSTYPE	int
+# endif
+YYSTYPE yylval;
+# define yylval_def
+# define YYERROR
+# define YYBACKUP(newtoken, newvalue)	YYERROR
+# define YYRECOVERING()	yyIsRepairing
+
+
+#include <stdio.h>
+
+void main()
+{
+
+    exit( yyparse() );
+
+}/*main*/
+
+yyerror( str )
+char 	*str;
+/* our slightly more informative error routine */
+{
+
+extern int	yylineno;
+extern char	yytext[];
+
+	fprintf( stderr, "ERROR <%s> near <%s> on line %d\n",
+			str, yytext, yylineno );
+
+}/*yyerror*/
+
+/*end occam.y*/
+}
+
+TOKEN
+	VAR	= 128
+	CHAN	= 129
+	ANY	= 130
+	WAIT	= 131
+	SKIP	= 132
+	ID	= 133
+	EOL	= 134
+	VALUE	= 135
+	BYTE	= 136
+	DEF	= 137
+	PROC	= 138
+	NOT	= 139
+	NUMBER	= 140
+	BOOL	= 141
+	NOW	= 142
+	TABLE	= 143
+	BOOLOP	= 144
+	SHIFTOP	= 145
+	COMPOP	= 146
+	CHCON	= 147
+	STR	= 148
+	LOGOP	= 149
+	SEQ	= 150
+	ALT	= 151
+	IF	= 152
+	PAR	= 153
+	WHILE	= 154
+	FOR	= 155
+	BEG	= 156
+	END	= 157
+	COMMA	= 158
+	'('	= 40
+	')'	= 41
+	':'	= 58
+	'='	= 61
+	'['	= 91
+	']'	= 93
+	'&'	= 38
+	'?'	= 63
+	'!'	= 33
+	';'	= 59
+	','	= 44
+	'-'	= 45
+	'+'	= 43
+	'*'	= 42
+	'/'	= 47
+	'\\'	= 92
+	error
+
+RULE
+
+__START__	: program .
+
+program 	: sep process 			 
+	| process 
+	. 			
+		
+
+process 	: primitive sep 			 
+	| ID sep 			 
+	| ID '(' explist ')' sep 			    
+	| construct 			
+	| declaration ':' sep process 			   
+	| error sep 
+	. 			 
+
+		
+
+primitive 	: assignment 		
+	| input 			
+	| output 			
+	| wait 			
+	| skip 
+	. 			
+		
+
+
+construct 	: SEQ sep BEG proclist END 		    
+	| SEQ replic sep BEG process END 			     
+	| SEQ sep 			 
+	| PAR sep BEG proclist END 			    
+	| PAR replic sep BEG process END 			     
+	| PAR sep 			 
+	| IF sep BEG condlist END 			    
+	| IF replic sep BEG cond END 			     
+	| IF sep 			 
+	| ALT sep BEG guardplist END 			    
+	| ALT replic sep BEG guardp END 			     
+	| ALT sep 			 
+	| WHILE expr sep BEG process END 
+	. 			     
+		
+
+sep 	: EOL 			
+	| sep EOL 
+	. 			 
+		
+
+proclist 	: process 		
+	| proclist process 
+	. 			 
+		
+
+condlist 	: cond 		
+	| condlist cond 
+	. 			 
+		
+
+guardplist 	: guardp 		
+	| guardplist guardp 
+	. 			 
+		
+
+
+replic 	: ID '=' '[' expr FOR expr ']' 
+	. 			      
+		
+
+cond 	: expr sep BEG process END 			    
+	| IF sep 			 
+	| IF sep BEG condlist END 			    
+	| IF replic sep BEG cond END 
+	. 			     
+		
+
+guardp 	: guard sep BEG process END 			    
+	| ALT sep 			 
+	| ALT sep BEG guardplist END 			    
+	| ALT replic sep BEG guardp END 
+	. 			     
+		
+
+guard 	: expr '&' input 			  
+	| input 			
+	| expr '&' wait 			  
+	| wait 			
+	| expr '&' SKIP 			  
+	| SKIP 
+	. 			
+		
+
+declaration 	: VAR varlist 		 
+	| CHAN chanlist 			 
+	| DEF deflist 			 
+	| PROC ID '=' sep BEG process END 			       
+	| PROC ID formparms '=' sep BEG process END 
+	. 			       
+		
+
+assignment 	: var ':' '=' expr 
+	. 		   
+		
+
+input 	: chan '?' inlist 			  
+	| chan '?' ANY 
+	. 			  
+		
+
+output 	: chan '!' outlist 			  
+	| chan '!' ANY 
+	. 			  
+		
+
+wait 	: WAIT expr 
+	. 			 
+		
+
+skip 	: SKIP 
+	. 			
+		
+
+inlist 	: var 			
+	| inlist ';' var 
+	. 			  
+		
+
+outlist 	: expr 			
+	| outlist ';' expr 
+	. 			  
+		
+
+explist 	: expr 			
+	| explist ',' expr 
+	. 			  
+		
+
+varlist 	: var 			
+	| varlist ',' var 
+	. 			  
+		
+
+chanlist 	: chan 		
+	| chanlist ',' chan 
+	. 			  
+		
+
+deflist 	: def 			
+	| deflist ',' def 
+	. 			  
+		
+
+formparms 	: '(' fparmlist ')' 
+	. 		  
+		
+
+fparmlist 	: fparm 		
+	| fparmlist COMMA fparm 
+	. 			  
+		
+
+var 	: ID 			
+	| ID subscript 
+	. 			 
+		
+
+chan 	: ID 			
+	| ID '[' expr ']' 
+	. 			   
+		
+
+def 	: ID '=' expr 			  
+	| ID '=' veccon 
+	. 			  
+		
+
+subscript 	: '[' expr ']' 		  
+	| '[' BYTE expr ']' 
+	. 			   
+		
+
+
+fparm 	: VAR plist 			 
+	| CHAN plist 			 
+	| VALUE plist 
+	. 			 
+		
+
+plist 	: parm 			
+	| plist ',' parm 
+	. 			  
+		
+
+parm 	: ID 			
+	| ID '[' ']' 
+	. 			  
+		
+
+expr 	: monop element 			 
+	| element op element 			  
+	| ellist 
+	. 			
+		
+
+ellist 	: element 			
+	| ellist assop element 
+	. 			  
+		
+
+monop 	: '-' 			
+	| NOT 
+	. 			
+		
+
+element 	: NUMBER 			
+	| BOOL 			
+	| NOW 			
+	| CHCON 			
+	| '(' expr ')' 			  
+	| item 
+	. 			
+		
+
+op 	: arop 			
+	| COMPOP 			
+	| '=' 			
+	| SHIFTOP 
+	. 			
+		
+
+assop 	: '+' 			
+	| '*' 			
+	| LOGOP 			
+	| BOOLOP 
+	. 			
+		
+
+arop 	: '-' 			
+	| '/' 			
+	| '\\' 
+	. 			
+		
+
+item 	: ID 			
+	| ID subscript 			 
+	| veccon subscript 
+	. 			 
+		
+
+veccon 	: str 			
+	| TABLE '[' BYTE tlist ']' 			    
+	| TABLE '[' tlist ']' 
+	. 			   
+		
+
+
+str 	: STR 			
+	| str sep STR 
+	. 			  
+		
+
+tlist 	: expr 			
+	| tlist ',' expr 
+	. 			  
+		
+

@@ -1,0 +1,7 @@
+1+*3  // expect syntax error which inserts 'digit' 99
+a=5
+a*4
+24*011  // octal base, more than one digit
+b=10
+a*b
+

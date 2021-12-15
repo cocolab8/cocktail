@@ -1,0 +1,62 @@
+CT_LIB	= "$(CT_DIR)"\lib
+INCDIR	= $(CT_LIB)\include
+CFLAGS	= /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /I$(INCDIR)
+CC	= cl /nologo
+
+all:	ParsDrv cParsDrv
+
+ParsDrv: ParsDrv.obj Scanner.obj Pars.obj
+	link /nologo /incremental:no /out:ParsDrv.exe ParsDrv.obj Scanner.obj Pars.obj $(CT_LIB)\libreuse.lib
+
+Scanner.rpp Pars.lrk: cpp.prs
+	lpp -cxzj cpp.prs
+
+cpp.rex: cpp.scn Scanner.rpp
+	rpp < cpp.scn > cpp.rex
+
+Scanner.h Scanner.c: cpp.rex
+	rex -cd cpp.rex
+
+Pars.h Pars.c ParsDrv.c: Pars.lrk
+	lark -cdi0ps -n300 Pars.lrk
+
+ParsDrv.obj:	Pars.h Scanner.h
+Pars.obj:		Pars.h Scanner.h
+Scanner.obj:	Scanner.h
+
+cParsDrv: cParsDrv.obj cScanSource.obj cScan.obj cPars.obj
+	link /nologo /incremental:no /out:cParsDrv.exe cParsDrv.obj cScanSource.obj cScan.obj cPars.obj $(CT_LIB)\libreuse.lib
+
+cScan.rpp cPars.lrk: c.prs
+	lpp -cxzj c.prs
+
+c.rex:	cpp.scn cScan.rpp
+	echo SCANNER cScan > temp1
+	rpp cScan.rpp < cpp.scn > temp2
+	copy /b temp1 + temp2 temp3
+	sed -f c.sed < temp3 > c.rex
+	del temp1
+	del temp2
+	del temp3
+
+cScan.h cScan.c cScanSource.h cScanSource.c: c.rex
+	rex -csd c.rex
+
+cPars.h cPars.c cParsDrv.c: cPars.lrk
+	lark -cdi0pns cPars.lrk
+
+cParsDrv.obj:	cPars.h cScan.h
+cPars.obj:	cPars.h cScan.h
+cScan.obj:	cScan.h cScanSource.h
+
+lint: Scanner.c Pars.c ParsDrv.c cScanSource.c cScan.c cPars.c cParsDrv.c
+	lint $(CFLAGS) -b -u *.c
+
+clean:
+	del /F core *.[hco] *.dbg cParsDrv ParsDrv c.rex cpp.rex \
+		cPars.lrk Pars.lrk cScan.rpp Scanner.rpp
+
+.SUFFIXES: .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

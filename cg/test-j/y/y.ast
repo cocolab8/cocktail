@@ -1,0 +1,2 @@
+RULE
+Vertex	= [index:int] [level:int] left:Vertex right:Vertex .

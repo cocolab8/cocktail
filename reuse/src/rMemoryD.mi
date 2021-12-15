@@ -1,0 +1,141 @@
+(* $Id: rMemoryD.mi,v 1.6 2008/09/12 14:20:59 grosch rel $ *)
+
+(*
+ * $Log: rMemoryD.mi,v $
+ * Revision 1.6  2008/09/12 14:20:59  grosch
+ * added module Pointers in order to handle pointers on 64 bit platforms
+ *
+ * Revision 1.5  2000/04/18 16:20:01  grosch
+ * extend test to very large blocks
+ * make real use of the memory
+ *
+ * Revision 1.4  1997/05/27 11:57:56  grosch
+ * truncation of filenames to 8.3 format
+ *
+ * Revision 1.3  1993/08/18 15:06:51  grosch
+ * rename System and Memory to rSystem and rMemory
+ *
+ * Revision 1.2  1991/11/21  14:33:17  grosch
+ * new version of RCS on SPARC
+ *
+ * Revision 1.1  90/03/02  17:35:01  grosch
+ * improved output behaviour using WriteFlush
+ *
+ * Revision 1.0  88/10/04  11:47:12  grosch
+ * Initial revision
+ *
+ *)
+
+(* Ich, Doktor Josef Grosch, Informatiker, Sept. 1987 *)
+
+MODULE rMemoryD;
+
+FROM SYSTEM	IMPORT ADDRESS, WORD;
+FROM Pointers	IMPORT PTRINT;
+FROM rMemory	IMPORT Alloc, Free, MemoryUsed;
+FROM IO		IMPORT StdOutput, WriteS, WriteI, WriteLong, WriteN, WriteNl, CloseIO;
+
+VAR
+   p1, p2, p3, p4	: ADDRESS;
+   i			: CARDINAL;
+   small, best, notbest, large: LONGINT;
+
+PROCEDURE AllocPrint (n: LONGINT): ADDRESS;
+VAR
+   a: POINTER TO ARRAY [0..1000000000] OF CHAR;
+   i: INTEGER;
+   b: CHAR;
+BEGIN
+   a := Alloc (n);
+   WriteS (StdOutput, "Alloc:  n = ");
+   WriteLong (StdOutput, n, 10);
+   WriteS (StdOutput, ", ADR = ");
+   WriteN (StdOutput, PTRINT (a), 8, 16);
+   WriteNl (StdOutput);
+   IF a # NIL THEN
+      FOR i := 0 TO n - 1 BY 1024 DO
+	 a^ [i] := 'x';
+	 b := a^ [i];
+      END;
+   END;
+   RETURN a;
+END AllocPrint;
+
+BEGIN
+   FOR i := 0 TO 63 DO
+      p1 := AllocPrint (i);
+      p2 := AllocPrint (i);
+      Free (i, p1);
+      Free (i, p2);
+      p3 := AllocPrint (i);
+      p4 := AllocPrint (i);
+
+      IF p3 # p2 THEN
+	 WriteS (StdOutput, "Alloc/Free small not inverse ");
+	 WriteI (StdOutput, i, 10);
+	 WriteNl (StdOutput);
+      END;
+
+      IF p4 # p1 THEN
+	 WriteS (StdOutput, "Alloc/Free small not inverse ");
+	 WriteI (StdOutput, i, 10);
+	 WriteNl (StdOutput);
+      END;
+   END;
+
+   small	:= 80;
+   best		:= 96;
+   notbest	:= 112;
+   large	:= 128;
+
+   LOOP
+      FOR i := 7 TO 32 DO
+	 WriteS (StdOutput, "        i = ");
+	 WriteI (StdOutput, i, 10);
+	 WriteNl (StdOutput);
+
+	 p1 := AllocPrint (small);
+	 p2 := AllocPrint (best);
+	 p3 := AllocPrint (notbest);
+	 p4 := AllocPrint (large);
+
+	 IF (p1 = NIL) OR (p2 = NIL) OR (p3 = NIL) OR (p4 = NIL) THEN EXIT; END;
+
+	 Free (large	, p4);
+	 Free (notbest	, p3);
+	 Free (best	, p2);
+	 Free (small	, p1);
+
+	 p1 := AllocPrint (best);
+	 IF p1 # p2 THEN
+	    WriteS (StdOutput, "Alloc/Free large not inverse ");
+	    WriteI (StdOutput, i, 10);
+	    WriteNl (StdOutput);
+	 END;
+
+	 p1 := AllocPrint (best);
+	 IF p1 # p3 THEN
+	    WriteS (StdOutput, "Alloc/Free large not inverse ");
+	    WriteI (StdOutput, i, 10);
+	    WriteNl (StdOutput);
+	 END;
+
+	 p1 := AllocPrint (best);
+	 IF p1 # p4 THEN
+	    WriteS (StdOutput, "Alloc/Free large not inverse ");
+	    WriteI (StdOutput, i, 10);
+	    WriteNl (StdOutput);
+	 END;
+
+	 INC (small, small);
+	 INC (best, best);
+	 INC (notbest, notbest);
+	 INC (large, large);
+      END;
+   END;
+   WriteNl (StdOutput);
+   WriteS (StdOutput, "Memory used: ");
+   WriteI (StdOutput, MemoryUsed, 10);
+   WriteNl (StdOutput);
+   CloseIO;
+END rMemoryD.

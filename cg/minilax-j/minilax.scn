@@ -1,0 +1,48 @@
+IMPORT	{
+   package minilax;
+
+   import de.cocolab.reuse.*;
+}
+
+EXPORT  {
+INSERT tScanAttribute
+INSERT ErrorAttribute
+}
+
+DEFAULT	{
+   Global.errors.message ("illegal character", Errors.Error,
+      attribute.position (), getWord ());
+}
+
+EOF	{
+   if (yyStartState == Comment)
+      Global.errors.message ("unclosed comment", Errors.Error,
+	 attribute.position ());
+}
+
+DEFINE	digit	= {0-9} .
+	letter	= {a-z A-Z} .
+
+START	Comment
+
+RULE
+	  "(*"	:- {yyStart (Comment);}
+#Comment# "*)"	:- {yyStart (STD);}
+#Comment# "*" | - {*\t\n} + :- {}
+
+#STD# digit +	: {attribute = new XxIntegerConst (attribute.position (),
+			Integer.parseInt (getWord ()));
+		   return IntegerConst;}
+
+#STD# digit * "." digit + (E {+\-} ? digit +) ?
+		: {attribute = new XxRealConst (attribute.position (),
+			// Double.parseDouble () only from JDK 1.2
+			Double.valueOf (getWord ()).doubleValue ());
+		   return RealConst;}
+
+INSERT RULES #STD#
+
+#STD# letter (letter | digit) *
+		: {attribute = new XxIdentifier (attribute.position (),
+			Global.idents.makeIdent (getWord ()));
+		   return Identifier;}

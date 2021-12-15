@@ -1,0 +1,288 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= /STACK:2000000 $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: lark.exe
+
+Compress.obj	: Compress.c	\
+	Compress.h	\
+	LarkTime.h	\
+	Conflict.h	\
+	Delta.h	\
+	LRk.h	\
+	Explain.h	\
+	GenLRk.h	\
+	Generate.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	Tree.h	\
+	Errors.h	\
+	Position.h	\
+	LR1.h
+
+Conflict.obj	: Conflict.c	\
+	Conflict.h	\
+	Delta.h	\
+	LRk.h	\
+	Tree.h	\
+	Errors.h	\
+	Explain.h	\
+	GenLRk.h	\
+	Generate.h	\
+	Compress.h	\
+	LarkTime.h	\
+	Position.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	LR1.h
+
+Delta.obj	: Delta.c	\
+	Delta.h	\
+	LR1.h	\
+	Compress.h	\
+	LarkTime.h	\
+	Conflict.h	\
+	LRk.h	\
+	Explain.h	\
+	GenLRk.h	\
+	Generate.h	\
+	Errors.h	\
+	Position.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	Tree.h
+
+Errors.obj	: Errors.c	\
+	Errors.h	\
+	Position.h
+
+Explain.obj	: Explain.c	\
+	Explain.h	\
+	LR1.h	\
+	Compress.h	\
+	LarkTime.h	\
+	Tree.h	\
+	GenLRk.h	\
+	Generate.h	\
+	LRk.h	\
+	Conflict.h	\
+	Delta.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	Errors.h	\
+	Position.h
+
+GenLRk.obj	: GenLRk.c	\
+	GenLRk.h	\
+	Generate.h	\
+	Errors.h	\
+	Position.h	\
+	Compress.h	\
+	LarkTime.h	\
+	Conflict.h	\
+	Delta.h	\
+	Explain.h	\
+	LRk.h	\
+	LR1.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	Tree.h
+
+Generate.obj	: Generate.c	\
+	Generate.h	\
+	GenLRk.h	\
+	LRk.h	\
+	Compress.h	\
+	LarkTime.h	\
+	Conflict.h	\
+	Delta.h	\
+	Explain.h	\
+	LR1.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	Tree.h	\
+	Errors.h	\
+	Position.h
+
+LR1.obj	: LR1.c	\
+	LR1.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	Generate.h	\
+	GenLRk.h	\
+	LRk.h	\
+	LarkTime.h	\
+	Compress.h	\
+	Conflict.h	\
+	Delta.h	\
+	Explain.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h
+
+LRk.obj	: LRk.c	\
+	LRk.h	\
+	LR1.h	\
+	Compress.h	\
+	LarkTime.h	\
+	Conflict.h	\
+	Delta.h	\
+	Explain.h	\
+	GenLRk.h	\
+	Generate.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h
+
+LarkTime.obj	: LarkTime.c	\
+	LarkTime.h	\
+	Tree.h	\
+	Errors.h	\
+	Position.h
+
+Parser.obj	: Parser.c	\
+	Parser.h	\
+	Tree.h	\
+	Position.h	\
+	Errors.h	\
+	Scanner.h	\
+	Generate.h	\
+	GenLRk.h	\
+	LRk.h	\
+	Compress.h	\
+	LarkTime.h	\
+	Conflict.h	\
+	Delta.h	\
+	Explain.h	\
+	LR1.h	\
+	Semantic.h	\
+	Queue.h
+
+Position.obj	: Position.c	\
+	Position.h
+
+Queue.obj	: Queue.c	\
+	Queue.h
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h	\
+	Generate.h	\
+	GenLRk.h	\
+	LRk.h	\
+	Compress.h	\
+	LarkTime.h	\
+	Conflict.h	\
+	Delta.h	\
+	Explain.h	\
+	LR1.h	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Tree.h	\
+	Errors.h	\
+	Position.h
+
+Semantic.obj	: Semantic.c	\
+	Semantic.h	\
+	Queue.h	\
+	Parser.h	\
+	Scanner.h	\
+	Generate.h	\
+	GenLRk.h	\
+	LRk.h	\
+	Compress.h	\
+	Conflict.h	\
+	Delta.h	\
+	Explain.h	\
+	LR1.h	\
+	LarkTime.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h
+
+Tree.obj	: Tree.c	\
+	Tree.h	\
+	Errors.h	\
+	Position.h
+
+lark.obj	: lark.c	\
+	Delta.h	\
+	LarkTime.h	\
+	Generate.h	\
+	GenLRk.h	\
+	Compress.h	\
+	Explain.h	\
+	Conflict.h	\
+	LRk.h	\
+	LR1.h	\
+	Semantic.h	\
+	Queue.h	\
+	Tree.h	\
+	Parser.h	\
+	Scanner.h	\
+	Errors.h	\
+	Position.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+lark_OBJS =	\
+	lark.obj	\
+	Delta.obj	\
+	LarkTime.obj	\
+	Generate.obj	\
+	GenLRk.obj	\
+	Compress.obj	\
+	Explain.obj	\
+	Conflict.obj	\
+	LRk.obj	\
+	LR1.obj	\
+	Semantic.obj	\
+	Queue.obj	\
+	Tree.obj	\
+	Parser.obj	\
+	Scanner.obj	\
+	Errors.obj	\
+	Position.obj
+
+lark.exe	: $(lark_OBJS) $(SYSTEM)
+	$(CC) /nologo $(lark_OBJS) $(SYSTEM) /link /out:lark.exe $(LDFLAGS)
+
+install:
+	if not exist "%ct_dir%"\lib\lark\ mkdir "%ct_dir%"\lib\lark
+	copy gcpp.bat "%ct_dir%"\bin
+	copy gupd.bat "%ct_dir%"\bin
+	copy lark.exe "%ct_dir%"\bin
+	cd ..\lib
+	copy *.* "%ct_dir%"\lib\lark
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

@@ -1,0 +1,48 @@
+EXPORT	{
+# include "Position.h"
+# include "Errors.h"
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+static int NestingLevel = 0;
+
+INSERT ErrorAttribute
+}
+
+DEFAULT	{ MessageI ("illegal character", xxError, Attribute.Position, xxCharacter, TokenPtr); }
+
+EOF	{ if (yyStartState == Comment) Message ("unclosed comment", xxError, Attribute.Position); }
+
+DEFINE
+   digit	= {0-9} .
+   hex_digit	= digit | {A-F} .
+   letter	= {A-Za-z} .
+   ident	= letter (letter | digit) * .
+   integer	= digit + .
+   hex_integer	= digit hex_digit * H .
+   scale_factor	= (E|D) ("+"|"-") ? digit + .
+   real		= digit + "." digit * scale_factor ? .
+   char_const	= digit hex_digit * X .
+   comment_char	= - {*(\t\n} .
+
+START	Comment
+
+RULE
+
+#STD, Comment# "(*"	:- { NestingLevel ++; yyStart (Comment); }
+#Comment#  "*)"		:- { if (-- NestingLevel == 0) yyStart (STD); }
+#Comment#  "(" | "*" | comment_char + :- {}
+
+#STD# char_const	: { return Char		; }
+#STD# integer		: { return Integer	; }
+#STD# hex_integer	: { return Integer	; }
+#STD# digit + / ".."	: { return Integer	; }
+#STD# real		: { return Real		; }
+#STD# \"-{"}*\"		: { return String	; }
+#STD# '-{'}*'		: { return String	; }
+
+INSERT RULES #STD#
+
+#STD# ident		: { return Ident	; }

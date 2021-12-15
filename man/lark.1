@@ -1,0 +1,198 @@
+.TH LARK 1 "" "CoCoLab Germany"
+.SH NAME
+lark \- LALR(2) parser generator with backtracking
+.SH SYNOPSIS
+lark [ -options ] [ -l\fIdirectory\fP ] [ \fIfile\fP ]
+.SH DESCRIPTION
+\fILark\fP is a parser generator for highly efficient parsers that
+generates parsers for LALR(2) and LR(1) grammars. Moreover, backtracking
+can be used to recognize even larger grammar classes such as non-LR(k) grammars.
+The grammar is read from the file given as argument or from
+standard input, if the file argument is missing. Each grammar rule
+may be associated with a semantic action consisting of arbitrary statements
+written in the target language. Whenever a grammar rule is recognized by the
+generated parser the associated semantic action is executed. A mechanism for
+S-attribution (synthesized attributes) is provided that allows for the
+communication between the semantic actions.
+Attributes can be accessed by symbolic names as well as by the $n notation.
+.PP
+In case of LR conflicts, derivation trees are printed that ease the location of
+the problem.
+Ambiguities in the grammar may be solved by specifying precedence and associativity
+for tokens and grammar rules or by the use of semantic and syntactic predicates.
+Syntactic errors are handled completely automatic by the generated parsers
+including error reporting, error recovery, and error repair.
+The generated parsers are table-driven.
+.PP
+The generated parser needs a scanner, an error handling module, and a few
+modules from a library of reusable modules.
+Errors detected during the analysis of the grammar are reported on standard error.
+Detailed explanations about LR conflicts can be requested with the options -v or -w.
+While option -v selects the explanation of all conflicts, option -w restricts
+the explanation to implicitly repaired conflicts and dynamically repaired
+conflicts (using predicates) and it suppresses the explanation of explicitly
+repaired conflicts (using precedence and associativity).
+The explanation is written to a file whose name is the name of the input file
+with the suffix ".dbg" or "Parser.dbg" in case of input comes from standard
+input.
+.SH OPTIONS
+.IP c
+generate C source code
+.IP +
+generate C++ source code
+.IP j
+generate Java source code
+.IP m
+generate Modula-2 source code (default)
+.IP 3
+generate Ada source code
+.IP e
+generate Eiffel 3 source code
+.\" .IP f
+.\" generate support classes for Eiffel
+.IP a
+generate all = -dip (default)
+.IP d
+generate header file or definition module
+.IP i
+generate implementation part or module
+.IP p
+generate main program to be used as test driver
+.IP 5
+generate parser with graphical visualization
+.IP -f[\fIprefix\fP]
+generate constant declarations for tokens in header file using prefix (default: t_)
+.IP g
+generate # line directives
+.IP :
+generate lines not longer than 80 characters
+.IP J
+report undefined tokens and multiply defined nonterminals as error (default: warning)
+.IP 2
+suppress reporting of multiply defined nonterminals
+.IP s
+suppress informations and warnings
+.IP r
+suppress elimination of LR(0) reductions
+.IP u
+use faster and larger terminal tables (default: slower and smaller)
+.IP o
+use faster and larger nonterminal tables (default: slower and smaller)
+.IP 4
+use tables to decrement stack pointers (default: inline code)
+.IP 6
+use alternate algorithm for table compression
+.IP b
+memorize previous trial parses and avoid repetition of same trial parses
+.IP v
+explain all LR conflicts in file with suffix .dbg
+.IP w
+explain implicitly and dynamically repaired conflicts, only
+.IP D
+explain new conflicts, only - old conflicts are read from file with suffix .cft,
+current set of conflicts is written to new version of this file,
+differences between previous and current runs are written to file with suffix .dlt
+.IP h
+print help information
+.IP n
+reduce the number of case labels in switch, case, or inspect statements
+by mapping so-called shift-reduce states to reduce states
+(increases run time a little bit but decreases code size,
+might be necessary due to compiler restrictions)
+.IP -n\fInumber\fP
+generate switch or case statements with at most number case labels
+(might be necessary due to compiler restrictions)
+.IP t
+print statistics about the generated parser
+.IP x
+print a list of terminals and their encoding
+.IP y
+print a readable version of the generated automaton (states and items)
+.IP z
+print a list of nonterminals and rules
+.IP 0
+construct an LALR(1) parser (based on an LR(0) automaton) (default)
+.IP 1
+construct an LR(1) parser (based on an LR(1) automaton)
+.IP 01
+construct an LALR(1) parser and extend it locally to LR(1) where necessary
+.IP -k2
+construct an LALR(2) parser (which uses 2 tokens lookahead) (default: 1)
+.IP 7
+touch output files only if necessary
+.IP 8
+report storage consumption
+.IP -l\fIdirectory\fP
+specify the directory where lark finds its data files
+.IP H
+print advanced help information
+.IP U
+explain explicitly repaired conflicts
+.IP V
+explain implicitly repaired conflicts
+.IP W
+explain LALR(2) repaired conflicts
+.IP X
+explain dynamically repaired conflicts
+.IP C
+disable generation of comments and rules
+.SH FILES
+.nf
+.ta 1.5i
+*.dbg   	readable explanation of LR conflicts
+*.cft   	internal representation of LR conflicts
+*.dlt   	differences in grammar and conflicts wrt. previous run
+.sp 0.5
+if output is in C:
+.sp 0.5
+<Parser>.h	header file for the generated parser
+<Parser>.c	body of the generated parser
+<Parser>Drv.c	body of the parser driver (main program)
+yySource	temporary file of visualizing parser
+yy<Parser>.brk	temporary file of visualizing parser
+yy<Parser>.itm	temporary file of visualizing parser
+yy<Parser>.rul	temporary file of visualizing parser
+yy<Parser>.sbl	temporary file of visualizing parser
+Parser.tcl	procedure definitions for visualizing parser
+.sp 0.5
+if output is in C++:
+.sp 0.5
+<Parser>.h	header file for the generated parser
+<Parser>.cxx	body of the generated parser
+<Parser>Drv.cxx	body of the parser driver (main program)
+yySource	temporary file of visualizing parser
+yy<Parser>.brk	temporary file of visualizing parser
+yy<Parser>.itm	temporary file of visualizing parser
+yy<Parser>.rul	temporary file of visualizing parser
+yy<Parser>.sbl	temporary file of visualizing parser
+Parser.tcl	procedure definitions for visualizing parser
+.sp 0.5
+if output is in Java:
+.sp 0.5
+<Parser>.java	class of the generated parser
+<Parser>Drv.java	parser driver (main program)
+.sp 0.5
+if output is in Modula-2:
+.sp 0.5
+<Parser>.md	definition module of the generated parser
+<Parser>.mi	implementation module of the generated parser
+<Parser>Drv.mi	implementation module of the parser driver
+.sp 0.5
+if output is in Ada:
+.sp 0.5
+<Parser>.ads	package (interface) of the generated parser
+<Parser>.adb	package body of the generated parser
+<Parser>drv.adb	package body of the parser driver
+.sp 0.5
+if output is in Eiffel:
+.sp 0.5
+<Parser>.e	class of the generated parser
+<Parser>drv.e	class of the test driver (main program)
+<Parser>.txt	tables controlling the parser (ASCII format)
+errors.e	class of error handler
+attribute.e	support class for the description of properties of nonterminals
+scanattribute.e	support class for the description of properties of tokens
+position.e	support class for the representation of source positions
+rfile.e 	support class extending the class FILE
+rsystem.e	support class for system specific properties
+.fi

@@ -1,0 +1,1243 @@
+(* $Id: Parser.mi,v 1.33 2008/10/08 10:18:35 grosch Exp $ *)
+
+$@ IMPLEMENTATION MODULE @;
+
+$@ IMPORT SYSTEM, $, General, Pack, Strings, DynArray,
+# ifndef NO_RECOVER
+   Sets,
+# endif
+# if ! defined NO_RECOVER | defined YYReParse
+   Errors,
+# endif
+# ifndef YYDEBUG
+   Position,
+# endif
+   IO;
+
+# define YYACCEPT yyAccept; RETURN yyErrorCount
+# define YYABORT  yyAbort ; RETURN yyErrorCount
+# define ErrorMessages(Messages) yyControl.yyMessages := Messages
+# define SemActions(Actions)	 yyControl.yyActions  := Actions
+
+$G[	(* GLOBAL section is inserted here *)
+$@ TYPE tParsAttribute = RECORD Scan: $.tScanAttribute; END;
+$]
+
+CONST
+# ifndef yyInitStackSize
+#  define yyInitStackSize	100
+# endif
+yyNoState	= 0;
+yystandard	= 0;
+yytrial		= 1;
+yybuffer	= 2;
+yyreparse	= 3;
+# define yyS			yySynAttribute
+# define yyA			yyAttributeStack
+
+$T	(* table constants are inserted here *)
+
+yyFirstFinalState	= yyFirstReadReduceState;
+
+TYPE
+   yyTableElmt		= SHORTCARD;
+   yyStateRange		= yyTableElmt [0 .. yyLastState];
+   yyReadReduceRange	= yyTableElmt [yyFirstReadReduceState .. yyLastReadReduceState + 1];
+   yyReduceRange	= yyTableElmt [yyFirstReduceState .. yyLastReduceState];
+   yySymbolRange	= yyTableElmt [yyFirstSymbol .. yyLastSymbol];
+   yyCombType		= RECORD Check, Next: yyStateRange; END;
+   yyNCombType1		= yyStateRange;
+   yyNCombType2		= yyCombType;
+   yyTCombTypePtr	= POINTER TO yyCombType;
+   yyNCombType1Ptr	= POINTER TO yyNCombType1;
+   yyNCombType2Ptr	= POINTER TO yyNCombType2;
+   yyStackType		= POINTER TO ARRAY [0 .. 1000000] OF yyStateRange;
+   yytControl		= RECORD yyMode: BITSET; yyActions, yyMessages: BOOLEAN; END;
+
+VAR
+   yyTBasePtr		: ARRAY [0 .. yyLastReadState]	OF SYSTEM.ADDRESS; (* yyTCombTypePtr *)
+   yyNBasePtr		: ARRAY [0 .. yyLastReadState]	OF SYSTEM.ADDRESS; (* yyNCombTypePtr *)
+   yyTDefault		: ARRAY [0 .. yyTDefaultSize]	OF yyStateRange	;
+   yyNDefault		: ARRAY [0 .. yyNDefaultSize]	OF yyStateRange	;
+   yyTComb		: ARRAY [0 .. yyTTableMax]	OF yyCombType	;
+   yyNComb1		: ARRAY [yyLastTerminal + 1 .. yyNTable1Max] OF yyNCombType1;
+   yyNComb2		: ARRAY [yyLastTerminal + 1 .. yyNTable2Max] OF yyNCombType2;
+# ifndef NO_RECOVER
+   yyLength		: ARRAY yyReduceRange		OF yyTableElmt	;
+   yyLeftHandSide	: ARRAY yyReduceRange		OF yySymbolRange;
+   yyContinuation	: ARRAY [0 .. yyLastReadState]	OF yySymbolRange;
+# endif
+   yyCondition		: ARRAY [yyLastReduceState + 1 .. yyLastState + 1] OF yyStateRange;
+   yyFinalToProd	: ARRAY yyReadReduceRange	OF yyReduceRange;
+   yyStartLine		: ARRAY [1 .. yyLastStopState - yyLastReadReduceState] OF SHORTCARD;
+   yyControl		: yytControl;
+
+# ifdef YYDEBUG
+   yyString		: ARRAY [0 .. 127]		OF CHAR;
+   yyCount		: CARDINAL;
+   yyTrace		: IO.tFile;
+# endif
+
+PROCEDURE TokenName (Token: CARDINAL; VAR Name: ARRAY OF CHAR);
+   VAR s1, s2: Strings.tString;
+   PROCEDURE Copy (Source: ARRAY OF CHAR; VAR Target: ARRAY OF CHAR);
+      VAR i, j: CARDINAL;
+      BEGIN
+	 IF HIGH (Source) < HIGH (Target)
+	 THEN j := HIGH (Source); ELSE j := HIGH (Target); END;
+	 FOR i := 0 TO j DO Target [i] := Source [i]; END;
+	 IF HIGH (Target) > j THEN Target [j + 1] := CHR (0); END;
+      END Copy;
+   BEGIN
+      CASE Token OF
+$W	(* token names are inserted here *)
+      ELSE
+	 Strings.ArrayToString ("unknown ", s1);
+	 Strings.IntToString (Token, s2);
+	 Strings.Concatenate (s1, s2);
+	 Strings.StringToArray (s1, Name);
+      END;
+   END TokenName;
+
+# ifdef YYDEBUG
+
+PROCEDURE yyRule (Rule: CARDINAL; VAR Name: ARRAY OF CHAR);
+   PROCEDURE Copy (Source: ARRAY OF CHAR; VAR Target: ARRAY OF CHAR);
+      VAR i, j: CARDINAL;
+      BEGIN
+	 IF HIGH (Source) < HIGH (Target)
+	 THEN j := HIGH (Source); ELSE j := HIGH (Target); END;
+	 FOR i := 0 TO j DO Target [i] := Source [i]; END;
+	 IF HIGH (Target) > j THEN Target [j + 1] := CHR (0); END;
+      END Copy;
+   BEGIN
+      CASE Rule OF
+$S	(* rules are inserted here *)
+      END;
+   END yyRule;
+
+# endif
+
+# if defined YYTrialParse | defined YYReParse | defined YYGetLook
+
+# ifndef yyInitBufferSize
+#  define yyInitBufferSize 100
+# endif
+
+TYPE yytBuffer	= RECORD Token		: yySymbolRange;
+$@ 			 Attribute	: $.tScanAttribute;
+# ifdef YYMemoParse
+			 yyStart	: SHORTINT;
+# endif
+		  END;
+
+VAR
+   yyBuffer	: POINTER TO ARRAY [0 .. 1000000] OF yytBuffer;
+   yyBufferSize	: LONGINT;
+   yyBufferNext	: INTEGER;
+   yyBufferLast	: INTEGER;
+   yyBufferClear: BOOLEAN;
+   yyParseLevel	: SHORTCARD;
+
+PROCEDURE yyBufferSet (yyToken: yySymbolRange);
+   BEGIN
+      IF yyBufferNext = yyBufferLast THEN
+	 IF yyBufferClear THEN yyBufferLast := 0; END;
+	 INC (yyBufferLast);
+	 IF yyBufferLast >= yyBufferSize THEN
+	    DynArray.ExtendArray (yyBuffer, yyBufferSize,
+	       SYSTEM.TSIZE (yytBuffer));
+# ifdef YYDEBUG
+	    IF yyDebug THEN
+	       yyPrintState (0);
+	       IO.WriteS (yyTrace, "extend  token buffer from ");
+	       IO.WriteI (yyTrace, yyBufferSize DIV 2, 0);
+	       IO.WriteS (yyTrace, " to ");
+	       IO.WriteI (yyTrace, yyBufferSize, 0);
+	       yyNl;
+	    END;
+# endif
+	 END;
+	 yyBuffer^ [yyBufferLast].Token		:= yyToken;
+$@ 	 yyBuffer^ [yyBufferLast].Attribute	:= $.Attribute;
+# ifdef YYMemoParse
+	 yyBuffer^ [yyBufferLast].yyStart	:= 0;
+# endif
+	 yyBufferNext := yyBufferLast;
+      END;
+   END yyBufferSet;
+
+PROCEDURE yyGetToken (): INTEGER;
+   VAR yyToken	: yySymbolRange;
+   BEGIN
+      IF yyBufferNext < yyBufferLast THEN
+	 INC (yyBufferNext);
+	 yyToken := yyBuffer^ [yyBufferNext].Token;
+$@ 	 $.Attribute := yyBuffer^ [yyBufferNext].Attribute;
+      ELSE
+$@ 	 yyToken := $.GetToken ();
+	 IF {yytrial, yybuffer} * yyControl.yyMode # {} THEN
+	    INC (yyBufferLast);
+	    IF yyBufferLast >= yyBufferSize THEN
+	       DynArray.ExtendArray (yyBuffer, yyBufferSize,
+		  SYSTEM.TSIZE (yytBuffer));
+# ifdef YYDEBUG
+	       IF yyDebug THEN
+		  yyPrintState (0);
+		  IO.WriteS (yyTrace, "extend  token buffer from ");
+		  IO.WriteI (yyTrace, yyBufferSize DIV 2, 0);
+		  IO.WriteS (yyTrace, " to ");
+		  IO.WriteI (yyTrace, yyBufferSize, 0);
+		  yyNl;
+	       END;
+# endif
+	    END;
+	    yyBuffer^ [yyBufferLast].Token	:= yyToken;
+$@ 	    yyBuffer^ [yyBufferLast].Attribute	:= $.Attribute;
+# ifdef YYMemoParse
+	    yyBuffer^ [yyBufferLast].yyStart	:= 0;
+# endif
+	    yyBufferNext := yyBufferLast;
+	 END;
+      END;
+# ifdef TOKENOP
+      TOKENOP
+# endif
+      RETURN yyToken;
+   END yyGetToken;
+
+# else
+$@ # define yyGetToken $.GetToken
+# endif
+
+# ifdef YYGetLook
+
+#  define GetLookahead(k)	yyGetLookahead ((k) - 1, yyTerminal)
+#  define GetAttribute(k, a)	yyGetAttribute ((k) - 1, yyTerminal, a)
+
+PROCEDURE yyGetLookahead (k, Terminal: INTEGER): INTEGER;
+   BEGIN
+      IF k = 0 THEN RETURN Terminal; END;
+      IF yyControl.yyMode = {yystandard} THEN yyBufferSet (Terminal); END;
+      WHILE yyBufferNext + k > yyBufferLast DO
+	 IF (yyBufferNext < yyBufferLast) AND
+$@ 	    (yyBuffer^ [yyBufferLast].Token = $.EofToken) THEN
+$@ 	    RETURN $.EofToken;
+	 END;
+	 INC (yyBufferLast);
+	 IF yyBufferLast >= yyBufferSize THEN
+	    DynArray.ExtendArray (yyBuffer, yyBufferSize,
+	       SYSTEM.TSIZE (yytBuffer));
+# ifdef YYDEBUG
+	    IF yyDebug THEN
+	       yyPrintState (0);
+	       IO.WriteS (yyTrace, "extend  token buffer from ");
+	       IO.WriteI (yyTrace, yyBufferSize DIV 2, 0);
+	       IO.WriteS (yyTrace, " to ");
+	       IO.WriteI (yyTrace, yyBufferSize, 0);
+	       yyNl;
+	    END;
+# endif
+	 END;
+$@ 	 yyBuffer^ [yyBufferLast].Token		:= $.GetToken ();
+$@ 	 yyBuffer^ [yyBufferLast].Attribute	:= $.Attribute;
+# ifdef YYMemoParse
+	 yyBuffer^ [yyBufferLast].yyStart	:= 0;
+# endif
+      END;
+$@       $.Attribute := yyBuffer^ [yyBufferNext].Attribute;
+      RETURN yyBuffer^ [yyBufferNext + k].Token;
+   END yyGetLookahead;
+
+$@ PROCEDURE yyGetAttribute (k, Terminal: INTEGER; VAR Attribute: $.tScanAttribute);
+   VAR x	: INTEGER;
+   BEGIN
+$@       IF k = 0 THEN Attribute := $.Attribute;
+      ELSE
+	 x := yyGetLookahead (k, Terminal);
+	 Attribute := yyBuffer^ [General.Min (yyBufferNext + k, yyBufferLast)].Attribute;
+      END;
+   END yyGetAttribute;
+
+# endif
+
+# ifdef YYReParse
+
+#  define BufferOn(Actions, Messages) yyBufferOn (Actions, Messages, yyTerminal)
+#  define BufferPosition yyBufferNext
+
+VAR yyPrevControl	: yytControl;
+
+PROCEDURE yyBufferOn (yyActions, yyMessages: BOOLEAN; yyToken: yySymbolRange): INTEGER;
+   BEGIN
+      IF yyControl.yyMode = {yystandard} THEN
+	 yyPrevControl		:= yyControl;
+	 yyControl.yyMode	:= {yybuffer};
+	 yyControl.yyActions	:= yyActions;
+	 yyControl.yyMessages	:= yyMessages;
+	 yyBufferSet (yyToken);
+	 yyBufferClear		:= FALSE;
+      END;
+      RETURN yyBufferNext;
+   END yyBufferOn;
+
+PROCEDURE BufferOff (): INTEGER;
+   BEGIN
+      IF yyControl.yyMode = {yybuffer} THEN yyControl := yyPrevControl; END;
+      RETURN yyBufferNext;
+   END BufferOff;
+
+PROCEDURE BufferClear ();
+   BEGIN
+      yyBufferClear := TRUE;
+   END BufferClear;
+
+# endif
+
+# ifdef YYDEBUG
+
+VAR yyModeLetter	: ARRAY [0..8] OF CHAR;
+
+PROCEDURE yyReduce (yyState: yyStateRange);
+   BEGIN
+      IF yyDebug THEN
+	 yyPrintState (yyStateStack^ [yyStackPtr]);
+	 IO.WriteS (yyTrace, "reduce  ");
+	 yyRule (yyState - yyLastReadReduceState, yyString);
+	 IO.WriteS (yyTrace, yyString);
+	 yyNl;
+      END;
+   END yyReduce;
+
+PROCEDURE yyNl; BEGIN IO.WriteNl (yyTrace); IO.WriteFlush (yyTrace); END yyNl;
+
+PROCEDURE yyPrintState (yyState: yyStateRange);
+   VAR i	: SHORTCARD;
+   BEGIN
+      INC (yyCount);
+      IO.WriteI (yyTrace, yyCount, 4);
+      IO.WriteC (yyTrace, ":");
+$@       Position.WritePosition (yyTrace, $.Attribute.Position);
+      IO.WriteC (yyTrace, ":");
+      IO.WriteI (yyTrace, yyState, 5);
+      IO.WriteS (yyTrace, "  ");
+      IO.WriteC (yyTrace, yyModeLetter [CARDINAL (yyControl.yyMode)]);
+      IO.WriteS (yyTrace, "  ");
+# if defined YYTrialParse | defined YYReParse
+      IF yyParseLevel > 0 THEN
+	 IO.WriteI (yyTrace, yyParseLevel, 2);
+	 FOR i := 0 TO yyParseLevel DO IO.WriteS (yyTrace, "  "); END;
+      ELSE
+	 IO.WriteS (yyTrace, "    ");
+      END;
+# else
+      IO.WriteS (yyTrace, "    ");
+# endif
+   END yyPrintState;
+
+# else
+#  define yyReduce(State)
+# endif
+
+VAR
+   yyStackPtr		: yyTableElmt;
+   yyStateStackSize	: LONGINT;
+   yyAttrStackSize	: LONGINT;
+   yyShortStackSize	: yyTableElmt;
+   yyStateStack		: yyStackType;
+   yyAttributeStack	: POINTER TO ARRAY [0 .. 100000] OF tParsAttribute;
+
+$@ PROCEDURE @ (): CARDINAL;
+   BEGIN
+$@       RETURN @2 (yyStartState);
+$@    END @;
+
+$@ PROCEDURE @2 (yyStartSymbol: SHORTCARD): CARDINAL;
+   VAR
+      yyErrorCount	: CARDINAL;
+   BEGIN
+$@       Begin@;
+      yyStateStackSize	:= yyInitStackSize;
+      yyAttrStackSize	:= yyInitStackSize;
+      DynArray.MakeArray (yyStateStack, yyStateStackSize,
+	 SYSTEM.TSIZE (yyStateRange));
+      DynArray.MakeArray (yyAttributeStack, yyAttrStackSize,
+	 SYSTEM.TSIZE (tParsAttribute));
+      yyShortStackSize	:= yyStateStackSize - 1;
+      yyStackPtr	:= 0;
+# if defined YYTrialParse | defined YYReParse | defined YYGetLook
+      yyBufferSize	:= yyInitBufferSize;
+      DynArray.MakeArray (yyBuffer, yyBufferSize, SYSTEM.TSIZE (yytBuffer));
+      yyBufferNext	:= 1;
+      yyBufferLast	:= 1;
+      yyBufferClear	:= TRUE;
+      yyParseLevel	:= 0;
+# endif
+# ifdef YYDEBUG
+      IF yyDebug THEN
+	 yyCount := 0;
+	 IO.WriteS (yyTrace, "  # |Position|State|Mod|Lev|Action |Terminal and Lookahead or Rule");
+	 yyNl; yyNl;
+      END;
+# endif
+      yyControl.yyMode		:= {yystandard};
+      yyControl.yyActions	:= TRUE;
+      yyControl.yyMessages	:= TRUE;
+      yyErrorCount := yyParse (yyStartSymbol, yyGetToken (), yyStartLine [yyStartSymbol]);
+      DynArray.ReleaseArray (yyStateStack, yyStateStackSize,
+	 SYSTEM.TSIZE (yyTableElmt));
+      DynArray.ReleaseArray (yyAttributeStack, yyAttrStackSize,
+	 SYSTEM.TSIZE (tParsAttribute));
+# if defined YYTrialParse | defined YYReParse | defined YYGetLook
+      DynArray.ReleaseArray (yyBuffer, yyBufferSize, SYSTEM.TSIZE (yytBuffer));
+# endif
+      RETURN yyErrorCount;
+$@    END @2;
+
+# ifdef YYTrialParse
+
+# ifdef YYMemoParse
+#  define MemoryClear(Position) yyBuffer^ [Position].yyStart := 0
+# endif
+
+PROCEDURE yyTrialParse (yyStartSymbol: yyStateRange; yyToken: yySymbolRange; yyLine: CARDINAL): INTEGER;
+   VAR
+      yyErrorCount	: CARDINAL;
+      yyPrevStackPtr	: CARDINAL;
+      yyPrevBufferNext	: CARDINAL;
+      yyPrevControl	: yytControl;
+   BEGIN
+# ifdef BEFORE_TRIAL
+      BEFORE_TRIAL
+# endif
+# ifdef YYMemoParse
+      IF yyBuffer^ [yyBufferNext].yyStart =   SHORTINT (yyStartSymbol) THEN RETURN 0; END;
+      IF yyBuffer^ [yyBufferNext].yyStart = - SHORTINT (yyStartSymbol) THEN RETURN 1; END;
+# endif
+      yyPrevControl		:= yyControl;
+      yyPrevStackPtr		:= yyStackPtr;
+      INC (yyStackPtr);
+      INC (yyParseLevel);
+      IF yyControl.yyMode = {yystandard} THEN yyBufferSet (yyToken); END;
+      yyPrevBufferNext		:= yyBufferNext;
+      yyControl.yyMode		:= {yytrial};
+      yyControl.yyActions	:= FALSE;
+      yyControl.yyMessages	:= FALSE;
+      yyErrorCount		:= yyParse (yyStartSymbol, yyToken, yyLine);
+# ifdef YYMemoParse
+      IF yyErrorCount = 0 THEN
+	 yyBuffer^ [yyPrevBufferNext].yyStart :=   yyStartSymbol;
+      ELSE
+	 yyBuffer^ [yyPrevBufferNext].yyStart := - yyStartSymbol;
+      END;
+# endif
+      yyStackPtr		:= yyPrevStackPtr;
+      yyBufferNext		:= yyPrevBufferNext;
+      yyControl			:= yyPrevControl;
+      DEC (yyParseLevel);
+$@       $.Attribute		:= yyBuffer^ [yyBufferNext].Attribute;
+# ifdef AFTER_TRIAL
+      AFTER_TRIAL
+# endif
+      RETURN yyErrorCount;
+   END yyTrialParse;
+
+# endif
+
+# ifdef YYReParse
+
+PROCEDURE ReParse (yyStartSymbol: yyStateRange; yyFrom, yyTo: INTEGER; yyActions, yyMessages: BOOLEAN): INTEGER;
+   VAR
+      yyErrorCount	: CARDINAL;
+      yyPrevStackPtr	: CARDINAL;
+      yyPrevBufferNext	: CARDINAL;
+      yyPrevControl	: yytControl;
+      yyToToken		: yySymbolRange;
+   BEGIN
+      IF (1 <= yyFrom) AND (yyFrom <= yyTo) AND (yyTo <= yyBufferLast) THEN
+	 yyPrevStackPtr		:= yyStackPtr;
+	 yyPrevBufferNext	:= yyBufferNext;
+	 yyToToken		:= yyBuffer^ [yyTo].Token;
+	 yyPrevControl		:= yyControl;
+	 INC (yyStackPtr);
+	 INC (yyParseLevel);
+
+	 yyBufferNext		:= yyFrom - 1;
+$@ 	 yyBuffer^ [yyTo].Token	:= $.EofToken;
+	 yyControl.yyMode	:= {yyreparse};
+	 yyControl.yyActions	:= yyActions;
+	 yyControl.yyMessages	:= yyMessages;
+	 yyErrorCount		:= yyParse (yyStartSymbol, yyGetToken (), yyStartLine [yyStartSymbol]);
+	 yyStackPtr		:= yyPrevStackPtr;
+	 yyBufferNext		:= yyPrevBufferNext;
+	 yyControl		:= yyPrevControl;
+	 DEC (yyParseLevel);
+	 yyBuffer^ [yyTo].Token	:= yyToToken;
+$@ 	 $.Attribute		:= yyBuffer^ [yyBufferNext].Attribute;
+	 RETURN yyErrorCount;
+      ELSE
+$@ 	 Errors.Message ("invalid call of ReParse", Errors.Error, $.Attribute.Position);
+	 RETURN 1;
+      END
+   END ReParse;
+
+# endif
+
+PROCEDURE yyParse (yyStartSymbol: yyStateRange; yyToken: yySymbolRange; yyLine: CARDINAL): INTEGER;
+$L	(* LOCAL section is inserted here *)
+   VAR
+      yyState		: yyStateRange;
+      yyTerminal	: yySymbolRange;
+      yyNonterminal	: yySymbolRange;	(* left-hand side symbol *)
+      yySynAttribute	: tParsAttribute;	(* synthesized attribute *)
+$@       yyRepairAttribute : $.tScanAttribute;
+      yyRepairToken	: yySymbolRange;
+      yyNextState	: yyStateRange;
+      yyTCombPtr	: yyTCombTypePtr;
+# ifdef YYNDefault
+      yyNComb2Ptr	: yyNCombType2Ptr;
+# else
+      yyNComb1Ptr	: yyNCombType1Ptr;
+# endif
+      yyIsRepairing	: BOOLEAN;
+      yyErrorCount	: CARDINAL;
+      yyTokenString	: ARRAY [0 .. 127] OF CHAR;
+# ifdef YYDEBUG
+      yyStartCount	: CARDINAL;
+      yyPrevTerminal	: yySymbolRange;
+# endif
+# ifdef YYGetLook
+      yy2		: yySymbolRange;
+# endif
+
+   PROCEDURE yyRead;
+      BEGIN
+	 yyState := yyCondition [yyTableElmt (yyState)];
+	 INC (yyStackPtr);
+$@ 	 yyAttributeStack^ [yyStackPtr].Scan := $.Attribute;
+	 yyTerminal := yyGetToken ();
+# ifdef YYDEBUG
+	 IF yyDebug THEN
+	    yyPrintState (yyStateStack^ [yyStackPtr - 1]);
+	    IO.WriteS (yyTrace, "shift   ");
+	    TokenName (yyPrevTerminal, yyString);
+	    IO.WriteS (yyTrace, yyString);
+	    IO.WriteS (yyTrace, ", lookahead: ");
+	    TokenName (yyTerminal, yyString);
+	    IO.WriteS (yyTrace, yyString);
+	    yyNl;
+	    yyPrevTerminal := yyTerminal;
+	 END;
+# endif
+	 yyIsRepairing := FALSE;
+      END yyRead;
+
+   PROCEDURE yyAccept;
+      BEGIN
+# ifdef YYDEBUG
+	 IF yyDebug THEN			(* accept *)
+	    yyPrintState (yyStateStack^ [yyStackPtr]);
+	    IO.WriteS (yyTrace, "accept  parse started at ");
+	    IO.WriteI (yyTrace, yyStartCount, 0);
+	    yyNl;
+	 END;
+# endif
+      END yyAccept;
+
+   PROCEDURE yyAbort;
+      BEGIN
+# ifdef YYDEBUG
+	 IF yyDebug THEN			(* abort *)
+	    yyPrintState (yyStateStack^ [yyStackPtr]);
+	    IO.WriteS (yyTrace, "fail    parse started at ");
+	    IO.WriteI (yyTrace, yyStartCount, 0);
+	    yyNl;
+	 END;
+# endif
+	 INC (yyErrorCount);
+      END yyAbort;
+
+# ifdef YYDEBUG
+
+   PROCEDURE yyPrintResult (Line: CARDINAL; Condition: BOOLEAN): BOOLEAN;
+      BEGIN
+	 IF yyDebug THEN
+	    yyPrintState (yyStateStack^ [yyStackPtr]);
+	    IO.WriteS (yyTrace, "check   predicate in line ");
+	    IO.WriteI (yyTrace, Line, 0);
+	    IO.WriteS (yyTrace, ", result = ");
+	    IO.WriteB (yyTrace, Condition);
+	    yyNl;
+	 END;
+	 RETURN Condition;
+      END yyPrintResult;
+
+# else
+#  define yyPrintResult(Line, Condition) Condition
+# endif
+
+   PROCEDURE yyExtendStack;
+      BEGIN
+	 DynArray.ExtendArray (yyStateStack, yyStateStackSize,
+	    SYSTEM.TSIZE (yyStateRange));
+	 DynArray.ExtendArray (yyAttributeStack, yyAttrStackSize,
+	    SYSTEM.TSIZE (tParsAttribute));
+	 yyShortStackSize := yyStateStackSize - 1;
+# ifdef YYDEBUG
+	 IF yyDebug THEN
+	    yyPrintState (yyState);
+	    IO.WriteS (yyTrace, "extend  stack from ");
+	    IO.WriteI (yyTrace, yyStateStackSize DIV 2, 0);
+	    IO.WriteS (yyTrace, " to ");
+	    IO.WriteI (yyTrace, yyStateStackSize, 0);
+	    yyNl;
+	 END;
+# endif
+      END yyExtendStack;
+
+   BEGIN
+# ifdef YYDEBUG
+      IF yyDebug THEN
+	 yyPrintState (yyStartSymbol);
+	 IO.WriteS (yyTrace, "parse   for predicate in line ");
+	 IO.WriteI (yyTrace, yyLine, 0);
+	 IO.WriteS (yyTrace, ", lookahead: ");
+	 TokenName (yyToken, yyString);
+	 IO.WriteS (yyTrace, yyString);
+	 yyNl;
+	 yyStartCount	:= yyCount;
+	 yyPrevTerminal	:= yyToken;
+      END;
+# endif
+      yyState		:= yyStartSymbol;
+      yyTerminal	:= yyToken;
+      yyErrorCount	:= 0;
+      yyIsRepairing	:= FALSE;
+
+     LOOP
+       LOOP
+	 IF yyStackPtr >= yyShortStackSize THEN
+	    yyExtendStack;
+	 END;
+	 yyStateStack^ [yyStackPtr] := yyState;
+
+	 LOOP	(* SPEC State := Next (State, Terminal); terminal transition *)
+	    yyTCombPtr := yyTCombTypePtr (yyTBasePtr [yyState]
+			     + yyTerminal * SYSTEM.TSIZE (yyCombType));
+	    IF yyTCombPtr^.Check = yyState THEN
+	       yyState := yyTCombPtr^.Next; EXIT;
+	    END;
+# ifdef YYTDefault
+	    yyState := yyTDefault [yyState];
+	    IF yyState = yyNoState THEN EXIT; END;
+# else
+	    yyState := yyNoState; EXIT;
+# endif
+	 END;
+
+	 IF (yyState = yyNoState) OR			(* syntax error ? *)
+	    yyIsRepairing AND (yyState >= yyFirstReduceState) THEN (* repair *)
+	    IF (yyState = yyNoState) AND NOT yyIsRepairing THEN (*syntax error*)
+# ifdef ERROR
+	       ERROR
+# endif
+# ifdef YYTrialParse
+	       IF yyControl.yyMode = {yytrial} THEN YYABORT; END;
+# endif
+# ifndef NO_RECOVER
+	       INC (yyErrorCount);			(* report and recover *)
+	       yyTerminal := ErrorRecovery (yyTerminal,
+# ifdef YYDEBUG
+				yyPrevTerminal,
+# endif
+				yyStateStackSize, yyStackPtr);
+	       yyIsRepairing := TRUE;
+	       yyState := yyStateStack^ [yyStackPtr];
+	       EXIT;					(* continue *)
+# else
+	       YYABORT;
+# endif
+	    END;
+
+# ifndef NO_RECOVER
+      (* SPEC State := Next (Top (), Continuation [yyState]); repair transit *)
+	    yyState := yyStateStack^ [yyStackPtr];
+	    yyRepairToken := yyContinuation [yyState];	(* repair *)
+	    yyState := Next (yyState, yyRepairToken);
+	    IF yyState > yyLastReduceState THEN		(* dynamic ? *)
+	       yyState := yyCondition [yyTableElmt (yyState)];
+	    END;
+	    IF yyState <= yyLastReadReduceState THEN (* read or read reduce ? *)
+$@ 	       $.ErrorAttribute (yyRepairToken, yyRepairAttribute);
+	       IF yyControl.yyMessages THEN
+		  TokenName (yyRepairToken, yyTokenString);
+		  Errors.ErrorMessageI (Errors.TokenInserted, Errors.Repair,
+$@ 		     $.Attribute.Position, Errors.Array,
+		     SYSTEM.ADR (yyTokenString));
+	       END;
+# ifdef YYDEBUG
+	       IF yyDebug THEN
+		  yyPrintState (yyStateStack^ [yyStackPtr]);
+		  IO.WriteS (yyTrace, "insert  ");
+		  TokenName (yyRepairToken, yyString);
+		  IO.WriteS (yyTrace, yyString);
+		  yyNl;
+		  yyPrintState (yyStateStack^ [yyStackPtr]);
+		  IO.WriteS (yyTrace, "shift   ");
+		  TokenName (yyRepairToken, yyString);
+		  IO.WriteS (yyTrace, yyString);
+		  IO.WriteS (yyTrace, ", lookahead: ");
+		  TokenName (yyTerminal, yyString);
+		  IO.WriteS (yyTrace, yyString);
+		  yyNl;
+	       END;
+# endif
+	       IF yyStackPtr >= yyShortStackSize THEN
+		  yyExtendStack;
+	       END;
+	       INC (yyStackPtr);
+	       yyAttributeStack^ [yyStackPtr].Scan := yyRepairAttribute;
+	       IF yyState >= yyFirstFinalState THEN	(* read reduce *)
+		  yyStateStack^ [yyStackPtr] := yyStateStack^ [yyStackPtr - 1];
+		  yyState := yyFinalToProd [yyState];
+	       ELSE					(* read *)
+		  yyStateStack^ [yyStackPtr] := yyState;
+	       END;
+	    END;
+	    IF yyState <= yyLastReadState THEN		(* read ? *)
+	       EXIT;					(* continue *)
+	    END;
+# endif
+	 END;
+
+	 IF yyState >= yyFirstFinalState THEN		(* final state ? *)
+	    IF yyState <= yyLastReadReduceState THEN	(* read reduce ? *)
+	       INC (yyStackPtr);
+$@ 	       yyAttributeStack^ [yyStackPtr].Scan := $.Attribute;
+	       yyTerminal := yyGetToken ();
+# ifdef YYDEBUG
+	       IF yyDebug THEN
+		  yyStateStack^ [yyStackPtr] := yyStateStack^ [yyStackPtr - 1];
+		  yyPrintState (yyStateStack^ [yyStackPtr]);
+		  IO.WriteS (yyTrace, "shift   ");
+		  TokenName (yyPrevTerminal, yyString);
+		  IO.WriteS (yyTrace, yyString);
+		  IO.WriteS (yyTrace, ", lookahead: ");
+		  TokenName (yyTerminal, yyString);
+		  IO.WriteS (yyTrace, yyString);
+		  yyNl;
+		  yyPrevTerminal := yyTerminal;
+	       END;
+# endif
+	       yyIsRepairing := FALSE;
+$X	       yyState := yyFinalToProd [yyState];
+	    END;
+
+	    LOOP					(* reduce *)
+# ifdef YYDEBUG
+	       IF yyDebug THEN
+		  IF yyState <= yyLastReadReduceState THEN (* read reduce ? *)
+		     yyState := yyFinalToProd [yyState];
+		  END;
+		  yyPrintState (yyStateStack^ [yyStackPtr]);
+		  IF yyState <= yyLastReduceState THEN
+		     IO.WriteS (yyTrace, "reduce  ");
+		     yyRule (yyState - yyLastReadReduceState, yyString);
+		     IO.WriteS (yyTrace, yyString);
+		  ELSE
+		     IO.WriteS (yyTrace, "dynamic decision ");
+		     IO.WriteI (yyTrace, yyState - yyLastReduceState, 0);
+		  END;
+		  yyNl;
+	       END;
+# endif
+$R	(* Code for Reductions is inserted here *)
+	(* SPEC State := Next (Top (), Nonterminal); nonterminal transition *)
+# ifdef YYNDefault
+	       yyState := yyStateStack^ [yyStackPtr];
+	       LOOP
+		  yyNComb2Ptr := yyNCombType2Ptr (yyNBasePtr [yyState]
+				 + yyNonterminal * SYSTEM.TSIZE (yyNCombType2));
+		  IF yyNComb2Ptr^.Check = yyState THEN
+		     yyState := yyNComb2Ptr^.Next; EXIT;
+		  END;
+		  yyState := yyNDefault [yyState];
+	       END;
+# else
+	       yyNComb1Ptr := yyNCombType1Ptr (yyNBasePtr [yyStateStack^ [yyStackPtr]]
+				 + yyNonterminal * SYSTEM.TSIZE (yyNCombType1));
+	       yyState := yyNComb1Ptr^;
+# endif
+	       INC (yyStackPtr);
+	       yyAttributeStack^ [yyStackPtr] := yySynAttribute;
+	       IF yyState < yyFirstFinalState THEN EXIT; END; (* read nonterminal ? *)
+# ifdef YYDEBUG
+	       IF yyDebug THEN
+		  yyStateStack^ [yyStackPtr] := yyStateStack^ [yyStackPtr - 1];
+	       END;
+# endif
+	    END;
+
+	 ELSE						(* read *)
+	    INC (yyStackPtr);
+$@ 	    yyAttributeStack^ [yyStackPtr].Scan := $.Attribute;
+	    yyTerminal := yyGetToken ();
+# ifdef YYDEBUG
+	    IF yyDebug THEN
+	       yyPrintState (yyStateStack^ [yyStackPtr - 1]);
+	       IO.WriteS (yyTrace, "shift   ");
+	       TokenName (yyPrevTerminal, yyString);
+	       IO.WriteS (yyTrace, yyString);
+	       IO.WriteS (yyTrace, ", lookahead: ");
+	       TokenName (yyTerminal, yyString);
+	       IO.WriteS (yyTrace, yyString);
+	       yyNl;
+	       yyPrevTerminal := yyTerminal;
+	    END;
+# endif
+	    yyIsRepairing := FALSE;
+	 END;
+       END;
+     END;
+   END yyParse;
+
+# ifndef NO_RECOVER
+PROCEDURE ErrorRecovery (
+	  Terminal	: yySymbolRange	;
+# ifdef YYDEBUG
+      VAR PrevTerminal	: yySymbolRange	;
+# endif
+	  StackSize	: LONGINT	;
+	  StackPtr	: LONGINT	): yySymbolRange;
+   VAR
+      TokensSkipped	: BOOLEAN;
+      ContinueSet	: Sets.tSet;
+      RestartSet	: Sets.tSet;
+      Token		: yySymbolRange;
+      TokenArray	: ARRAY [0 .. 127] OF CHAR;
+      TokenString	: Strings.tString;
+      ContinueString	: Strings.tString;
+      l			: INTEGER;
+   BEGIN
+      IF yyControl.yyMessages THEN
+   (* 1. report the error *)
+$@ 	 Errors.ErrorMessage (Errors.SyntaxError, Errors.Error, $.Attribute.Position);
+
+   (* 2. report the offending token *)
+	 TokenName (Terminal, TokenArray);
+	 Strings.ArrayToString (TokenArray, TokenString);
+# ifdef SPELLING
+$@ 	 l := $.GetWord (ContinueString);
+	 IF NOT Strings.IsEqual (TokenString, ContinueString) THEN
+	    Strings.Append (TokenString, ' ');
+	    Strings.Concatenate (TokenString, ContinueString);
+	 END;
+# endif
+	 Errors.ErrorMessageI (Errors.TokenFound, Errors.Information,
+$@ 	    $.Attribute.Position, Errors.String, SYSTEM.ADR (TokenString));
+
+   (* 3. report the set of expected terminal symbols *)
+	 Sets.MakeSet (ContinueSet, yyLastTerminal);
+	 ComputeContinuation (StackSize, StackPtr, ContinueSet);
+	 Strings.AssignEmpty (ContinueString);
+	 FOR Token := Sets.Minimum (ContinueSet) TO Sets.Maximum (ContinueSet) DO
+	    IF Sets.IsElement (Token, ContinueSet) THEN
+	       TokenName (Token, TokenArray);
+	       Strings.ArrayToString (TokenArray, TokenString);
+	       IF (Strings.Length (ContinueString) + Strings.Length (TokenString) + 1 <= Strings.cMaxStrLength) THEN
+		  Strings.Concatenate (ContinueString, TokenString);
+		  Strings.Append (ContinueString, ' ');
+	       END;
+	    END;
+	 END;
+	 Errors.ErrorMessageI (Errors.ExpectedTokens, Errors.Information,
+$@ 	    $.Attribute.Position, Errors.String, SYSTEM.ADR (ContinueString));
+	 Sets.ReleaseSet (ContinueSet);
+      END;
+
+   (* 4. compute the set of terminal symbols for restart of the parse *)
+      Sets.MakeSet (RestartSet, yyLastTerminal);
+      ComputeRestartPoints (StackSize, StackPtr, RestartSet);
+
+   (* 5. skip terminal symbols until a restart point is reached *)
+      TokensSkipped := FALSE;
+      WHILE NOT Sets.IsElement (Terminal, RestartSet) DO
+	 Terminal := yyGetToken ();
+	 TokensSkipped := TRUE;
+# ifdef YYDEBUG
+	 IF yyDebug THEN
+	    yyPrintState (yyStateStack^ [StackPtr]);
+	    IO.WriteS (yyTrace, "skip    ");
+	    TokenName (PrevTerminal, yyString);
+	    IO.WriteS (yyTrace, yyString);
+	    IO.WriteS (yyTrace, ", lookahead: ");
+	    TokenName (Terminal, yyString);
+	    IO.WriteS (yyTrace, yyString);
+	    yyNl;
+	    PrevTerminal := Terminal;
+	 END;
+# endif
+      END;
+      Sets.ReleaseSet (RestartSet);
+
+   (* 6. report the restart point *)
+      IF TokensSkipped AND yyControl.yyMessages THEN
+$@ 	 Errors.ErrorMessage (Errors.RestartPoint, Errors.Information, $.Attribute.Position);
+      END;
+
+      RETURN Terminal;
+   END ErrorRecovery;
+
+(*
+   compute the set of terminal symbols that can be accepted (read)
+   in a given stack configuration (eventually after reduce actions)
+*)
+
+PROCEDURE ComputeContinuation (
+	  StackSize	: LONGINT	;
+	  StackPtr	: LONGINT	;
+      VAR ContinueSet	: Sets.tSet	);
+   VAR
+      Terminal		: yySymbolRange;
+      State		: yyStateRange;
+      NextState		: yyStateRange;
+   BEGIN
+      State := yyStateStack^ [StackPtr];
+      Sets.AssignEmpty (ContinueSet);
+      FOR Terminal := yyFirstTerminal TO yyLastTerminal DO
+	 NextState := Next (State, Terminal);
+	 IF (NextState <> yyNoState) AND ((NextState <= yyLastStopState) OR
+	    IsContinuation (Terminal, StackSize, StackPtr)) THEN
+	    Sets.Include (ContinueSet, Terminal);
+	 END;
+      END;
+   END ComputeContinuation;
+
+(*
+   check whether a given terminal symbol can be accepted (read)
+   in a certain stack configuration (eventually after reduce actions)
+*)
+
+PROCEDURE IsContinuation (
+      Terminal		: yySymbolRange	;
+      StackSize		: LONGINT	;
+      StackPtr		: LONGINT	): BOOLEAN;
+   VAR
+      State		: LONGINT;
+      Nonterminal	: yySymbolRange;
+      StateStack	: yyStackType;
+   BEGIN
+      DynArray.MakeArray (StateStack, StackSize, SYSTEM.TSIZE (yyStateRange));
+      FOR State := 0 TO StackPtr DO
+	 StateStack^ [State] := yyStateStack^ [State];
+      END;
+      State := StateStack^ [StackPtr];
+      LOOP
+	 StateStack^ [StackPtr] := State;
+	 State := Next (State, Terminal);
+	 IF State = yyNoState THEN
+	    DynArray.ReleaseArray (StateStack, StackSize,
+	       SYSTEM.TSIZE (yyStateRange));
+	    RETURN FALSE;
+	 END;
+
+	 REPEAT						(* reduce *)
+	    IF State > yyLastReduceState THEN		(* dynamic ? *)
+	       State := yyCondition [State];
+	    END;
+	    IF State <= yyLastStopState THEN (* read, read reduce, or accept? *)
+	       DynArray.ReleaseArray (StateStack, StackSize,
+		  SYSTEM.TSIZE (yyStateRange));
+	       RETURN TRUE;
+	    ELSE					(* reduce *)
+	       DEC (StackPtr, yyLength [State]);
+	       Nonterminal := yyLeftHandSide [State];
+	    END;
+
+	    State := Next (StateStack^ [StackPtr], Nonterminal);
+	    INC (StackPtr);
+	    IF StackPtr >= StackSize THEN
+	       DynArray.ExtendArray (StateStack, StackSize,
+		  SYSTEM.TSIZE (yyStateRange));
+	    END;
+	 UNTIL State < yyFirstFinalState;
+      END;
+   END IsContinuation;
+
+(*
+   compute the set of terminal symbols that can be accepted (read)
+   directly in a given stack configuration
+*)
+
+PROCEDURE CompContinuation (
+	  State		: yyStateRange;
+      VAR ContinueSet	: Sets.tSet	);
+   VAR
+      Terminal		: yySymbolRange;
+      NextState		: yyStateRange;
+   BEGIN
+      Sets.AssignEmpty (ContinueSet);
+      FOR Terminal := yyFirstTerminal TO yyLastTerminal DO
+	 NextState := Next (State, Terminal);
+	 IF (NextState <> yyNoState) AND (NextState <= yyLastStopState) THEN
+	    Sets.Include (ContinueSet, Terminal);
+	 END;
+      END;
+   END CompContinuation;
+
+(*
+   compute a set of terminal symbols that can be used to restart
+   parsing in a given stack configuration. We simulate parsing until
+   end of file using a suffix program synthesized by the function
+   Continuation. All symbols acceptable in the states reached during
+   the simulation can be used to restart parsing.
+*)
+
+PROCEDURE ComputeRestartPoints (
+	  StackSize	: LONGINT	;
+	  StackPtr	: LONGINT	;
+      VAR RestartSet	: Sets.tSet	);
+   VAR
+      StateStack	: yyStackType;
+      State		: LONGINT;
+      Nonterminal	: yySymbolRange;
+      ContinueSet	: Sets.tSet;
+   BEGIN
+      DynArray.MakeArray (StateStack, StackSize, SYSTEM.TSIZE (yyStateRange));
+      FOR State := 0 TO StackPtr DO
+	 StateStack^ [State] := yyStateStack^ [State];
+      END;
+      Sets.MakeSet (ContinueSet, yyLastTerminal);
+      Sets.AssignEmpty (RestartSet);
+      State := StateStack^ [StackPtr];
+
+      LOOP
+	 IF StackPtr >= StackSize THEN
+	    DynArray.ExtendArray (StateStack, StackSize,
+	       SYSTEM.TSIZE (yyStateRange));
+	 END;
+	 StateStack^ [StackPtr] := State;
+	 CompContinuation (State, ContinueSet);
+	 Sets.Union (RestartSet, ContinueSet);
+	 State := Next (State, yyContinuation [State]);
+
+	 IF State >= yyFirstFinalState THEN		(* final state ? *)
+	    IF State <= yyLastReadReduceState THEN	(* read reduce ? *)
+	       INC (StackPtr);
+	       State := yyFinalToProd [State];
+	    END;
+
+	    LOOP					(* reduce *)
+	       IF State > yyLastReduceState THEN	(* dynamic ? *)
+		  State := yyCondition [State];
+	       END;
+	       IF (yyFirstReduceState <= State) AND
+		  (State <= yyLastStopState) THEN	(* accept *)
+		  DynArray.ReleaseArray (StateStack, StackSize,
+		     SYSTEM.TSIZE (yyStateRange));
+		  Sets.ReleaseSet (ContinueSet);
+		  RETURN;
+	       ELSIF State < yyFirstFinalState THEN	(* read *)
+		  INC (StackPtr);
+		  EXIT;
+	       ELSE					(* reduce *)
+		  DEC (StackPtr, yyLength [State]);
+		  Nonterminal := yyLeftHandSide [State];
+	       END;
+
+	       State := Next (StateStack^ [StackPtr], Nonterminal);
+	       INC (StackPtr);
+	       IF State < yyFirstFinalState THEN EXIT; END;
+	    END;
+	 ELSE						(* read *)
+	    INC (StackPtr);
+	 END;
+      END;
+   END ComputeRestartPoints;
+
+(* access the parse table:   Next : State x Symbol -> State *)
+
+PROCEDURE Next (State: yyStateRange; Symbol: yySymbolRange): yyStateRange;
+   VAR
+      TCombPtr		: yyTCombTypePtr;
+      NComb1Ptr		: yyNCombType1Ptr;
+      NComb2Ptr		: yyNCombType2Ptr;
+   BEGIN
+      IF Symbol <= yyLastTerminal THEN
+	 LOOP
+	    TCombPtr := yyTCombTypePtr (yyTBasePtr [State]
+			   + Symbol * SYSTEM.TSIZE (yyCombType));
+	    IF TCombPtr^.Check = State THEN RETURN TCombPtr^.Next; END;
+# ifdef YYTDefault
+	    State := yyTDefault [State];
+	    IF State = yyNoState THEN RETURN yyNoState; END;
+# else
+	    RETURN yyNoState;
+# endif
+	 END;
+      ELSE
+# ifdef YYNDefault
+	 LOOP
+	    NComb2Ptr := yyNCombType2Ptr (yyNBasePtr [State]
+			   + Symbol * SYSTEM.TSIZE (yyNCombType2));
+	    IF NComb2Ptr^.Check = State THEN RETURN NComb2Ptr^.Next; END;
+	    State := yyNDefault [State];
+	 END;
+# else
+	 NComb1Ptr := yyNCombType1Ptr (yyNBasePtr [State]
+			   + Symbol * SYSTEM.TSIZE (yyNCombType1));
+	 RETURN NComb1Ptr^;
+# endif
+      END;
+   END Next;
+# endif
+
+VAR yyunpackindex: CARDINAL;
+
+PROCEDURE TBaseUnpacker (value: LONGCARD);
+   BEGIN
+      yyTBasePtr [yyunpackindex] := SYSTEM.ADR (yyTComb [value]);
+      INC (yyunpackindex);
+   END TBaseUnpacker;
+
+PROCEDURE NBaseUnpacker (value: LONGCARD);
+   BEGIN
+# ifdef YYNDefault
+      yyNBasePtr [yyunpackindex] :=
+	 SYSTEM.ADR (yyNComb2 [value + yyLastTerminal + 1]) -
+	 (yyLastTerminal + 1) * SYSTEM.TSIZE (yyNCombType2);
+# else
+      yyNBasePtr [yyunpackindex] :=
+	 SYSTEM.ADR (yyNComb1 [value + yyLastTerminal + 1]) -
+	 (yyLastTerminal + 1) * SYSTEM.TSIZE (yyNCombType1);
+# endif
+      INC (yyunpackindex);
+   END NBaseUnpacker;
+
+PROCEDURE TDefaultUnpacker (value: LONGCARD);
+   BEGIN
+      yyTDefault [yyunpackindex] := value;
+      INC (yyunpackindex);
+   END TDefaultUnpacker;
+
+PROCEDURE NDefaultUnpacker (value: LONGCARD);
+   BEGIN
+      yyNDefault [yyunpackindex] := value;
+      INC (yyunpackindex);
+   END NDefaultUnpacker;
+
+PROCEDURE TCombUnpacker (value: LONGCARD);
+   BEGIN
+      IF NOT ODD (yyunpackindex) THEN
+	 yyTComb [yyunpackindex DIV 2].Check := value;
+      ELSE
+	 yyTComb [yyunpackindex DIV 2].Next := value;
+      END;
+      INC (yyunpackindex);
+   END TCombUnpacker;
+
+PROCEDURE NComb1Unpacker (value: LONGCARD);
+   BEGIN
+      yyNComb1 [yyunpackindex] := value;
+      INC (yyunpackindex);
+   END NComb1Unpacker;
+
+PROCEDURE NComb2Unpacker (value: LONGCARD);
+   BEGIN
+      IF NOT ODD (yyunpackindex) THEN
+	 yyNComb2 [yyunpackindex DIV 2].Check := value;
+      ELSE
+	 yyNComb2 [yyunpackindex DIV 2].Next := value;
+      END;
+      INC (yyunpackindex);
+   END NComb2Unpacker;
+
+# ifndef NO_RECOVER
+PROCEDURE LengthUnpacker (value: LONGCARD);
+   BEGIN
+      yyLength [yyunpackindex] := value;
+      INC (yyunpackindex);
+   END LengthUnpacker;
+
+PROCEDURE LeftHandSideUnpacker (value: LONGCARD);
+   BEGIN
+      yyLeftHandSide [yyunpackindex] := value;
+      INC (yyunpackindex);
+   END LeftHandSideUnpacker;
+
+PROCEDURE ContinuationUnpacker (value: LONGCARD);
+   BEGIN
+      yyContinuation [yyunpackindex] := value;
+      INC (yyunpackindex);
+   END ContinuationUnpacker;
+# endif
+
+PROCEDURE ConditionUnpacker (value: LONGCARD);
+   BEGIN
+      yyCondition [yyunpackindex] := value;
+      INC (yyunpackindex);
+   END ConditionUnpacker;
+
+PROCEDURE FinalToProdUnpacker (value: LONGCARD);
+   BEGIN
+      yyFinalToProd [yyunpackindex] := value;
+      INC (yyunpackindex);
+   END FinalToProdUnpacker;
+
+PROCEDURE yyInitTables;
+   VAR hc	: Pack.UnpackCardHandler;
+   BEGIN
+      hc := TBaseUnpacker	; yyunpackindex := 1;
+$P
+      hc := NBaseUnpacker	; yyunpackindex := 1;
+$Q
+      hc := TDefaultUnpacker	; yyunpackindex := 1;
+$D
+      hc := NDefaultUnpacker	; yyunpackindex := 1;
+$V
+      hc := TCombUnpacker	; yyunpackindex := 0;
+$M
+      hc := NComb1Unpacker	; yyunpackindex := yyLastTerminal + 1;
+$N
+      hc := NComb2Unpacker	; yyunpackindex := (yyLastTerminal + 1) * 2;
+$Y
+# ifndef NO_RECOVER
+      hc := LengthUnpacker	; yyunpackindex := yyFirstReduceState;
+$K
+      hc := LeftHandSideUnpacker; yyunpackindex := yyFirstReduceState;
+$H
+      hc := ContinuationUnpacker; yyunpackindex := 1;
+$O
+# endif
+      hc := ConditionUnpacker	; yyunpackindex := yyLastReduceState + 1;
+$A
+      hc := FinalToProdUnpacker	; yyunpackindex := yyFirstReadReduceState;
+$F
+   END yyInitTables;
+
+$@ PROCEDURE Begin@;
+   BEGIN
+$B	(* BEGIN section is inserted here *)
+$@    END Begin@;
+
+$@ PROCEDURE Close@;
+   BEGIN
+$C	(* CLOSE section is inserted here *)
+$@    END Close@;
+
+BEGIN
+   yyInitTables;
+   yyDebug	:= FALSE;
+# ifdef YYDEBUG
+   yyTrace	:= IO.StdOutput;
+   yyModeLetter [1] := 'S';
+   yyModeLetter [2] := 'T';
+   yyModeLetter [4] := 'B';
+   yyModeLetter [8] := 'R';
+# endif
+# if defined YYTrialParse | defined YYReParse | defined YYGetLook
+   yyBufferClear := TRUE;
+# endif
+
+$J	(* yyStartLine is initialized here *)
+$@ END @.

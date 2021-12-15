@@ -1,0 +1,14 @@
+
+01:Vertex
+  level            = 3
+  left             =  Vertex
+    level            = 2
+    left             =  Vertex
+      level            = 1
+      left             =  NoTree
+      right            =  NoTree
+    right            =  Vertex
+      level            = 1
+      left             =  NoTree
+      right            =  NoTree
+  right            = ^1

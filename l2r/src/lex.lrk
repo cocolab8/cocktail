@@ -1,0 +1,222 @@
+/* $Id: lex.lrk,v 1.3 1997/05/27 15:51:23 grosch rel $ */
+
+/*
+ * $Log: lex.lrk,v $
+ * Revision 1.3  1997/05/27 15:51:23  grosch
+ * bug fix: changed precedence of repetition
+ *
+ * Revision 1.2  1997/05/27 21:46:44  grosch
+ * truncation of filenames to 8.3 format
+ *
+ * Revision 1.1  1996/09/30 23:30:35  grosch
+ * bug fixes, improvements, and cosmetic changes
+ *
+ * Revision 1.0  1993/08/17  16:15:49  grosch
+ * Initial revision
+ *
+ */
+
+/************************************************************************/
+/*									*/
+/* specification of parser for lex input language in lalr syntax	*/
+/*									*/
+/************************************************************************/
+
+GLOBAL {
+
+#include <stdio.h>
+
+typedef struct { tScanAttribute Scan; } tParsAttribute;
+
+static int in_defs = 1;	/* parsing definition part			*/
+static char macro [256];/* regular expression for macro definition	*/
+static int  m;		/* index for macro				*/
+static int level = 0;	/* level count to decide on meaning of $	*/
+
+/* output representation for character, see print_char			*/
+static char how_to_print [] =
+{ 0, 0, 0, 0, 0, 0, 0, 0, 'b', 't', 'n', 0, 'f', 'r', 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 0 };
+
+/* in definition part, append v to macro, otherwise copy to buffer	*/
+static void str_put (v)
+   char * v;
+{
+  if (in_defs) {
+    while (macro [m++] = *v++);
+    m--;
+  }
+  else BufString (v);
+}
+
+/* print one character, escape if necessary				*/
+static void print_char (c)
+   char c;
+{
+  char i;
+  char v [8];
+
+  i = how_to_print [c];
+  switch (i) {
+    case 0	: (void) sprintf (v, "\\%d", c); break;
+    case 1	: (void) sprintf (v,   "%c", c); break;
+    case 2	: (void) sprintf (v, "\\%c", c); break;
+    default	: (void) sprintf (v, "\\%c", i); break;
+  }
+  str_put (v);
+}
+
+/* print the default rules for lex compatibility			*/
+default_rules ()
+{
+  str_put ("\n/* REM the next three lines can be removed in most cases */\n");
+  str_put ("\" \"	:- { yyEcho; }\n");
+  str_put ("\\t	:- { yyTab; yyEcho; }\n");
+  str_put ("\\n	:- { yyEol (0); yyEcho; }\n");
+}
+}
+
+TOKEN
+	'%%'		= 1
+
+	STARTDEF	= 4
+	'%t'		= 5
+	'/'		= 6
+	'.'		= 7
+	'?'		= 8
+	'+'		= 9
+	'*'		= 10
+	'('		= 11
+	')'		= 12
+	'|'		= 13
+	ACTION		= 14
+	STARTCOND	= 15
+	REPEAT		= 16
+	EXPANSION	= 17
+	'^'		= 18
+	PSEUDOACTION	= 19
+	STRING		= 20
+	CHARCLASS	= 21
+	CHAR		= 22
+	MACRODEF	= 23
+	TRANSLATION	= 24
+	'\n'		= 25
+	'$'		= 26
+
+RULE
+
+(************************************************************************)
+(*									*)
+(* syntax of lex source file						*)
+(*									*)
+(* lex source consists of a definition part, a rule part and an		*)
+(* optional subprograms part, which are separated by lines beginning	*)
+(* with '%%'.								*)
+(*									*)
+(************************************************************************)
+
+source		: defs '%%' { in_defs = 0; str_put ("\nRULE\n\n");
+  str_put ("/* REM the string \" (void) GetWord (yytext);\" can be removed in most cases */\n\n"); }
+		  rules { default_rules (); } [ '%%' ]
+		.
+
+(************************************************************************)
+(*									*)
+(* definition part							*)
+(*									*)
+(* consists of an arbitrary number of definitions (even 0).		*)
+(*									*)
+(************************************************************************)
+
+defs		: ( def '\n' ) *
+		.
+
+(* syntax of single definition						*)
+def		: macrodef expr { str_put (" ."); put_macro (macro); level--; }
+		| STARTDEF
+		| '%t' ( TRANSLATION '\n' ) * '%t'
+		{ (void) fprintf (stderr, "WARNING: translation table ignored !\n"); }
+		|
+		.
+
+macrodef	: MACRODEF { m = 0;
+			     str_put ((char *) $1.Scan.string_value);
+			     str_put ("\t= ");
+			     level++; }
+		.
+
+(************************************************************************)
+(*									*)
+(* rule part								*)
+(*									*)
+(* consists of an arbitrary number of rules (even 0).			*)
+(*									*)
+(************************************************************************)
+
+rules		: ( rule '\n' { str_put ("\n"); } ) *
+		.
+
+rule		: [ startcond caret fullexpr [ endcond ] ] action
+		.
+
+startcond	: STARTCOND { str_put ((char *) $1.Scan.string_value); str_put (" "); }
+		|
+		.
+
+caret		: '^' { str_put ("< "); }
+		|
+		.
+
+endcond		: '/' { str_put (" / "); } expr
+		.
+
+fullexpr	: fullexpr '|' { str_put (" , "); } sequence
+		| sequence
+		.
+
+expr		: expr  '|' { str_put (" | "); } sequence
+		| sequence
+		.
+
+sequence	: sequence secondary
+		| secondary
+		.
+
+secondary	: secondary '?'	{ str_put (" ?"); }
+		| secondary '*'	{ str_put (" *"); }
+		| secondary '+'	{ str_put (" +"); }
+		| secondary REPEAT { str_put ((char *) $2.Scan.string_value); }
+		| primary
+		.
+
+primary		: '(' { str_put ("("); level++; } expr ')'
+			{ str_put (")"); level--; }
+		| EXPANSION { str_put ((char *) $1.Scan.string_value); }
+		| CHARCLASS { str_put ((char *) $1.Scan.string_value); }
+		| '.'	{ str_put (" ANY "); }
+		| STRING	{ str_put ((char *) $1.Scan.string_value); }
+		| CHAR	{ print_char ((char) $1.Scan.char_value); }
+		| '$'	{ if (level != 0)
+			    { str_put ("$"); }
+			  else
+			    str_put (" >"); }
+		.
+
+action		: { str_put ("	: { (void) GetWord (yytext); "); }
+		  action_1 { str_put (" }"); }
+		| PSEUDOACTION	{ str_put (" ,"); }
+		|
+		.
+
+action_1	: action_1 action_2
+		| action_2
+		.
+
+action_2	: ACTION { str_put ((char *) $1.Scan.string_value); }
+		.

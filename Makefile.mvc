@@ -1,0 +1,104 @@
+support: c_reuse c_common c_mpp c_estra c_mtc2
+
+c_reuse:
+	cd reuse\m2c
+	nmake /c /f makefile.mvc
+	cd ..\..
+
+c_common:
+	cd common\m2c
+	nmake /c /f makefile.mvc
+	cd ..\..
+
+c_mpp:
+	cd mpp\m2c
+	nmake /c /f makefile.mvc
+	cd ..\..
+
+c_estra:
+	cd estra\m2c
+	nmake /c /f makefile.mvc
+	cd ..\..
+
+c_mtc2:
+	cd mtc2\m2c
+	nmake /c /f makefile.mvc
+	cd ..\..
+
+install_support:	# install support tools for source code generation
+	cd mpp\m2c
+	nmake /c /f makefile.mvc install
+	cd ..\..
+	cd estra\m2c
+	nmake /c /f makefile.mvc install
+	cd ..\..
+	cd mtc2\m2c
+	nmake /c /f makefile.mvc install
+	cd ..\..
+
+DIRS	= reuse front ell bnf rpp r2l l2cg rex lark cg tidy puma
+
+sources:	# generate source code
+	for %%d in ($(DIRS)) do \
+	  cd %%d\src && \
+	  nmake sources /c /f Makefile.mvc && \
+	  cd ..\..
+
+m2c:		# convert Modula-2 code to C code
+	for %%d in ($(DIRS)) do \
+	  cd %%d\src && \
+	  nmake m2c M2FLAGS=-cuw /c /f Makefile.mvc && \
+	  cd ..\..
+
+compile:	# compile C code using Microsoft Visual C/C++ compiler
+	copy config.d\config.coco reuse\m2c\config.h
+	for %%d in ($(DIRS)) do \
+	  cd %%d\m2c && \
+	  nmake /c /f Makefile.mvc && \
+	  cd ..\..
+	for %%d in (reuse\c reuse\cpp y2l\src l2r\src) do \
+	  cd %%d && \
+	  nmake /c /f Makefile.mvc && \
+	  cd ..\..
+
+install:	# install Cocktail Toolbox in folder CT_DIR
+	if "%CT_DIR%"=="" echo variable CT_DIR is NOT defined
+	if not exist "%CT_DIR%"\ mkdir "%CT_DIR%"
+	if not exist "%CT_DIR%"\bin\ mkdir "%CT_DIR%"\bin
+	if not exist "%CT_DIR%"\lib\ mkdir "%CT_DIR%"\lib
+	for %%d in ($(DIRS)) do \
+	  cd %%d\m2c && \
+	  nmake install /c /f Makefile.mvc && \
+	  cd ..\..
+	for %%d in (reuse\c reuse\cpp y2l\src l2r\src) do \
+	  cd %%d && \
+	  nmake install /c /f Makefile.mvc && \
+	  cd ..\..
+
+TESTS	= c\ada c\c c\cpp c\minilax c\modula2 c\modula2.ell c\oberon2 c\sather \
+	  c\sql c\wag cpp\modula2 cpp\minilax cxx\minilax modula\ada \
+	  modula\minilax modula\modula2 modula\modula2.ell modula\modula3 \
+	  modula\oberon modula\pascal modula\wag
+
+test:		# test Cocktail Toolbox
+	cd examples
+	for %%d in ($(TESTS)) do \
+	  cd %%d && \
+	  nmake /c /f makefile.mvc && \
+	  cd ..\..
+	cd ..
+
+CLEAN	= reuse\c reuse\cpp reuse\m2c common\m2c rex\m2c front\m2c lark\m2c \
+	  ell\m2c bnf\m2c y2l\src l2r\src r2l\m2c l2cg\m2c rpp\m2c cg\m2c \
+	  lpp\m2c tidy\m2c puma\m2c mpp\m2c estra\m2c mtc2\m2c
+
+clean:		# clean source tree of Cocktail Toolbox
+	for %%d in ($(CLEAN)) do \
+	  if exist "%%d" \
+	  cd %%d	&& \
+	  del *.obj	&& \
+	  del *.lib	&& \
+	  del *.exe	&& \
+	  del *.o	&& \
+	  del *.a	&& \
+	  cd ..\..

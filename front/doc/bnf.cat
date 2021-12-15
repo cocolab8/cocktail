@@ -1,0 +1,36 @@
+BNF(1)			       CoCoLab Karlsruhe			BNF(1)
+
+
+
+NAME
+       bnf - convert a grammar from EBNF to BNF
+
+SYNOPSIS
+       bnf [-c|-m|-eiffel] [-h][-l][-g] <file>
+
+DESCRIPTION
+       Bnf  translates a context-free grammar in EBNF into an equivalent gram‐
+       mar in BNF, which is written to standard output.	  The  result  can  be
+       used as input for the parser generator lalr.
+
+OPTIONS
+       c      the target language is C
+
+       m      the target language is Modula-2 (default)
+
+       eiffel the target language is Eiffel
+
+       h      print further help information
+
+       l      print complete (error) listing
+
+       g      generate # line directives
+
+SEE ALSO
+       J.  Grosch,  B.	Vielsack:  "The	 Parser	 Generators Lalr and Ell", GMD
+       Forschungsstelle an der Universitaet Karlsruhe, Compiler Generation Re‐
+       port No. 8, 1991
+
+
+
+				       1				BNF(1)

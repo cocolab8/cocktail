@@ -1,0 +1,27 @@
+
+# define HAVE_FCNTL_H		1 /* <fcntl.h>		*/
+# define HAVE_MEMORY_H		1 /* <memory.h>		*/
+# define HAVE_STDARG_H		1 /* <stdarg.h>		*/
+# define HAVE_STDDEF_H		1 /* <stddef.h>		*/
+# define HAVE_STDLIB_H		1 /* <stdlib.h>		*/
+# define HAVE_STRINGS_H		0 /* <strings.h>	*/
+# define HAVE_STRING_H		1 /* <string.h>		*/
+# define HAVE_TIME_H		1 /* <time.h>		*/
+# define HAVE_UNISTD_H		0 /* <unistd.h>		*/
+# define HAVE_WCHAR_H		0 /* <wchar.h>		*/
+
+# define HAVE_SYS_STAT_H	1 /* <sys/stat.h>	*/
+# define HAVE_SYS_TIMES_H	0 /* <sys/times.h>	*/
+# define HAVE_SYS_TIME_H	1 /* <sys/time.h>	*/
+# define HAVE_SYS_TYPES_H	1 /* <sys/types.h>	*/
+
+# define HAVE_STRCASECMP	0 /* strcasecmp		*/
+# define HAVE_STRNCASECMP	0 /* strncasecmp	*/
+# define HAVE_WCHAR_T		0 /* wchar_t		*/
+# define HAVE_WCSCPY		0 /* wcscpy		*/
+# define HAVE_WCSLEN		0 /* wcslen		*/
+
+# ifndef __cplusplus
+/* #  undef const */
+# endif
+

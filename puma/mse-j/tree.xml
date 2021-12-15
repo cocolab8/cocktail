@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<FILE EXT="cg">
+TREE
+
+EXPORT {
+<C>
+#include "Defs.h"
+#define String char *
+typedef int *array;
+extern array a3, anot3;
+</C>
+<Java>
+public static int[] a3= {0,1,2,3,4,5,6,7,8,9};
+public static int[] anot3 = {9,9,9,9,9,9,9,9,9,9};
+</Java>
+}
+
+GLOBAL {
+<C>
+int a3v[] = {0,1,2,3,4,5,6,7,8,9};
+int anot3v[] = {9,9,9,9,9,9,9,9,9,9};
+array a3 = a3v;
+array anot3 = anot3v;
+</C>
+}
+
+PROPERTY INPUT
+
+RULE
+
+<TAG NAME="tree_rules"/>
+</FILE>
+
+

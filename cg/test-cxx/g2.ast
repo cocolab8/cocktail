@@ -1,0 +1,35 @@
+IMPORT {
+# include "StringM.h"
+# include "Idents.h"
+
+typedef int MyInt;
+}
+
+GLOBAL {
+# define closeint(a)		printf ("%d ", a);
+
+/* human readable: with indentation and selector names */
+# define readSELECTOR()		yySkip ();
+# define writeSELECTOR(a)	yyIndentSelector (a);
+/*
+*/
+
+/* compact: without indentation and selector names */
+/*
+# define readSELECTOR()		
+# define writeSELECTOR(a)	
+*/
+}
+
+RULE
+
+Abstract	:= [Hex: MyInt] .
+
+Node <- Abstract= [Mark] [Ident: tIdent] [String: tStringRef]
+		  [a: tree] [b: Node] -> [c: tree] [d: Node] <
+   Node0	= .
+   Node1	= Child1: Node <
+      Node11	= Node .
+   > .
+   Node2	= Child1: Node REV Child2: Node [Child3: ttree] .
+> .

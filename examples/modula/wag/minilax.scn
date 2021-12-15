@@ -1,0 +1,58 @@
+EXPORT  {
+FROM Idents	IMPORT tIdent;
+FROM Position	IMPORT tPosition;
+
+TYPE
+   tINTEGER	= INTEGER;
+   tREAL	= REAL;
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+FROM SYSTEM	IMPORT ADR;
+FROM Strings	IMPORT tString, StringToInt, StringToReal;
+FROM Idents	IMPORT tIdent, NoIdent, MakeIdent;
+FROM Errors	IMPORT Message, MessageI, Error, String;
+
+INSERT ErrorAttribute
+}
+
+LOCAL	{ VAR Word: tString; }
+
+DEFAULT	{
+   GetWord (Word);
+   MessageI ("illegal character", Error, Attribute.Position, String, ADR (Word));
+}
+
+EOF	{
+   IF yyStartState = Comment THEN
+      Message ("unclosed comment", Error, Attribute.Position);
+   END;
+}
+
+DEFINE	digit	= {0-9} .
+	letter	= {a-z A-Z} .
+
+START	Comment
+
+RULE
+	  "(*"	:- {yyStart (Comment);}
+#Comment# "*)"	:- {yyStart (STD);}
+#Comment# "*" | - {*\t\n} + :- {}
+
+#STD# digit +	: {GetWord (Word);
+		   Attribute.IntegerConst.Integer := StringToInt (Word);
+		   RETURN IntegerConst;}
+
+#STD# digit * "." digit + (E {+\-} ? digit +) ?
+		: {GetWord (Word);
+		   Attribute.RealConst.Real := StringToReal (Word);
+		   RETURN RealConst;}
+
+INSERT RULES #STD#
+
+#STD# letter (letter | digit) *
+		: {GetWord (Word);
+		   Attribute.Ident.Ident := MakeIdent (Word);
+		   RETURN Ident;}

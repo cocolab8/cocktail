@@ -1,0 +1,8 @@
+Generator for Scanner Specifications	Lpp
+
+Lpp makes use of a library of reusable Modula-2 modules (MLIB=reuse).
+This library must be compiled before Lpp itself.
+
+To generate Lpp use:
+
+   make install BIN=... LIB=... OPT=...

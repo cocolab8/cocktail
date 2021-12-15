@@ -1,0 +1,152 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: puma.exe
+# all	: pumal.exe
+
+C.obj	: C.c	\
+	C.h	\
+	Optimize.h	\
+	Scanner.h	\
+	Semantic.h	\
+	Eval.h	\
+	Tree.h
+
+Cxx.obj	: Cxx.c	\
+	Cxx.h	\
+	Optimize.h	\
+	Scanner.h	\
+	Semantic.h	\
+	Eval.h	\
+	Tree.h
+
+Eval.obj	: Eval.c	\
+	Eval.h	\
+	Scanner.h	\
+	Tree.h
+
+Java.obj	: Java.c	\
+	Java.h	\
+	Scanner.h	\
+	Optimize.h	\
+	Semantic.h	\
+	Eval.h	\
+	Tree.h
+
+Mod.obj	: Mod.c	\
+	Mod.h	\
+	Optimize.h	\
+	Scanner.h	\
+	Semantic.h	\
+	Eval.h	\
+	Tree.h
+
+Optimize.obj	: Optimize.c	\
+	Optimize.h	\
+	Scanner.h	\
+	Tree.h
+
+Parser.obj	: Parser.c	\
+	Parser.h	\
+	Tree.h	\
+	Scanner.h
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h	\
+	Tree.h
+
+Semantic.obj	: Semantic.c	\
+	Semantic.h	\
+	Eval.h	\
+	Scanner.h	\
+	Tree.h
+
+Tree.obj	: Tree.c	\
+	Tree.h
+
+Tree2.obj	: Tree2.c	\
+	Tree2.h	\
+	Tree.h
+
+puma.obj	: puma.c	\
+	Tree2.h	\
+	Java.h	\
+	Cxx.h	\
+	C.h	\
+	Mod.h	\
+	Optimize.h	\
+	Semantic.h	\
+	Eval.h	\
+	Tree.h	\
+	Parser.h	\
+	Scanner.h
+
+pumal.obj	: pumal.c	\
+	Tree3.h	\
+	C.h	\
+	Optimize.h	\
+	Semantic.h	\
+	Eval.h	\
+	Tree.h	\
+	Parser.h	\
+	Scanner.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+puma_OBJS =	\
+	puma.obj	\
+	Tree2.obj	\
+	Java.obj	\
+	Cxx.obj	\
+	C.obj	\
+	Mod.obj	\
+	Optimize.obj	\
+	Semantic.obj	\
+	Eval.obj	\
+	Tree.obj	\
+	Parser.obj	\
+	Scanner.obj
+
+puma.exe	: $(puma_OBJS) $(SYSTEM)
+	$(CC) /nologo $(puma_OBJS) $(SYSTEM) /link /out:puma.exe $(LDFLAGS)
+
+pumal_OBJS =	\
+	pumal.obj	\
+	Tree3.obj	\
+	C.obj	\
+	Optimize.obj	\
+	Semantic.obj	\
+	Eval.obj	\
+	Tree.obj	\
+	Parser.obj	\
+	Scanner.obj
+
+pumal.exe	: $(pumal_OBJS) $(SYSTEM)
+	$(CC) /nologo $(pumal_OBJS) $(SYSTEM) /link /out:pumal.exe $(LDFLAGS)
+
+install:
+	if not exist "%ct_dir%"\lib\puma\ mkdir "%ct_dir%"\lib\puma
+	copy gcpp.bat	"%ct_dir%"\bin
+	copy gupd.bat	"%ct_dir%"\bin
+	copy grm.bat	"%ct_dir%"\bin
+	copy puma.exe	"%ct_dir%"\bin
+	copy typetab.c	"%ct_dir%"\lib\puma
+	copy typetab.cx	"%ct_dir%"\lib\puma
+	copy typetab.cxx "%ct_dir%"\lib\puma
+	copy typetab.m	"%ct_dir%"\lib\puma
+	copy typetab.j	"%ct_dir%"\lib\puma
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

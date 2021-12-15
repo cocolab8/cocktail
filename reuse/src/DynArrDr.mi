@@ -1,0 +1,272 @@
+(* $Id: DynArrDr.mi,v 1.5 2008/09/12 14:20:59 grosch rel $ *)
+
+(*
+ * $Log: DynArrDr.mi,v $
+ * Revision 1.5  2008/09/12 14:20:59  grosch
+ * added module Pointers in order to handle pointers on 64 bit platforms
+ *
+ * Revision 1.4  2006/07/17 16:38:32  grosch
+ * made code work on 64 bit machines
+ *
+ * Revision 1.3  2000/04/18 16:23:00  grosch
+ * improvements and adaptations to C version
+ *
+ * Revision 1.2  1997/05/27 11:57:56  grosch
+ * truncation of filenames to 8.3 format
+ *
+ * Revision 1.1  1991/11/21 14:33:17  grosch
+ * new version of RCS on SPARC
+ *
+ * Revision 1.0  88/10/04  11:46:51  grosch
+ * Initial revision
+ * 
+ *)
+
+(* Ich, Doktor Josef Grosch, Informatiker, Sept. 1987/April 2006 *)
+
+MODULE DynArrDr;
+
+FROM SYSTEM	IMPORT TSIZE;
+FROM Pointers	IMPORT PTRINT;
+FROM rMemory	IMPORT MemoryUsed;
+FROM DynArray	IMPORT MakeArray, ExtendArray, ResizeArray;
+FROM IO		IMPORT StdOutput, WriteC, WriteI, WriteN, WriteNl, WriteS, WriteLong, CloseIO;
+
+VAR  i : LONGINT;
+     is: SHORTCARD;
+     ic: CARDINAL;
+     j : CARDINAL;
+
+(* necessary to force index arithmetic to be done with long integers *)
+TYPE t = ARRAY [1 .. 1000000] OF LONGINT;
+     ts= ARRAY [1 .. 1000000] OF SHORTCARD;
+     tc= ARRAY [1 .. 1000000] OF CHAR;
+
+VAR  p : POINTER TO t;
+     ps: POINTER TO ts;
+     pc: POINTER TO tc;
+     s : LONGINT;
+     ss: SHORTCARD;
+     sc: CARDINAL;
+
+CONST n = 19;
+      ns= 14;
+      nc= 14;
+
+BEGIN
+
+(* ------------------------------------------------------------ *)
+
+   WriteNl (StdOutput);
+   WriteS (StdOutput, "LONGINT");
+   WriteNl (StdOutput);
+   WriteNl (StdOutput);
+   s := 1;
+
+   MakeArray (p, s, TSIZE (LONGINT));
+   FOR i := 1 TO s DO
+      p^[i] := i;
+   END;
+
+   FOR j := 1 TO n DO
+      ExtendArray (p, s, TSIZE (LONGINT));
+
+      IF p = NIL THEN
+	 WriteS (StdOutput, "Extend Error"); WriteNl (StdOutput);
+      END;
+
+      FOR i := s DIV 2 + 1 TO s DO
+	 p^[i] := i;
+      END;
+
+      FOR i := 1 TO s DO
+	 IF p^[i] # i THEN
+	    WriteS (StdOutput, "Error j, i, p^[i] =");
+	    WriteI (StdOutput, j, 5);
+	    WriteLong (StdOutput, i, 5);
+	    WriteLong (StdOutput, p^[i], 10);
+	    WriteNl (StdOutput);
+	 END;
+      END;
+
+      WriteS (StdOutput, "p, j, size = ");
+      WriteN (StdOutput, PTRINT (p), 8, 16);
+      WriteI (StdOutput, j, 5);
+      WriteLong (StdOutput, s, 10);
+      WriteS (StdOutput, " ok");
+      WriteNl (StdOutput);
+   END;
+   WriteS (StdOutput, "Memory used = ");
+   WriteI (StdOutput, MemoryUsed, 10);
+   WriteNl (StdOutput);
+
+   FOR j := n TO 1 BY -1 DO
+      ResizeArray (p, s, s DIV 2, TSIZE (LONGINT));
+
+      FOR i := 1 TO s DO
+	 IF p^[i] # i THEN
+	    WriteS (StdOutput, "Error j, i, p^[i] =");
+	    WriteI (StdOutput, j, 5);
+	    WriteLong (StdOutput, i, 5);
+	    WriteLong (StdOutput, p^[i], 10);
+	    WriteNl (StdOutput);
+	 END;
+      END;
+
+      WriteS (StdOutput, "p, j, size = ");
+      WriteN (StdOutput, PTRINT (p), 8, 16);
+      WriteI (StdOutput, j, 5);
+      WriteLong (StdOutput, s, 10);
+      WriteS (StdOutput, " ok");
+      WriteNl (StdOutput);
+   END;
+   WriteS (StdOutput, "Memory used = ");
+   WriteI (StdOutput, MemoryUsed, 10);
+   WriteNl (StdOutput);
+
+(* ------------------------------------------------------------ *)
+
+   WriteNl (StdOutput);
+   WriteS (StdOutput, "SHORTCARD");
+   WriteNl (StdOutput);
+   WriteNl (StdOutput);
+   s := 1;
+
+   MakeArray (ps, s, TSIZE (SHORTCARD));
+   ss := s;
+   FOR is := 1 TO ss DO
+      ps^[is] := is;
+   END;
+
+   FOR j := 1 TO ns DO
+      ExtendArray (ps, s, TSIZE (SHORTCARD));
+
+      IF ps = NIL THEN
+	 WriteS (StdOutput, "Extend Error"); WriteNl (StdOutput);
+      END;
+
+      ss := s;
+      FOR is := ss DIV 2 + 1 TO ss DO
+	 ps^[is] := is;
+      END;
+
+      FOR is := 1 TO ss DO
+	 IF ps^[is] # is THEN
+	    WriteS (StdOutput, "Error j, is, ps^[is] =");
+	    WriteI (StdOutput, j, 5);
+	    WriteLong (StdOutput, is, 5);
+	    WriteLong (StdOutput, ps^[is], 10);
+	    WriteNl (StdOutput);
+	 END;
+      END;
+
+      WriteS (StdOutput, "ps, j, size = ");
+      WriteN (StdOutput, PTRINT (ps), 8, 16);
+      WriteI (StdOutput, j, 5);
+      WriteLong (StdOutput, s, 10);
+      WriteS (StdOutput, " ok");
+      WriteNl (StdOutput);
+   END;
+   WriteS (StdOutput, "Memory used = ");
+   WriteI (StdOutput, MemoryUsed, 10);
+   WriteNl (StdOutput);
+
+   FOR j := ns TO 1 BY -1 DO
+      ResizeArray (ps, s, s DIV 2, TSIZE (SHORTCARD));
+
+      ss := s;
+      FOR is := 1 TO ss DO
+	 IF ps^[is] # is THEN
+	    WriteS (StdOutput, "Error j, is, ps^[is] =");
+	    WriteI (StdOutput, j, 5);
+	    WriteLong (StdOutput, is, 5);
+	    WriteLong (StdOutput, ps^[is], 10);
+	    WriteNl (StdOutput);
+	 END;
+      END;
+
+      WriteS (StdOutput, "ps, j, size = ");
+      WriteN (StdOutput, PTRINT (ps), 8, 16);
+      WriteI (StdOutput, j, 5);
+      WriteLong (StdOutput, s, 10);
+      WriteS (StdOutput, " ok");
+      WriteNl (StdOutput);
+   END;
+   WriteS (StdOutput, "Memory used = ");
+   WriteI (StdOutput, MemoryUsed, 10);
+   WriteNl (StdOutput);
+
+(* ------------------------------------------------------------ *)
+
+   WriteNl (StdOutput);
+   WriteS (StdOutput, "CHAR");
+   WriteNl (StdOutput);
+   WriteNl (StdOutput);
+   s := 1;
+
+   MakeArray (pc, s, TSIZE (CHAR));
+   sc := s;
+   FOR ic := 1 TO sc DO
+      pc^[ic] := CHR (ic MOD 256);
+   END;
+
+   FOR j := 1 TO nc DO
+      ExtendArray (pc, s, TSIZE (CHAR));
+
+      IF pc = NIL THEN
+	 WriteS (StdOutput, "Extend Error"); WriteNl (StdOutput);
+      END;
+
+      sc := s;
+      FOR ic := sc DIV 2 + 1 TO sc DO
+	 pc^[ic] := CHR (ic MOD 256);
+      END;
+
+      FOR ic := 1 TO sc DO
+	 IF pc^[ic] # CHR (ic MOD 256) THEN
+	    WriteS (StdOutput, "Error j, ic, pc^[ic] =");
+	    WriteI (StdOutput, j, 5);
+	    WriteLong (StdOutput, ic, 5);
+	    WriteLong (StdOutput, ORD (pc^[ic]), 10);
+	    WriteNl (StdOutput);
+	 END;
+      END;
+
+      WriteS (StdOutput, "pc, j, size = ");
+      WriteN (StdOutput, PTRINT (pc), 8, 16);
+      WriteI (StdOutput, j, 5);
+      WriteLong (StdOutput, s, 10);
+      WriteS (StdOutput, " ok");
+      WriteNl (StdOutput);
+   END;
+   WriteS (StdOutput, "Memory used = ");
+   WriteI (StdOutput, MemoryUsed, 10);
+   WriteNl (StdOutput);
+
+   FOR j := nc TO 1 BY -1 DO
+      ResizeArray (pc, s, s DIV 2, TSIZE (CHAR));
+
+      sc := s;
+      FOR ic := 1 TO sc DO
+	 IF pc^[ic] # CHR (ic MOD 256) THEN
+	    WriteS (StdOutput, "Error j, ic, pc^[ic] =");
+	    WriteI (StdOutput, j, 5);
+	    WriteLong (StdOutput, ic, 5);
+	    WriteLong (StdOutput, ORD (pc^[ic]), 10);
+	    WriteNl (StdOutput);
+	 END;
+      END;
+
+      WriteS (StdOutput, "pc, j, size = ");
+      WriteN (StdOutput, PTRINT (pc), 8, 16);
+      WriteI (StdOutput, j, 5);
+      WriteLong (StdOutput, s, 10);
+      WriteS (StdOutput, " ok");
+      WriteNl (StdOutput);
+   END;
+   WriteS (StdOutput, "Memory used = ");
+   WriteI (StdOutput, MemoryUsed, 10);
+   WriteNl (StdOutput);
+
+   CloseIO;
+END DynArrDr.

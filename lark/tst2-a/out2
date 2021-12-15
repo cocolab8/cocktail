@@ -1,0 +1,452 @@
+  # |Position|State|Mod|Lev|Action |Terminal and Lookahead or Rule
+
+   1:   1,  1:    1  S      parse   for predicate in line 39, lookahead: {
+   2:   2,  4:    1  S      shift   {, lookahead: IDENTIFIER
+   3:   2,  4:    4  S      reduce  1_compound_statement_UCAct_2 : 
+   4:   2,  4:    8  B      reduce  declaration_list : 
+   5:   2,  4:   11  B      dynamic decision 2
+   6:   2,  4:    3  T   1    parse   for predicate in line 62, lookahead: IDENTIFIER
+   7:   2,  4:    3  T   1    reduce  1_declaration_Trial_1 : 
+   8:   2,  6:    7  T   1    shift   IDENTIFIER, lookahead: (
+   9:   2,  6:    9  T   1    dynamic decision 1
+  10:   2,  6:    9  T   1    check   predicate in line 81, result = FALSE
+  11:   2,  6:    9  T   1    check   predicate in line 80, result = TRUE
+  12:   2,  6:    9  T   1    reduce  TYPEDEFname : IDENTIFIER 
+  13:   2,  6:    7  T   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+  14:   2,  7:   10  T   1    shift   (, lookahead: IDENTIFIER
+  15:   2,  8:   12  T   1    shift   IDENTIFIER, lookahead: )
+  16:   2,  8:   12  T   1    reduce  declarator : IDENTIFIER 
+trial action
+  17:   2,  9:   15  T   1    shift   ), lookahead: ;
+  18:   2,  9:   15  T   1    reduce  declarator : '(' declarator ')' 
+  19:   3,  4:   13  T   1    shift   ;, lookahead: IDENTIFIER
+  20:   3,  4:   13  T   1    reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+  21:   3,  4:    3  T   1    reduce  0_intern : declaration 
+  22:   3,  4:    3  T   1    accept  parse started at 6
+  23:   2,  4:   11  B      check   predicate in line 62, result = TRUE
+  24:   2,  4:   11  B      reduce  1_declaration_Trial_1 : 
+  25:   2,  6:    7  B      shift   IDENTIFIER, lookahead: (
+  26:   2,  6:    9  B      dynamic decision 1
+  27:   2,  6:    9  B      check   predicate in line 81, result = FALSE
+  28:   2,  6:    9  B      check   predicate in line 80, result = TRUE
+  29:   2,  6:    9  B      reduce  TYPEDEFname : IDENTIFIER 
+  30:   2,  6:    7  B      reduce  declaration_specifier : TYPEDEFname 
+trial action
+  31:   2,  7:   10  B      shift   (, lookahead: IDENTIFIER
+  32:   2,  8:   12  B      shift   IDENTIFIER, lookahead: )
+  33:   2,  8:   12  B      reduce  declarator : IDENTIFIER 
+trial action
+  34:   2,  9:   15  B      shift   ), lookahead: ;
+  35:   2,  9:   15  B      reduce  declarator : '(' declarator ')' 
+  36:   3,  4:   13  B      shift   ;, lookahead: IDENTIFIER
+  37:   3,  4:   13  B      reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+  38:   3,  4:   11  B      reduce  declaration_list : declaration_list declaration 
+  39:   3,  4:   11  B      dynamic decision 2
+  40:   3,  4:    3  T   1    parse   for predicate in line 62, lookahead: IDENTIFIER
+  41:   3,  4:    3  T   1    reduce  1_declaration_Trial_1 : 
+  42:   3,  6:    7  T   1    shift   IDENTIFIER, lookahead: {
+  43:   3,  6:    9  T   1    dynamic decision 1
+  44:   3,  6:    9  T   1    check   predicate in line 81, result = FALSE
+  45:   3,  6:    9  T   1    check   predicate in line 80, result = TRUE
+  46:   3,  6:    9  T   1    reduce  TYPEDEFname : IDENTIFIER 
+  47:   3,  6:    7  T   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+  48:   4,  7:   10  T   1    shift   {, lookahead: IDENTIFIER
+  49:   4,  7:    4  T   1    reduce  1_compound_statement_UCAct_2 : 
+  50:   4,  7:    8  T   1    reduce  declaration_list : 
+  51:   4,  7:   11  T   1    dynamic decision 2
+  52:   4,  7:    3  T   2      parse   for predicate in line 62, lookahead: IDENTIFIER
+  53:   4,  7:    3  T   2      reduce  1_declaration_Trial_1 : 
+  54:   4,  9:    7  T   2      shift   IDENTIFIER, lookahead: (
+  55:   4,  9:    9  T   2      dynamic decision 1
+  56:   4,  9:    9  T   2      check   predicate in line 81, result = FALSE
+  57:   4,  9:    9  T   2      check   predicate in line 80, result = TRUE
+  58:   4,  9:    9  T   2      reduce  TYPEDEFname : IDENTIFIER 
+  59:   4,  9:    7  T   2      reduce  declaration_specifier : TYPEDEFname 
+trial action
+  60:   4, 10:   10  T   2      shift   (, lookahead: IDENTIFIER
+  61:   4, 11:   12  T   2      shift   IDENTIFIER, lookahead: )
+  62:   4, 11:   12  T   2      reduce  declarator : IDENTIFIER 
+trial action
+  63:   4, 12:   15  T   2      shift   ), lookahead: ;
+  64:   4, 12:   15  T   2      reduce  declarator : '(' declarator ')' 
+  65:   5,  7:   13  T   2      shift   ;, lookahead: IDENTIFIER
+  66:   5,  7:   13  T   2      reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+  67:   5,  7:    3  T   2      reduce  0_intern : declaration 
+  68:   5,  7:    3  T   2      accept  parse started at 52
+  69:   4,  7:   11  T   1    check   predicate in line 62, result = TRUE
+  70:   4,  7:   11  T   1    reduce  1_declaration_Trial_1 : 
+  71:   4,  9:    7  T   1    shift   IDENTIFIER, lookahead: (
+  72:   4,  9:    9  T   1    dynamic decision 1
+  73:   4,  9:    9  T   1    check   predicate in line 81, result = FALSE
+  74:   4,  9:    9  T   1    check   predicate in line 80, result = TRUE
+  75:   4,  9:    9  T   1    reduce  TYPEDEFname : IDENTIFIER 
+  76:   4,  9:    7  T   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+  77:   4, 10:   10  T   1    shift   (, lookahead: IDENTIFIER
+  78:   4, 11:   12  T   1    shift   IDENTIFIER, lookahead: )
+  79:   4, 11:   12  T   1    reduce  declarator : IDENTIFIER 
+trial action
+  80:   4, 12:   15  T   1    shift   ), lookahead: ;
+  81:   4, 12:   15  T   1    reduce  declarator : '(' declarator ')' 
+  82:   5,  7:   13  T   1    shift   ;, lookahead: IDENTIFIER
+  83:   5,  7:   13  T   1    reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+  84:   5,  7:   11  T   1    reduce  declaration_list : declaration_list declaration 
+  85:   5,  7:   11  T   1    dynamic decision 2
+  86:   5,  7:    3  T   2      parse   for predicate in line 62, lookahead: IDENTIFIER
+  87:   5,  7:    3  T   2      reduce  1_declaration_Trial_1 : 
+  88:   5,  9:    7  T   2      shift   IDENTIFIER, lookahead: (
+  89:   5,  9:    9  T   2      dynamic decision 1
+  90:   5,  9:    9  T   2      check   predicate in line 81, result = FALSE
+  91:   5,  9:    9  T   2      check   predicate in line 80, result = TRUE
+  92:   5,  9:    9  T   2      reduce  TYPEDEFname : IDENTIFIER 
+  93:   5,  9:    7  T   2      reduce  declaration_specifier : TYPEDEFname 
+trial action
+  94:   5, 10:   10  T   2      shift   (, lookahead: IDENTIFIER
+  95:   5, 11:   12  T   2      shift   IDENTIFIER, lookahead: )
+  96:   5, 11:   12  T   2      reduce  declarator : IDENTIFIER 
+trial action
+  97:   5, 13:   15  T   2      shift   ), lookahead: ++
+  98:   5, 13:   15  T   2      reduce  declarator : '(' declarator ')' 
+  99:   5, 13:   13  T   2      fail    parse started at 86
+ 100:   5,  7:   11  T   1    check   predicate in line 62, result = FALSE
+ 101:   5,  7:   11  T   1    reduce  1_compound_statement_UCAct_4 : 
+ 102:   4,  7:    2  R   2      parse   for predicate in line 56, lookahead: IDENTIFIER
+ 103:   4,  7:    2  R   2      reduce  declaration_list : 
+ 104:   4,  7:    6  R   2      reduce  1_declaration_Trial_1 : 
+ 105:   4,  9:    7  R   2      shift   IDENTIFIER, lookahead: (
+ 106:   4,  9:    9  R   2      dynamic decision 1
+ 107:   4,  9:    9  R   2      check   predicate in line 81, result = FALSE
+ 108:   4,  9:    9  R   2      check   predicate in line 80, result = TRUE
+ 109:   4,  9:    9  R   2      reduce  TYPEDEFname : IDENTIFIER 
+ 110:   4,  9:    7  R   2      reduce  declaration_specifier : TYPEDEFname 
+trial action
+final action
+ 111:   4, 10:   10  R   2      shift   (, lookahead: IDENTIFIER
+ 112:   4, 11:   12  R   2      shift   IDENTIFIER, lookahead: )
+ 113:   4, 11:   12  R   2      reduce  declarator : IDENTIFIER 
+trial action
+final action
+ 114:   4, 12:   15  R   2      shift   ), lookahead: ;
+ 115:   4, 12:   15  R   2      reduce  declarator : '(' declarator ')' 
+ 116:   5,  7:   13  R   2      shift   ;, lookahead: _EOF_
+ 117:   5,  7:   13  R   2      reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 118:   5,  7:    6  R   2      reduce  declaration_list : declaration_list declaration 
+ 119:   5,  7:    6  R   2      reduce  0_intern : declaration_list _EOF_ 
+ 120:   5,  7:    6  R   2      accept  parse started at 102
+ 121:   5,  7:   14  T   1    reduce  statement_list : 
+ 122:   5,  9:   17  T   1    shift   IDENTIFIER, lookahead: (
+ 123:   5,  9:   18  T   1    dynamic decision 3
+ 124:   5,  9:   18  T   1    check   predicate in line 81, result = FALSE
+ 125:   5,  9:   18  T   1    check   predicate in line 80, result = TRUE
+ 126:   5,  9:   18  T   1    reduce  TYPEDEFname : IDENTIFIER 
+ 127:   5, 10:   20  T   1    shift   (, lookahead: IDENTIFIER
+ 128:   5, 11:   22  T   1    shift   IDENTIFIER, lookahead: )
+ 129:   5, 11:   18  T   1    reduce  expression : IDENTIFIER 
+ 130:   5, 13:   24  T   1    shift   ), lookahead: ++
+ 131:   5, 13:   24  T   1    reduce  expression : TYPEDEFname '(' expression ')' 
+ 132:   5, 15:   19  T   1    shift   ++, lookahead: ;
+ 133:   5, 15:   19  T   1    reduce  expression : expression '++' 
+ 134:   6,  4:   19  T   1    shift   ;, lookahead: }
+ 135:   6,  4:   19  T   1    reduce  statement : expression ';' 
+ 136:   6,  4:   17  T   1    reduce  statement_list : statement_list statement 
+ 137:   6,  5:   17  T   1    shift   }, lookahead: ;
+ 138:   6,  5:   17  T   1    reduce  compound_statement : '{' 1_compound_statement_UCAct_2 declaration_list 1_compound_statement_UCAct_4 statement_list '}' 
+ 139:   6,  5:   10  T   1    reduce  declarator : compound_statement 
+ 140:   7,  4:   13  T   1    shift   ;, lookahead: IDENTIFIER
+ 141:   7,  4:   13  T   1    reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 142:   7,  4:    3  T   1    reduce  0_intern : declaration 
+ 143:   7,  4:    3  T   1    accept  parse started at 40
+ 144:   3,  4:   11  B      check   predicate in line 62, result = TRUE
+ 145:   3,  4:   11  B      reduce  1_declaration_Trial_1 : 
+ 146:   3,  6:    7  B      shift   IDENTIFIER, lookahead: {
+ 147:   3,  6:    9  B      dynamic decision 1
+ 148:   3,  6:    9  B      check   predicate in line 81, result = FALSE
+ 149:   3,  6:    9  B      check   predicate in line 80, result = TRUE
+ 150:   3,  6:    9  B      reduce  TYPEDEFname : IDENTIFIER 
+ 151:   3,  6:    7  B      reduce  declaration_specifier : TYPEDEFname 
+trial action
+ 152:   4,  7:   10  B      shift   {, lookahead: IDENTIFIER
+ 153:   4,  7:    4  B      reduce  1_compound_statement_UCAct_2 : 
+ 154:   4,  7:    8  B      reduce  declaration_list : 
+ 155:   4,  7:   11  B      dynamic decision 2
+ 156:   4,  7:    3  T   1    parse   for predicate in line 62, lookahead: IDENTIFIER
+ 157:   4,  7:    3  T   1    reduce  1_declaration_Trial_1 : 
+ 158:   4,  9:    7  T   1    shift   IDENTIFIER, lookahead: (
+ 159:   4,  9:    9  T   1    dynamic decision 1
+ 160:   4,  9:    9  T   1    check   predicate in line 81, result = FALSE
+ 161:   4,  9:    9  T   1    check   predicate in line 80, result = TRUE
+ 162:   4,  9:    9  T   1    reduce  TYPEDEFname : IDENTIFIER 
+ 163:   4,  9:    7  T   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+ 164:   4, 10:   10  T   1    shift   (, lookahead: IDENTIFIER
+ 165:   4, 11:   12  T   1    shift   IDENTIFIER, lookahead: )
+ 166:   4, 11:   12  T   1    reduce  declarator : IDENTIFIER 
+trial action
+ 167:   4, 12:   15  T   1    shift   ), lookahead: ;
+ 168:   4, 12:   15  T   1    reduce  declarator : '(' declarator ')' 
+ 169:   5,  7:   13  T   1    shift   ;, lookahead: IDENTIFIER
+ 170:   5,  7:   13  T   1    reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 171:   5,  7:    3  T   1    reduce  0_intern : declaration 
+ 172:   5,  7:    3  T   1    accept  parse started at 156
+ 173:   4,  7:   11  B      check   predicate in line 62, result = TRUE
+ 174:   4,  7:   11  B      reduce  1_declaration_Trial_1 : 
+ 175:   4,  9:    7  B      shift   IDENTIFIER, lookahead: (
+ 176:   4,  9:    9  B      dynamic decision 1
+ 177:   4,  9:    9  B      check   predicate in line 81, result = FALSE
+ 178:   4,  9:    9  B      check   predicate in line 80, result = TRUE
+ 179:   4,  9:    9  B      reduce  TYPEDEFname : IDENTIFIER 
+ 180:   4,  9:    7  B      reduce  declaration_specifier : TYPEDEFname 
+trial action
+ 181:   4, 10:   10  B      shift   (, lookahead: IDENTIFIER
+ 182:   4, 11:   12  B      shift   IDENTIFIER, lookahead: )
+ 183:   4, 11:   12  B      reduce  declarator : IDENTIFIER 
+trial action
+ 184:   4, 12:   15  B      shift   ), lookahead: ;
+ 185:   4, 12:   15  B      reduce  declarator : '(' declarator ')' 
+ 186:   5,  7:   13  B      shift   ;, lookahead: IDENTIFIER
+ 187:   5,  7:   13  B      reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 188:   5,  7:   11  B      reduce  declaration_list : declaration_list declaration 
+ 189:   5,  7:   11  B      dynamic decision 2
+ 190:   5,  7:    3  T   1    parse   for predicate in line 62, lookahead: IDENTIFIER
+ 191:   5,  7:    3  T   1    reduce  1_declaration_Trial_1 : 
+ 192:   5,  9:    7  T   1    shift   IDENTIFIER, lookahead: (
+ 193:   5,  9:    9  T   1    dynamic decision 1
+ 194:   5,  9:    9  T   1    check   predicate in line 81, result = FALSE
+ 195:   5,  9:    9  T   1    check   predicate in line 80, result = TRUE
+ 196:   5,  9:    9  T   1    reduce  TYPEDEFname : IDENTIFIER 
+ 197:   5,  9:    7  T   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+ 198:   5, 10:   10  T   1    shift   (, lookahead: IDENTIFIER
+ 199:   5, 11:   12  T   1    shift   IDENTIFIER, lookahead: )
+ 200:   5, 11:   12  T   1    reduce  declarator : IDENTIFIER 
+trial action
+ 201:   5, 13:   15  T   1    shift   ), lookahead: ++
+ 202:   5, 13:   15  T   1    reduce  declarator : '(' declarator ')' 
+ 203:   5, 13:   13  T   1    fail    parse started at 190
+ 204:   5,  7:   11  B      check   predicate in line 62, result = FALSE
+ 205:   5,  7:   11  B      reduce  1_compound_statement_UCAct_4 : 
+ 206:   4,  7:    2  R   1    parse   for predicate in line 56, lookahead: IDENTIFIER
+ 207:   4,  7:    2  R   1    reduce  declaration_list : 
+ 208:   4,  7:    6  R   1    reduce  1_declaration_Trial_1 : 
+ 209:   4,  9:    7  R   1    shift   IDENTIFIER, lookahead: (
+ 210:   4,  9:    9  R   1    dynamic decision 1
+ 211:   4,  9:    9  R   1    check   predicate in line 81, result = FALSE
+ 212:   4,  9:    9  R   1    check   predicate in line 80, result = TRUE
+ 213:   4,  9:    9  R   1    reduce  TYPEDEFname : IDENTIFIER 
+ 214:   4,  9:    7  R   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+final action
+ 215:   4, 10:   10  R   1    shift   (, lookahead: IDENTIFIER
+ 216:   4, 11:   12  R   1    shift   IDENTIFIER, lookahead: )
+ 217:   4, 11:   12  R   1    reduce  declarator : IDENTIFIER 
+trial action
+final action
+ 218:   4, 12:   15  R   1    shift   ), lookahead: ;
+ 219:   4, 12:   15  R   1    reduce  declarator : '(' declarator ')' 
+ 220:   5,  7:   13  R   1    shift   ;, lookahead: _EOF_
+ 221:   5,  7:   13  R   1    reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 222:   5,  7:    6  R   1    reduce  declaration_list : declaration_list declaration 
+ 223:   5,  7:    6  R   1    reduce  0_intern : declaration_list _EOF_ 
+ 224:   5,  7:    6  R   1    accept  parse started at 206
+ 225:   5,  7:   14  B      reduce  statement_list : 
+ 226:   5,  9:   17  B      shift   IDENTIFIER, lookahead: (
+ 227:   5,  9:   18  B      dynamic decision 3
+ 228:   5,  9:   18  B      check   predicate in line 81, result = FALSE
+ 229:   5,  9:   18  B      check   predicate in line 80, result = TRUE
+ 230:   5,  9:   18  B      reduce  TYPEDEFname : IDENTIFIER 
+ 231:   5, 10:   20  B      shift   (, lookahead: IDENTIFIER
+ 232:   5, 11:   22  B      shift   IDENTIFIER, lookahead: )
+ 233:   5, 11:   18  B      reduce  expression : IDENTIFIER 
+ 234:   5, 13:   24  B      shift   ), lookahead: ++
+ 235:   5, 13:   24  B      reduce  expression : TYPEDEFname '(' expression ')' 
+ 236:   5, 15:   19  B      shift   ++, lookahead: ;
+ 237:   5, 15:   19  B      reduce  expression : expression '++' 
+ 238:   6,  4:   19  B      shift   ;, lookahead: }
+ 239:   6,  4:   19  B      reduce  statement : expression ';' 
+ 240:   6,  4:   17  B      reduce  statement_list : statement_list statement 
+ 241:   6,  5:   17  B      shift   }, lookahead: ;
+ 242:   6,  5:   17  B      reduce  compound_statement : '{' 1_compound_statement_UCAct_2 declaration_list 1_compound_statement_UCAct_4 statement_list '}' 
+ 243:   6,  5:   10  B      reduce  declarator : compound_statement 
+ 244:   7,  4:   13  B      shift   ;, lookahead: IDENTIFIER
+ 245:   7,  4:   13  B      reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 246:   7,  4:   11  B      reduce  declaration_list : declaration_list declaration 
+ 247:   7,  4:   11  B      dynamic decision 2
+ 248:   7,  4:    3  T   1    parse   for predicate in line 62, lookahead: IDENTIFIER
+ 249:   7,  4:    3  T   1    reduce  1_declaration_Trial_1 : 
+ 250:   7,  6:    7  T   1    shift   IDENTIFIER, lookahead: (
+ 251:   7,  6:    9  T   1    dynamic decision 1
+ 252:   7,  6:    9  T   1    check   predicate in line 81, result = FALSE
+ 253:   7,  6:    9  T   1    check   predicate in line 80, result = TRUE
+ 254:   7,  6:    9  T   1    reduce  TYPEDEFname : IDENTIFIER 
+ 255:   7,  6:    7  T   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+ 256:   7,  7:   10  T   1    shift   (, lookahead: IDENTIFIER
+ 257:   7,  8:   12  T   1    shift   IDENTIFIER, lookahead: )
+ 258:   7,  8:   12  T   1    reduce  declarator : IDENTIFIER 
+trial action
+ 259:   7, 10:   15  T   1    shift   ), lookahead: ++
+ 260:   7, 10:   15  T   1    reduce  declarator : '(' declarator ')' 
+ 261:   7, 10:   13  T   1    fail    parse started at 248
+ 262:   7,  4:   11  B      check   predicate in line 62, result = FALSE
+ 263:   7,  4:   11  B      reduce  1_compound_statement_UCAct_4 : 
+ 264:   2,  4:    2  R   1    parse   for predicate in line 56, lookahead: IDENTIFIER
+ 265:   2,  4:    2  R   1    reduce  declaration_list : 
+ 266:   2,  4:    6  R   1    reduce  1_declaration_Trial_1 : 
+ 267:   2,  6:    7  R   1    shift   IDENTIFIER, lookahead: (
+ 268:   2,  6:    9  R   1    dynamic decision 1
+ 269:   2,  6:    9  R   1    check   predicate in line 81, result = FALSE
+ 270:   2,  6:    9  R   1    check   predicate in line 80, result = TRUE
+ 271:   2,  6:    9  R   1    reduce  TYPEDEFname : IDENTIFIER 
+ 272:   2,  6:    7  R   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+final action
+ 273:   2,  7:   10  R   1    shift   (, lookahead: IDENTIFIER
+ 274:   2,  8:   12  R   1    shift   IDENTIFIER, lookahead: )
+ 275:   2,  8:   12  R   1    reduce  declarator : IDENTIFIER 
+trial action
+final action
+ 276:   2,  9:   15  R   1    shift   ), lookahead: ;
+ 277:   2,  9:   15  R   1    reduce  declarator : '(' declarator ')' 
+ 278:   3,  4:   13  R   1    shift   ;, lookahead: IDENTIFIER
+ 279:   3,  4:   13  R   1    reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 280:   3,  4:    6  R   1    reduce  declaration_list : declaration_list declaration 
+ 281:   3,  4:    6  R   1    reduce  1_declaration_Trial_1 : 
+ 282:   3,  6:    7  R   1    shift   IDENTIFIER, lookahead: {
+ 283:   3,  6:    9  R   1    dynamic decision 1
+ 284:   3,  6:    9  R   1    check   predicate in line 81, result = FALSE
+ 285:   3,  6:    9  R   1    check   predicate in line 80, result = TRUE
+ 286:   3,  6:    9  R   1    reduce  TYPEDEFname : IDENTIFIER 
+ 287:   3,  6:    7  R   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+final action
+ 288:   4,  7:   10  R   1    shift   {, lookahead: IDENTIFIER
+ 289:   4,  7:    4  R   1    reduce  1_compound_statement_UCAct_2 : 
+ 290:   4,  7:    8  R   1    reduce  declaration_list : 
+ 291:   4,  7:   11  R   1    dynamic decision 2
+ 292:   4,  7:    3  T   2      parse   for predicate in line 62, lookahead: IDENTIFIER
+ 293:   4,  7:    3  T   2      reduce  1_declaration_Trial_1 : 
+ 294:   4,  9:    7  T   2      shift   IDENTIFIER, lookahead: (
+ 295:   4,  9:    9  T   2      dynamic decision 1
+ 296:   4,  9:    9  T   2      check   predicate in line 81, result = FALSE
+ 297:   4,  9:    9  T   2      check   predicate in line 80, result = TRUE
+ 298:   4,  9:    9  T   2      reduce  TYPEDEFname : IDENTIFIER 
+ 299:   4,  9:    7  T   2      reduce  declaration_specifier : TYPEDEFname 
+trial action
+ 300:   4, 10:   10  T   2      shift   (, lookahead: IDENTIFIER
+ 301:   4, 11:   12  T   2      shift   IDENTIFIER, lookahead: )
+ 302:   4, 11:   12  T   2      reduce  declarator : IDENTIFIER 
+trial action
+ 303:   4, 12:   15  T   2      shift   ), lookahead: ;
+ 304:   4, 12:   15  T   2      reduce  declarator : '(' declarator ')' 
+ 305:   5,  7:   13  T   2      shift   ;, lookahead: IDENTIFIER
+ 306:   5,  7:   13  T   2      reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 307:   5,  7:    3  T   2      reduce  0_intern : declaration 
+ 308:   5,  7:    3  T   2      accept  parse started at 292
+ 309:   4,  7:   11  R   1    check   predicate in line 62, result = TRUE
+ 310:   4,  7:   11  R   1    reduce  1_declaration_Trial_1 : 
+ 311:   4,  9:    7  R   1    shift   IDENTIFIER, lookahead: (
+ 312:   4,  9:    9  R   1    dynamic decision 1
+ 313:   4,  9:    9  R   1    check   predicate in line 81, result = FALSE
+ 314:   4,  9:    9  R   1    check   predicate in line 80, result = TRUE
+ 315:   4,  9:    9  R   1    reduce  TYPEDEFname : IDENTIFIER 
+ 316:   4,  9:    7  R   1    reduce  declaration_specifier : TYPEDEFname 
+trial action
+final action
+ 317:   4, 10:   10  R   1    shift   (, lookahead: IDENTIFIER
+ 318:   4, 11:   12  R   1    shift   IDENTIFIER, lookahead: )
+ 319:   4, 11:   12  R   1    reduce  declarator : IDENTIFIER 
+trial action
+final action
+ 320:   4, 12:   15  R   1    shift   ), lookahead: ;
+ 321:   4, 12:   15  R   1    reduce  declarator : '(' declarator ')' 
+ 322:   5,  7:   13  R   1    shift   ;, lookahead: IDENTIFIER
+ 323:   5,  7:   13  R   1    reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 324:   5,  7:   11  R   1    reduce  declaration_list : declaration_list declaration 
+ 325:   5,  7:   11  R   1    dynamic decision 2
+ 326:   5,  7:    3  T   2      parse   for predicate in line 62, lookahead: IDENTIFIER
+ 327:   5,  7:    3  T   2      reduce  1_declaration_Trial_1 : 
+ 328:   5,  9:    7  T   2      shift   IDENTIFIER, lookahead: (
+ 329:   5,  9:    9  T   2      dynamic decision 1
+ 330:   5,  9:    9  T   2      check   predicate in line 81, result = FALSE
+ 331:   5,  9:    9  T   2      check   predicate in line 80, result = TRUE
+ 332:   5,  9:    9  T   2      reduce  TYPEDEFname : IDENTIFIER 
+ 333:   5,  9:    7  T   2      reduce  declaration_specifier : TYPEDEFname 
+trial action
+ 334:   5, 10:   10  T   2      shift   (, lookahead: IDENTIFIER
+ 335:   5, 11:   12  T   2      shift   IDENTIFIER, lookahead: )
+ 336:   5, 11:   12  T   2      reduce  declarator : IDENTIFIER 
+trial action
+ 337:   5, 13:   15  T   2      shift   ), lookahead: ++
+ 338:   5, 13:   15  T   2      reduce  declarator : '(' declarator ')' 
+ 339:   5, 13:   13  T   2      fail    parse started at 326
+ 340:   5,  7:   11  R   1    check   predicate in line 62, result = FALSE
+ 341:   5,  7:   11  R   1    reduce  1_compound_statement_UCAct_4 : 
+ 342:   4,  7:    2  R   2      parse   for predicate in line 56, lookahead: IDENTIFIER
+ 343:   4,  7:    2  R   2      reduce  declaration_list : 
+ 344:   4,  7:    6  R   2      reduce  1_declaration_Trial_1 : 
+ 345:   4,  9:    7  R   2      shift   IDENTIFIER, lookahead: (
+ 346:   4,  9:    9  R   2      dynamic decision 1
+ 347:   4,  9:    9  R   2      check   predicate in line 81, result = FALSE
+ 348:   4,  9:    9  R   2      check   predicate in line 80, result = TRUE
+ 349:   4,  9:    9  R   2      reduce  TYPEDEFname : IDENTIFIER 
+ 350:   4,  9:    7  R   2      reduce  declaration_specifier : TYPEDEFname 
+trial action
+final action
+ 351:   4, 10:   10  R   2      shift   (, lookahead: IDENTIFIER
+ 352:   4, 11:   12  R   2      shift   IDENTIFIER, lookahead: )
+ 353:   4, 11:   12  R   2      reduce  declarator : IDENTIFIER 
+trial action
+final action
+ 354:   4, 12:   15  R   2      shift   ), lookahead: ;
+ 355:   4, 12:   15  R   2      reduce  declarator : '(' declarator ')' 
+ 356:   5,  7:   13  R   2      shift   ;, lookahead: _EOF_
+ 357:   5,  7:   13  R   2      reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 358:   5,  7:    6  R   2      reduce  declaration_list : declaration_list declaration 
+ 359:   5,  7:    6  R   2      reduce  0_intern : declaration_list _EOF_ 
+ 360:   5,  7:    6  R   2      accept  parse started at 342
+ 361:   5,  7:   14  R   1    reduce  statement_list : 
+ 362:   5,  9:   17  R   1    shift   IDENTIFIER, lookahead: (
+ 363:   5,  9:   18  R   1    dynamic decision 3
+ 364:   5,  9:   18  R   1    check   predicate in line 81, result = FALSE
+ 365:   5,  9:   18  R   1    check   predicate in line 80, result = TRUE
+ 366:   5,  9:   18  R   1    reduce  TYPEDEFname : IDENTIFIER 
+ 367:   5, 10:   20  R   1    shift   (, lookahead: IDENTIFIER
+ 368:   5, 11:   22  R   1    shift   IDENTIFIER, lookahead: )
+ 369:   5, 11:   18  R   1    reduce  expression : IDENTIFIER 
+ 370:   5, 13:   24  R   1    shift   ), lookahead: ++
+ 371:   5, 13:   24  R   1    reduce  expression : TYPEDEFname '(' expression ')' 
+ 372:   5, 15:   19  R   1    shift   ++, lookahead: ;
+ 373:   5, 15:   19  R   1    reduce  expression : expression '++' 
+ 374:   6,  4:   19  R   1    shift   ;, lookahead: }
+ 375:   6,  4:   19  R   1    reduce  statement : expression ';' 
+ 376:   6,  4:   17  R   1    reduce  statement_list : statement_list statement 
+ 377:   6,  5:   17  R   1    shift   }, lookahead: ;
+ 378:   6,  5:   17  R   1    reduce  compound_statement : '{' 1_compound_statement_UCAct_2 declaration_list 1_compound_statement_UCAct_4 statement_list '}' 
+ 379:   6,  5:   10  R   1    reduce  declarator : compound_statement 
+ 380:   7,  4:   13  R   1    shift   ;, lookahead: _EOF_
+ 381:   7,  4:   13  R   1    reduce  declaration : 1_declaration_Trial_1 declaration_specifier declarator ';' 
+ 382:   7,  4:    6  R   1    reduce  declaration_list : declaration_list declaration 
+ 383:   7,  4:    6  R   1    reduce  0_intern : declaration_list _EOF_ 
+ 384:   7,  4:    6  R   1    accept  parse started at 264
+ 385:   7,  4:   14  S      reduce  statement_list : 
+ 386:   7,  6:   17  S      shift   IDENTIFIER, lookahead: (
+ 387:   7,  6:   18  S      dynamic decision 3
+ 388:   7,  6:   18  S      check   predicate in line 81, result = FALSE
+ 389:   7,  6:   18  S      check   predicate in line 80, result = TRUE
+ 390:   7,  6:   18  S      reduce  TYPEDEFname : IDENTIFIER 
+ 391:   7,  7:   20  S      shift   (, lookahead: IDENTIFIER
+ 392:   7,  8:   22  S      shift   IDENTIFIER, lookahead: )
+ 393:   7,  8:   18  S      reduce  expression : IDENTIFIER 
+ 394:   7, 10:   24  S      shift   ), lookahead: ++
+ 395:   7, 10:   24  S      reduce  expression : TYPEDEFname '(' expression ')' 
+ 396:   7, 12:   19  S      shift   ++, lookahead: ;
+ 397:   7, 12:   19  S      reduce  expression : expression '++' 
+ 398:   8,  1:   19  S      shift   ;, lookahead: }
+ 399:   8,  1:   19  S      reduce  statement : expression ';' 
+ 400:   8,  1:   17  S      reduce  statement_list : statement_list statement 
+ 401:   9,  1:   17  S      shift   }, lookahead: _EOF_
+ 402:   9,  1:   17  S      reduce  compound_statement : '{' 1_compound_statement_UCAct_2 declaration_list 1_compound_statement_UCAct_4 statement_list '}' 
+ 403:   9,  1:    5  S      reduce  0_intern : compound_statement _EOF_ 
+ 404:   9,  1:    5  S      accept  parse started at 1

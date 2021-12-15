@@ -1,0 +1,10 @@
+fred "£250 for Barney" numberten
+£10 number99 /* don't match end of line */
+jim end
+   {abcABC!"£$%} 5Habcde  	[lkADq124()*£]
+  3X1234HAB£1
+(* c1 (* c2 /* *) /* c3 */ Cdone *) OuterModulaComment *)
+/* c4 /* c5  c6  */
+&&&	eight
+begin line9col7/**/
+

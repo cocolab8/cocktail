@@ -1,0 +1,95 @@
+MODULE ErrorsDr;
+
+(* $Id: ErrorsDr.mi,v 1.2 2000/09/04 13:01:17 grosch rel $ *)
+
+(*
+ * $Log: ErrorsDr.mi,v $
+ * Revision 1.2  2000/09/04 13:01:17  grosch
+ * added support for wide character strings
+ *
+ * Revision 1.1  1997/05/27 11:57:56  grosch
+ * truncation of filenames to 8.3 format
+ *
+ * Revision 1.0  1993/01/16 11:25:41  grosch
+ * Initial revision
+ *
+ * Revision 1.0  1992/08/07  14:31:41  grosch
+ * Initial revision
+ *
+ *)
+
+(* Ich, Doktor Josef Grosch, Informatiker, Nov. 1992 *)
+
+FROM SYSTEM	IMPORT ADR;
+FROM IO		IMPORT StdOutput, StdError, WriteNl;
+FROM Sets	IMPORT tSet, MakeSet, Include;
+FROM Strings	IMPORT tString, ArrayToString;
+FROM WStrings	IMPORT tWString, WCHAR;
+FROM Idents	IMPORT tIdent, MakeIdent, tWIdent, MakeWIdent;
+FROM Position	IMPORT NoPosition;
+FROM Errors	IMPORT MessageI, StoreMessages, WriteMessages;
+
+IMPORT Errors, WStrings;
+
+VAR
+   Integer	: INTEGER;
+   Short	: SHORTCARD;
+   Long		: LONGINT;
+   Cardinal	: CARDINAL;
+   Real		: REAL;
+   Boolean	: BOOLEAN;
+   Character	: CHAR;
+   WCharacter	: WCHAR;
+   Array	: ARRAY [0..9] OF CHAR;
+   WArray	: ARRAY [0..9] OF WCHAR;
+   Set		: tSet;
+   Ident	: tIdent;
+   WIdent	: tWIdent;
+   String	: tString;
+   WString	: tWString;
+
+PROCEDURE errors;
+BEGIN
+   MessageI ("Integer	", Errors.Error, NoPosition, Errors.Integer	, ADR (Integer	));
+   MessageI ("Short	", Errors.Error, NoPosition, Errors.Short	, ADR (Short	));
+   MessageI ("Long	", Errors.Error, NoPosition, Errors.Long	, ADR (Long	));
+   MessageI ("Cardinal	", Errors.Error, NoPosition, Errors.Cardinal	, ADR (Cardinal	));
+   MessageI ("Real	", Errors.Error, NoPosition, Errors.Real	, ADR (Real	));
+   MessageI ("Boolean	", Errors.Error, NoPosition, Errors.Boolean	, ADR (Boolean	));
+   MessageI ("Character	", Errors.Error, NoPosition, Errors.Character	, ADR (Character));
+   MessageI ("WCharacter", Errors.Error, NoPosition, Errors.WCharacter	, ADR (WCharacter));
+   MessageI ("String	", Errors.Error, NoPosition, Errors.String	, ADR (String	));
+   MessageI ("WString	", Errors.Error, NoPosition, Errors.WString	, ADR (WString	));
+   MessageI ("Ident	", Errors.Error, NoPosition, Errors.Ident	, ADR (Ident	));
+   MessageI ("WIdent	", Errors.Error, NoPosition, Errors.WIdent	, ADR (WIdent	));
+   MessageI ("Array	", Errors.Error, NoPosition, Errors.Array	, ADR (Array	));
+   MessageI ("Set	", Errors.Error, NoPosition, Errors.Set		, ADR (Set	));
+END errors;
+
+BEGIN
+   Integer	:= 1;
+   Short	:= 2;
+   Long		:= 3;
+   Cardinal	:= 4294967295;
+   Real		:= 5.0;
+   Boolean	:= FALSE;
+   Character	:= 'a';
+   WCharacter	:= ORD ('b');
+   Array	:= "abc";
+   WArray [0]	:= ORD ('g');
+   WArray [1]	:= ORD ('h');
+   WArray [2]	:= ORD ('i');
+
+   MakeSet (Set, 10); Include (Set, 5); Include (Set, 6);
+   ArrayToString ("def", String);
+   WStrings.ArrayToString (WArray, WString);
+   Ident := MakeIdent (String);
+   WIdent := MakeWIdent (WString);
+   errors;		   WriteNl (StdError);
+   StoreMessages (TRUE);
+   errors;
+   WriteMessages (StdError); WriteNl (StdError);
+   WriteMessages (StdOutput); WriteNl (StdError);
+   StoreMessages (TRUE);
+   WriteMessages (StdOutput);
+END ErrorsDr.

@@ -1,0 +1,22 @@
+Vertex
+index            = 0
+level            = 4
+left             = 80dc1fd
+right            = 80dc1f6
+? Vertex
+index            = 1
+level            = 3
+left             = 80dc1fc
+right            = 80dc1f9
+? Vertex
+index            = 2
+level            = 2
+left             = 80dc1fb
+right            = 80dc1fa
+? Vertex
+index            = 3
+level            = 1
+left             = NoTree
+right            = NoTree
+? NoTree
+? 

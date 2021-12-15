@@ -1,0 +1,98 @@
+TREE trees.Tree
+
+RULE
+
+Program		= Statements.
+
+Statements	= <
+  NoStat	= .
+  Statement	= Next: Statements REVERSE <
+    Assign	= [ l ] Expression .
+    Print	= Expression.
+  >.
+>.
+
+Expression	= <
+  Number	= [ n ] .
+  Var		= [ l ] .
+  Unary		= Expression <
+    UMinus	= .
+    UPlus	= .
+  >.
+  Binary	= lhs: Expression rhs: Expression <
+    Add		= .
+    Subtract	= .
+    Multiply	= .
+    Divide	= .
+    Remainder	= .
+  >.
+>.
+
+MODULE output
+
+EVAL
+
+EXPORT {
+   static private java.io.PrintStream stdout = System.out;
+}
+
+PROPERTY
+
+DECLARE
+Expression		= [ value SYN ] .
+Statements Expression	= [ regs: int[] THREAD ] .
+
+RULE
+
+Program		= { Statements:regsIn := new int[26]; }.
+
+Statement	= { regsOut := Next:regsOut; }.
+
+Assign		= { Expression:regsIn := regsIn;
+		    Next:regsIn := {
+			regsIn[l] = Expression:value;
+			Next:regsIn = Expression:regsOut;};
+		}.
+
+Print		= { Expression:regsIn := regsIn;
+		    Next:regsIn := {
+			stdout.print (Expression:value);
+			if (Expression:UsesA) stdout.print (" uses a");
+			stdout.println(); stdout.flush();
+			Next:regsIn = Expression:regsOut;};
+		}.
+
+Expression	= { value := 0; }.
+
+Number		= { value := n; }.
+
+Var		= { value := regsIn [l]; }.
+
+UMinus		= { value := - Expression:value; }.
+
+UPlus		= { value := Expression:value; }.
+
+Add		= { value := lhs:value + rhs:value; }.
+
+Subtract	= { value := lhs:value - rhs:value; }.
+
+Multiply	= { value := lhs:value * rhs:value; }.
+
+Divide		= { value := lhs:value / rhs:value; }.
+
+Remainder	= { value := lhs:value % rhs:value; }.
+
+END output
+
+MODULE analysis
+
+RULE
+PROPERTIES	:= [UsesA: boolean SYN]  { UsesA := false; }.
+
+Expression <- PROPERTIES = .
+Var		= { UsesA := l==0; }.
+Unary		= { UsesA := Expression:UsesA; }.
+Binary		= { UsesA := lhs:UsesA || rhs:UsesA; }.
+
+END analysis
+

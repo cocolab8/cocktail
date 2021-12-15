@@ -1,0 +1,91 @@
+EXPORT	{
+FROM StringM	IMPORT tStringRef;
+FROM Idents	IMPORT tIdent;
+FROM Position	IMPORT tPosition;
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+FROM SYSTEM	IMPORT ADR;
+FROM Errors	IMPORT Message, MessageI, Error;
+IMPORT Errors;
+FROM Strings	IMPORT tString, AssignEmpty, Concatenate, Append, Char, Length,
+			StringToInt, StringToNumber, StringToReal, ArrayToString, SubString;
+FROM StringM	IMPORT tStringRef, PutString;
+FROM Idents	IMPORT tIdent, MakeIdent, NoIdent;
+
+VAR Quote, Tab	: tStringRef;
+VAR Word	: tString;
+
+INSERT ErrorAttribute
+}
+
+LOCAL	{ VAR String, S	: tString; }
+
+BEGIN	{
+   ArrayToString ("'", Word); Quote := PutString (Word);
+   ArrayToString (11C, Word); Tab   := PutString (Word);
+}
+
+DEFAULT	{ GetWord (Word);
+	  MessageI ("illegal character", Error, Attribute.Position, Errors.String, ADR (Word)); }
+
+EOF	{ IF yyStartState = Comment THEN
+	     Message ("unclosed comment", Error, Attribute.Position); END; }
+   
+DEFINE
+   digit	= {0-9}		.
+   letter	= {a-z A-Z}	.
+   CmtCh	= - {*\}\t\n}	.
+   StrCh	= - {'\t\n}	.
+
+START	Comment, Str
+
+RULES
+
+#STD, Comment# "(*" | "{" :- {yyStart (Comment);}
+#Comment#  "*)" | "}"	  :- {yyStart (STD);}
+#Comment#  "*" | CmtCh +  :- {}
+
+#STD# {+\-} ? digit +	: {GetWord (Word);
+			   Attribute.IntConst.Integer := StringToInt (Word);
+			   RETURN IntConst;}
+
+#STD# {+\-} ? digit + "." digit + ({Ee} {+\-} ? digit +) ? |
+      {+\-} ? digit + {Ee} {+\-} ? digit +
+			: {GetWord (Word);
+			   Attribute.RealConst.Real := StringToReal (Word);
+			   RETURN RealConst;}
+
+#STD# ''''		: {Attribute.StringConst.String := Quote;
+			   RETURN StringConst;}
+#STD# ' \t '		: {Attribute.StringConst.String := Tab;
+			   yyTab1 (1);
+			   RETURN StringConst;}
+#STD# ' ANY '		: {GetWord (Word);
+			   SubString (Word, 2, Length (Word) - 1, String);
+			   Attribute.StringConst.String := PutString (String);
+			   RETURN StringConst;}
+
+#STD# '			:  {AssignEmpty (String); yyStart (Str);}
+#Str# StrCh +		:- {GetWord (S); Concatenate (String, S);}
+#Str# ''		:- {Append (String, "'");}
+#Str# '			:- {Attribute.StringConst.String := PutString (String);
+			    yyStart (STD); RETURN StringConst;}
+
+#Str# \t		:- {Append (String, 11C); yyTab;}
+#Str# \n		:- {Message ("unclosed string", Error, Attribute.Position);
+			    Attribute.StringConst.String := PutString (String);
+			    yyEol (0); yyStart (STD); RETURN StringConst;}
+
+#STD# "(."		: {RETURN '['	;}
+#STD# ".)"		: {RETURN ']'	;}
+#STD# "@"		: {RETURN '^'	;}
+
+INSERT RULES CASE-INSENSITIVE #STD#
+
+#STD# letter (letter | digit) * : {
+			   GetLower (Word);
+			   Attribute.Identifier.Ident := MakeIdent (Word);
+			   RETURN Identifier;}

@@ -1,0 +1,258 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= /STACK:2000000 $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: rex.exe
+
+Classes.obj	: Classes.c	\
+	Classes.h	\
+	ScanGen.h	\
+	Position.h	\
+	Tree.h	\
+	GenTabs.h	\
+	Traces.h	\
+	Nfa.h	\
+	ScanTabs.h	\
+	DefTable.h	\
+	Scanner.h	\
+	Errors.h	\
+	Dfa.h	\
+	Tree0.h	\
+	UniCode.h
+
+DefTable.obj	: DefTable.c	\
+	DefTable.h	\
+	Tree.h	\
+	UniCode.h	\
+	Position.h
+
+Dfa.obj	: Dfa.c	\
+	Dfa.h	\
+	GenTabs.h	\
+	ScanGen.h	\
+	Scanner.h	\
+	ScanTabs.h	\
+	Traces.h	\
+	Nfa.h	\
+	DefTable.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h	\
+	Classes.h	\
+	Tree0.h	\
+	UniCode.h
+
+Errors.obj	: Errors.c	\
+	Errors.h	\
+	Position.h
+
+Eval.obj	: Eval.c	\
+	Eval.h	\
+	Tree.h	\
+	UniCode.h	\
+	Position.h	\
+	Dfa.h	\
+	GenTabs.h	\
+	ScanGen.h	\
+	Scanner.h	\
+	ScanTabs.h	\
+	Traces.h	\
+	Nfa.h	\
+	DefTable.h	\
+	Errors.h	\
+	Classes.h	\
+	Tree0.h
+
+GenTabs.obj	: GenTabs.c	\
+	GenTabs.h	\
+	UniCode.h	\
+	Classes.h	\
+	Tree0.h	\
+	ScanGen.h	\
+	Scanner.h	\
+	ScanTabs.h	\
+	Traces.h	\
+	Dfa.h	\
+	Nfa.h	\
+	DefTable.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h
+
+Nfa.obj	: Nfa.c	\
+	Nfa.h	\
+	UniCode.h	\
+	GenTabs.h	\
+	ScanGen.h	\
+	Scanner.h	\
+	Traces.h	\
+	Dfa.h	\
+	DefTable.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h	\
+	Classes.h	\
+	Tree0.h	\
+	ScanTabs.h
+
+Parser.obj	: Parser.c	\
+	Parser.h	\
+	UniCode.h	\
+	ScanGen.h	\
+	Classes.h	\
+	ScanTabs.h	\
+	Dfa.h	\
+	GenTabs.h	\
+	Traces.h	\
+	Nfa.h	\
+	DefTable.h	\
+	Tree.h	\
+	Tree0.h	\
+	Position.h	\
+	Errors.h	\
+	Scanner.h
+
+Position.obj	: Position.c	\
+	Position.h
+
+ScanGen.obj	: ScanGen.c	\
+	ScanGen.h	\
+	Position.h	\
+	UniCode.h	\
+	Classes.h	\
+	Tree0.h	\
+	Tree.h	\
+	GenTabs.h	\
+	Traces.h	\
+	Nfa.h	\
+	ScanTabs.h	\
+	Dfa.h	\
+	DefTable.h	\
+	Scanner.h	\
+	Errors.h
+
+ScanTabs.obj	: ScanTabs.c	\
+	ScanTabs.h	\
+	Position.h	\
+	Errors.h	\
+	UniCode.h	\
+	Tree.h	\
+	ScanGen.h	\
+	DefTable.h	\
+	Scanner.h	\
+	Classes.h	\
+	Tree0.h	\
+	GenTabs.h	\
+	Traces.h	\
+	Nfa.h	\
+	Dfa.h
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h	\
+	ScanGen.h	\
+	Classes.h	\
+	Tree0.h	\
+	Tree.h	\
+	GenTabs.h	\
+	Traces.h	\
+	Nfa.h	\
+	ScanTabs.h	\
+	Dfa.h	\
+	DefTable.h	\
+	Errors.h	\
+	UniCode.h	\
+	Position.h
+
+Traces.obj	: Traces.c	\
+	Traces.h	\
+	GenTabs.h	\
+	UniCode.h	\
+	Classes.h	\
+	Tree0.h	\
+	ScanGen.h	\
+	Scanner.h	\
+	ScanTabs.h	\
+	Nfa.h	\
+	DefTable.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h	\
+	Dfa.h
+
+Tree.obj	: Tree.c	\
+	Tree.h	\
+	UniCode.h	\
+	Position.h
+
+Tree0.obj	: Tree0.c	\
+	Tree0.h	\
+	Errors.h	\
+	UniCode.h	\
+	Tree.h	\
+	Position.h
+
+UniCode.obj	: UniCode.c	\
+	UniCode.h
+
+rex.obj	: rex.c	\
+	ScanGen.h	\
+	UniCode.h	\
+	ScanTabs.h	\
+	DefTable.h	\
+	GenTabs.h	\
+	Traces.h	\
+	Nfa.h	\
+	Dfa.h	\
+	Tree0.h	\
+	Tree.h	\
+	Eval.h	\
+	Classes.h	\
+	Parser.h	\
+	Scanner.h	\
+	Errors.h	\
+	Position.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+rex_OBJS =	\
+	rex.obj	\
+	ScanGen.obj	\
+	UniCode.obj	\
+	ScanTabs.obj	\
+	DefTable.obj	\
+	GenTabs.obj	\
+	Traces.obj	\
+	Nfa.obj	\
+	Dfa.obj	\
+	Tree0.obj	\
+	Tree.obj	\
+	Eval.obj	\
+	Classes.obj	\
+	Parser.obj	\
+	Scanner.obj	\
+	Errors.obj	\
+	Position.obj
+
+rex.exe	: $(rex_OBJS) $(SYSTEM)
+	$(CC) /nologo $(rex_OBJS) $(SYSTEM) /link /out:rex.exe $(LDFLAGS)
+
+install:
+	if not exist "%ct_dir%"\lib\rex\ mkdir "%ct_dir%"\lib\rex
+	copy gupd.bat "%ct_dir%"\bin
+	copy gcpp.bat "%ct_dir%"\bin
+	copy rex.exe "%ct_dir%"\bin
+	copy ..\lib\*.* "%ct_dir%"\lib\rex
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

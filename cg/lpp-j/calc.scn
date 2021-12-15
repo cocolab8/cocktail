@@ -1,0 +1,22 @@
+SCANNER CScanner
+
+EXPORT {
+INSERT tScanAttribute
+INSERT ErrorAttribute
+}
+
+RULE
+
+" "	: {}
+"//" ANY* : {}
+{0-9}	: { attribute = new Xx_1 (attribute, Integer.parseInt(getWord()));
+	    return 'DIGIT';
+	  }
+{a-z}	: { attribute = new XxLETTER (attribute, Character.getNumericValue(getWord().charAt(0))
+		- Character.getNumericValue('a'));
+	    return LETTER;
+	  }
+
+\n	: { yyEol(0); return '.'; }
+
+INSERT RULES

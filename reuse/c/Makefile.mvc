@@ -1,0 +1,142 @@
+# Makefile for Microsoft Visual C++ 5.0 or later
+
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W4 /c /I. /I.. /I..\.. \
+
+#	  /D WITH_GETTEXT
+REUSE_LIB = libreuse.lib
+
+OBJS	= rSystem.obj General.obj rMemory.obj DynArray.obj StringM.obj \
+	  Idents.obj Sets.obj Relation.obj rTime.obj Errors.obj Position.obj \
+	  Source.obj rString.obj rGetopt.obj rSrcMem.obj rFsearch.obj
+
+all demo:	libreuse.lib
+
+libreuse.lib:	$(OBJS)
+	link.exe -lib /nologo /out:$(REUSE_LIB) $(OBJS)
+
+sources:
+
+# test programs
+
+test:	rMemoryD.exe DynArrDr.exe SetsDrv.exe RelDrv.exe IdentsDr.exe \
+	StringMD.exe ErrorsDr.exe rStringD.exe \
+	rGetoptD.exe rSrcMemD.exe rFsearD.exe # test..exe
+
+rMemoryD.exe:	rMemoryD.obj $(REUSE_LIB)
+	$(CC) /nologo rMemoryD.obj $(REUSE_LIB) /link /out:rMemoryD.exe
+
+DynArrDr.exe:	DynArrDr.obj $(REUSE_LIB)
+	$(CC) /nologo DynArrDr.obj $(REUSE_LIB) /link /out:DynArrDr.exe
+
+SetsDrv.exe:	SetsDrv.obj $(REUSE_LIB)
+	$(CC) /nologo SetsDrv.obj $(REUSE_LIB) /link /out:SetsDrv.exe
+
+RelDrv.exe:	RelDrv.obj $(REUSE_LIB)
+	$(CC) /nologo RelDrv.obj $(REUSE_LIB) /link /out:RelDrv.exe
+
+IdentsDr.exe:	IdentsDr.obj $(REUSE_LIB)
+	$(CC) /nologo IdentsDr.obj $(REUSE_LIB) /link /out:IdentsDr.exe
+
+StringMD.exe:	StringMD.obj $(REUSE_LIB)
+	$(CC) /nologo StringMD.obj $(REUSE_LIB) /link /out:StringMD.exe
+
+ErrorsDr.exe:	ErrorsDr.obj $(REUSE_LIB)
+	$(CC) /nologo ErrorsDr.obj $(REUSE_LIB) /link /out:ErrorsDr.exe
+
+rStringD.exe:	rStringD.obj $(REUSE_LIB)
+	$(CC) /nologo rStringD.obj $(REUSE_LIB) /link /out:rStringD.exe
+
+rGetoptD.exe:	rGetoptD.obj $(REUSE_LIB)
+	$(CC) /nologo rGetoptD.obj $(REUSE_LIB) /link /out:rGetoptD.exe
+
+rFsearD.exe:	rFsearD.obj $(REUSE_LIB)
+	$(CC) /nologo rFsearD.obj $(REUSE_LIB) /link /out:rFsearD.exe
+
+rSrcMemD.exe:	rSrcMemD.obj $(REUSE_LIB)
+	$(CC) /nologo rSrcMemD.obj $(REUSE_LIB) /link /out:rSrcMemD.exe
+
+test..exe:	rFsearD.exe
+	- mkdir DIR
+	- mkdir foo
+	- mkdir foo\\foo
+	- mkdir bar
+	- mkdir bar\\foo
+	echo "abc" > C:\\temp\\abc
+	echo "abc" > test1
+	echo "abc" > TEST2
+	echo "abc" > Test3
+	echo "abc" > READABLE
+	echo "abc" > READABLE-LINK
+	echo "abc" > NOT-READABLE
+	echo "abc" > NOT-READABLE-LINK
+	echo "abc" > bar\\foo\\barfoo.h
+	echo "abc" > foo\\foo\\foobar.h
+	- rFsearD.exe
+	$(MAKE) /f Makefile.mvc test-clean
+
+install:
+	copy libreuse.lib "%ct_dir%"\lib
+	if not exist "%ct_dir%"\lib\include\ mkdir "%ct_dir%"\lib\include
+	copy *.h "%ct_dir%"\lib\include
+	copy ..\..\config.h "%ct_dir%"\lib\include
+	copy Errors.c "%ct_dir%"\lib\include
+	copy Position.c "%ct_dir%"\lib\include
+
+test-clean:
+	@rmdir DIR
+	@rmdir foo
+	@rmdir bar
+	@del test1
+	@del TEST2
+	@del Test3
+	@del NOT-READABLE*
+	@del READABLE*
+	@del NO-LINK*
+	@del NO-SUCH-FILE
+
+clean clean-objects:	# test-clean
+	-del *.obj
+	-del *.exe
+	-del *.exe.manifest
+	-del *.lib
+	-del *.dll
+	-del *.plg
+	-del *.opt
+	-del *.ncb
+
+.SUFFIXES:	.c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) $*.c
+
+# dependencies
+
+rSystem.obj: rSystem.c rSystem.h ratc.h rString.h
+General.obj: General.c General.h ratc.h
+rMemory.obj: rMemory.c rMemory.h ratc.h rSystem.h General.h Errors.h Position.h Idents.h StringM.h
+DynArray.obj: DynArray.c DynArray.h ratc.h General.h rMemory.h
+StringM.obj: StringM.c StringM.h ratc.h rString.h General.h rMemory.h Errors.h Position.h Idents.h
+Idents.obj: Idents.c Idents.h ratc.h StringM.h rString.h DynArray.h Sets.h Errors.h Position.h
+Sets.obj: Sets.c Sets.h ratc.h DynArray.h General.h
+Relation.obj: Relation.c Relation.h ratc.h Sets.h General.h DynArray.h
+rTime.obj: rTime.c rTime.h ratc.h rSystem.h
+Errors.obj: Errors.c Errors.h ratc.h Position.h Idents.h StringM.h rString.h rSystem.h rMemory.h Sets.h
+Position.obj: Position.c Position.h ratc.h Idents.h StringM.h rString.h
+Source.obj: Source.c Source.h ratc.h rSystem.h rString.h
+rString.obj: rString.c rString.h ratc.h
+rGetopt.obj: rGetopt.c rGetopt.h
+rFsearch.obj: rFsearch.c rString.h rMemory.h ratc.h rSystem.h DynArray.h rFsearch.h
+rSrcMem.obj: rSrcMem.c rSrcMem.h ratc.h Position.h Idents.h StringM.h DynArray.h rMemory.h
+rMemoryD.obj: rMemoryD.c rMemory.h ratc.h
+DynArrDr.obj: DynArrDr.c rMemory.h ratc.h DynArray.h
+SetsDrv.obj: SetsDrv.c Sets.h ratc.h
+RelDrv.obj: RelDrv.c Relation.h ratc.h Sets.h
+IdentsDr.obj: IdentsDr.c Idents.h ratc.h StringM.h rMemory.h
+StringMD.obj: StringMD.c rString.h StringM.h ratc.h
+ErrorsDr.obj: ErrorsDr.c Position.h ratc.h Idents.h StringM.h Errors.h Sets.h
+rStringD.obj: rStringD.c rString.h ratc.h
+rGetoptD.obj: rGetoptD.c rGetopt.h
+rFsearD.obj: rFsearD.c rMemory.h ratc.h rFsearch.h rTime.h
+rSrcMemD.obj: rSrcMemD.c rMemory.h ratc.h rSrcMem.h Position.h Idents.h StringM.h

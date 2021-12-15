@@ -1,0 +1,19 @@
+MODULE Main;
+
+FROM StdIO	IMPORT ReadI, WriteI, WriteNl, CloseIO;
+FROM Tree	IMPORT tTree, mR, mP1;
+FROM Eval	IMPORT Eval, BeginEval;
+
+VAR t	: tTree;
+
+BEGIN
+   BeginEval;
+   REPEAT
+      t := mR (mP1 (), ReadI ());
+      Eval (t);
+      WriteI (t^.R.r, 0);
+      WriteNl;
+   UNTIL t^.R.n = 0;
+   CloseIO;
+END Main.
+

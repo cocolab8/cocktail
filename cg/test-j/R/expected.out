@@ -1,0 +1,12 @@
+Testing list reverser...
+forward / static forall:
+4
+3
+2
+1
+backward / dynamic forall:
+1
+2
+3
+4
+...done.

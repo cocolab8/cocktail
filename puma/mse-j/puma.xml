@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<FILE EXT="pum">
+TRAFO
+   <TAG NAME="trafo"/>
+TREE
+   <TAG NAME="tree"/>
+
+<C>
+PUBLIC main
+
+GLOBAL {
+    int indent = 0;
+}
+</C>
+
+<Java>
+GLOBAL {
+#define YYTHROWS throws java.io.IOException
+}
+</Java>
+
+<Java>
+EXPORT {
+    static int indent = 0;
+    public static void main(String[] argv) throws java.io.IOException {
+<TAG NAME="calls"/>
+        yyf.close ();
+    }
+}
+</Java>
+
+<C>
+FUNCTION main (argc: int, argv: {char **}) int
+... RETURN 0 :- {
+<TAG NAME="calls"/>
+};.
+</C>
+
+<TAG NAME="procs"/>
+
+</FILE>
+

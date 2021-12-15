@@ -1,0 +1,32 @@
+#define DEFINITION_StdIO
+
+extern void Zp1BbM_0 ARGS ((void));
+extern INTEGER Zp1BbM_1 ARGS ((ADDRESS Z117, CARDINAL Z118));
+extern CHAR Zp1BbM_2 ARGS ((void));
+extern INTEGER Zp1BbM_3 ARGS ((void));
+extern REAL Zp1BbM_4 ARGS ((void));
+extern BOOLEAN Zp1BbM_5 ARGS ((void));
+extern INTEGER Zp1BbM_6 ARGS ((INTEGER Z124));
+extern void Zp1BbM_7 ARGS ((CHAR Z126[], LONGCARD ));
+extern SHORTINT Zp1BbM_8 ARGS ((void));
+extern LONGINT Zp1BbM_9 ARGS ((void));
+extern CARDINAL Zp1BbM_10 ARGS ((void));
+extern void Zp1BbM_11 ARGS ((void));
+extern void Zp1BbM_12 ARGS ((void));
+extern BOOLEAN Zp1BbM_13 ARGS ((void));
+extern BOOLEAN Zp1BbM_14 ARGS ((void));
+extern void Zp1BbM_15 ARGS ((void));
+extern void Zp1BbM_16 ARGS ((void));
+extern INTEGER Zp1BbM_17 ARGS ((ADDRESS Z117, CARDINAL Z118));
+extern void Zp1BbM_18 ARGS ((CHAR Z138));
+extern void Zp1BbM_19 ARGS ((INTEGER Z140, CARDINAL Z141));
+extern void Zp1BbM_20 ARGS ((REAL Z140, CARDINAL Z143, CARDINAL Z144, CARDINAL Z145));
+extern void Zp1BbM_21 ARGS ((BOOLEAN Z147));
+extern void Zp1BbM_22 ARGS ((LONGCARD Z140, CARDINAL Z141, CARDINAL Z124));
+extern void Zp1BbM_23 ARGS ((CHAR Z126[], LONGCARD ));
+extern void Zp1BbM_24 ARGS ((SHORTINT Z140, CARDINAL Z141));
+extern void Zp1BbM_25 ARGS ((LONGINT Z140, CARDINAL Z141));
+extern void Zp1BbM_26 ARGS ((CARDINAL Z140, CARDINAL Z141));
+extern void Zp1BbM_27 ARGS ((void));
+extern void Zp1BbM_28 ARGS ((void));
+extern void BEGIN_StdIO ARGS ((void));

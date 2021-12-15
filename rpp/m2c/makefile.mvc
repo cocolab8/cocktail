@@ -1,0 +1,37 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: rpp.exe
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h
+
+rpp.obj	: rpp.c	\
+	Scanner.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+rpp_OBJS =	\
+	rpp.obj	\
+	Scanner.obj
+
+rpp.exe	: $(rpp_OBJS) $(SYSTEM)
+	$(CC) /nologo $(rpp_OBJS) $(SYSTEM) /link /out:rpp.exe $(LDFLAGS)
+
+install:
+	copy rpp.exe "%ct_dir%"\bin
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

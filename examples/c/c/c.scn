@@ -1,0 +1,238 @@
+/*
+   Copyright (c) 1998 Dr. Josef Grosch, CoCoLab - Datenverarbeitung
+
+   This file contains proprietary and confidential information and
+   remains the property of CoCoLab. Use, disclosure, or reproduction
+   is prohibited except as permitted by express written license agreement
+   with CoCoLab.
+
+   Phone: +49-7841-669144
+   Fax  : +49-7841-669145
+   Email: grosch@cocolab.com
+*/
+
+/*
+
+			C Scanner
+			=========
+
+		     conforming to:
+
+			 ANSI C
+	 ISO/IEC 9899:1990 Programming languages -- C
+
+*/
+
+/* Ich, Doktor Josef Grosch, Informatiker, July 1996 */
+
+EXPORT {
+# include "Position.h"
+# include "StringM.h"
+# include "Idents.h"
+# include "Tree.h"
+
+extern	tIdent	input_id;
+
+INSERT tScanAttribute
+}
+
+GLOBAL {
+# include <ctype.h>
+# include "rString.h"
+# include "Errors.h"
+# include "deftab.h"
+
+# define max_leng 10240
+
+extern	int	error_count;
+
+	tIdent	input_id;
+
+INSERT ErrorAttribute
+}
+
+LOCAL { char string [max_leng]; int length; }
+
+BEGIN {
+   input_id = NoIdent;
+}
+
+DEFAULT	{
+   if (' ' < * TokenPtr && * TokenPtr <= '~') {
+      MessageI ("illegal character", xxError, Attribute.Position,
+	 xxCharacter, TokenPtr);
+   } else {
+      char s [5];
+      (void) sprintf (s, "\\%03d", (unsigned char) * TokenPtr);
+      MessageI ("illegal character", xxError, Attribute.Position,
+	 xxString, s);
+   }
+   error_count ++;
+}
+
+DEFINE
+   identifier		= {a-zA-Z_} {0-9a-zA-Z_} * .
+   exponent_part	= {eE} {+\-} ? {0-9} + .
+   fractional_constant	= {0-9} * "." {0-9} + | {0-9} + "." .
+   floating_constant	= (fractional_constant exponent_part ? |
+			  {0-9} + exponent_part ) {FfLl} ? .
+   integer_suffix_opt	= {uU} ? {lL} ? | {lL} {uU} .
+   decimal_constant	= {1-9} {0-9} * integer_suffix_opt .
+   octal_constant	= "0" {0-7} * integer_suffix_opt .
+   hex_constant		= "0" {xX} {0-9a-fA-F} + integer_suffix_opt .
+   c_char		= - {'\t\n\\}.
+   s_char		= - {"\t\n\\}.
+   white_space		= {\ \t\f} * .
+
+START String1 String2 Comment
+
+RULE
+
+#STD#	  "/*"			:- { yyStart (Comment); }
+#Comment# - {*\n\t} + | "*"	:- {}
+#Comment# "*/"			:- { yyPrevious; }
+
+INSERT RULES #STD#
+
+#STD# < white_space \# white_space pragma ANY * \n :- { /* ignore pragma */ yyEol (0); }
+#STD# < white_space \# white_space line ? white_space {0-9} + white_space \" s_char * \" ANY * \n,
+#STD# < white_space \# white_space line ? white_space {0-9} + - {"\n} * \n	:- {
+
+  /* Handle directive left by the preprocessor, i.e.
+   *
+   *    # line 123 "foo.h"
+   *    # line 125
+   *    # 126 "foo.h" 2
+   */
+
+   char Word [256]; (void) GetWord (Word); yyEol (0);
+   {
+      char * line_ptr = strpbrk (Word, "0123456789");
+      char * file_ptr = strchr (line_ptr, '"');		/* start of file-name */
+      yyLineCount = atol (line_ptr);
+
+      if (file_ptr != 0) {
+	 char * file_end = strrchr (++ file_ptr, '"');	/* end */
+	 int len = file_end - file_ptr;
+	 Attribute.Position.FileName = MakeIdent (file_ptr, len);
+	 if (input_id == NoIdent)
+	    input_id = Attribute.Position.FileName;
+      }
+   }
+}
+
+#STD# identifier	: { Attribute.identifier.ident =
+			       MakeIdent (TokenPtr, TokenLength);
+			    if (is_type_name (Attribute.identifier.ident))
+			       return typedef_name;
+			    else
+			       return identifier; }
+
+#STD# decimal_constant	: { char Suffix1 = TokenLength > 1 ?
+				       toupper (TokenPtr [TokenLength-2]) : ' ';
+			    char Suffix2 = toupper (TokenPtr [TokenLength-1]);
+			    Attribute.integer_literal.type = c_int;
+			    if (Suffix1 == 'U' || Suffix2 == 'U')
+			       Attribute.integer_literal.type += c_unsigned;
+			    if (Suffix1 == 'L' || Suffix2 == 'L')
+			       Attribute.integer_literal.type += c_long;
+			    Attribute.integer_literal.value = atol (TokenPtr);
+			    return integer_literal	; }
+
+#STD# octal_constant	: { char Suffix1 = TokenLength > 1 ?
+				       toupper (TokenPtr [TokenLength-2]) : ' ';
+			    char Suffix2 = toupper (TokenPtr [TokenLength-1]);
+			    Attribute.integer_literal.type = c_int;
+			    if (Suffix1 == 'U' || Suffix2 == 'U')
+			       Attribute.integer_literal.type += c_unsigned;
+			    if (Suffix1 == 'L' || Suffix2 == 'L')
+			       Attribute.integer_literal.type += c_long;
+			    (void) sscanf (TokenPtr, "%li", & Attribute.integer_literal.value);
+			    return integer_literal	; }
+
+#STD# hex_constant	: { char Suffix1 = TokenLength > 1 ?
+				       toupper (TokenPtr [TokenLength-2]) : ' ';
+			    char Suffix2 = toupper (TokenPtr [TokenLength-1]);
+			    Attribute.integer_literal.type = c_int;
+			    if (Suffix1 == 'U' || Suffix2 == 'U')
+			       Attribute.integer_literal.type += c_unsigned;
+			    if (Suffix1 == 'L' || Suffix2 == 'L')
+			       Attribute.integer_literal.type += c_long;
+			    (void) sscanf (TokenPtr, "%li", & Attribute.integer_literal.value);
+			    return integer_literal	; }
+
+#STD# floating_constant	: { switch (TokenPtr [TokenLength-1]) {
+			    case 'f':
+			    case 'F':
+			       Attribute.floating_literal.type = c_float;
+			       break;
+			    case 'l':
+			    case 'L':
+			       Attribute.floating_literal.type = c_long | c_double;
+			       break;
+			    default :
+			       Attribute.floating_literal.type = c_double;
+			    }
+			    Attribute.floating_literal.value =
+			       PutString (TokenPtr, TokenLength);
+			    return floating_literal	; }
+
+#STD# "L" ? \'		: { yyStart (String1); length = 0;
+			    Attribute.character_literal.type =
+			       TokenPtr [0] == 'L' ? c_wchar_t : c_char; }
+
+#STD# "L" ? \"		: { yyStart (String2); length = 0;
+			    Attribute.string_literal.type =
+			       TokenPtr [0] == 'L' ? c_wchar_t : c_char; }
+
+#String1# c_char +	:-{ if (length + TokenLength <= max_leng)
+				length += GetWord (& string [length]); }
+#String2# s_char +	:-{ if (length + TokenLength <= max_leng)
+				length += GetWord (& string [length]); }
+
+#String1, String2# \t	:-{ if (length < max_leng) string [length ++] = '\t'; yyTab; }
+#String1, String2# \\ a	:-{ if (length < max_leng) string [length ++] = '\a'; }
+#String1, String2# \\ b	:-{ if (length < max_leng) string [length ++] = '\b'; }
+#String1, String2# \\ f	:-{ if (length < max_leng) string [length ++] = '\f'; }
+#String1, String2# \\ n	:-{ if (length < max_leng) string [length ++] = '\n'; }
+#String1, String2# \\ r	:-{ if (length < max_leng) string [length ++] = '\r'; }
+#String1, String2# \\ t	:-{ if (length < max_leng) string [length ++] = '\t'; }
+#String1, String2# \\ v	:-{ if (length < max_leng) string [length ++] = '\v'; }
+
+#String1, String2# \\ {0-7} [1-3]
+			:-{ char s [5]; unsigned int i;
+			    (void) GetWord (s);
+	                    (void) sscanf (s + 1, "%o", & i);
+			    if (length < max_leng) string [length ++] = i; }
+
+#String1, String2# \\ "x" {0-9a-fA-F} +
+			:-{ unsigned int i;
+	                    (void) sscanf (TokenPtr + 2, "%x", & i);
+			    if (length < max_leng) string [length ++] = i; }
+
+#String1, String2# \\ ANY:-{ if (length < max_leng) string [length ++] = TokenPtr [1]; }
+#String1, String2# \\ \n:-{ yyEol (0); }
+
+#String1# \'		:-{ Attribute.character_literal.value =
+			       PutString (string, length);
+			    yyStart (STD); return character_literal; }
+
+#String2# \"		:-{ Attribute.string_literal.value =
+			       PutString (string, length);
+			    yyStart (STD); return string_literal; }
+
+#String1# \\		,
+#String1# \n		: { Message ("unclosed character literal", xxError, Attribute.Position);
+			    error_count ++;
+			    Attribute.character_literal.value =
+			       PutString (string, length);
+			    yyStart (STD); yyEol (0); return character_literal; }
+
+#String2# \\		,
+#String2# \n		: { Message ("unclosed string literal", xxError, Attribute.Position);
+			    error_count ++;
+			    Attribute.string_literal.value =
+			       PutString (string, length);
+			    yyStart (STD); yyEol (0); return string_literal; }
+
+#STD# \f | \r | \26	:- {}

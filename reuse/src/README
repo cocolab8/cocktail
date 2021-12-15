@@ -1,0 +1,17 @@
+A Library of reusable Modula-2 Modules
+======================================
+
+
+To generate reuse use:
+
+   make MC=<compiler>
+
+There are a few machine dependencies. These are isolated in the file
+
+   rSystem.c
+
+which is written in C. The machine dependencies in the files
+
+   rMemory.mi, Heap.mi, and DynArray.mi
+
+are handled during runtime.

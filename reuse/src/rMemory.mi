@@ -1,0 +1,347 @@
+(* $Id: rMemory.mi,v 1.21 2008/10/10 12:59:32 grosch Exp $ *)
+
+(*
+ * $Log: rMemory.mi,v $
+ * Revision 1.21  2008/10/10 12:59:32  grosch
+ * fixed function ResizeArray: do not free blocks smaller than MinSizeSmallBlock
+ *
+ * Revision 1.20  2008/09/25 21:04:15  grosch
+ * replaced operation PTRINC by arithmetic with type ADDRESS
+ *
+ * Revision 1.19  2008/09/12 14:20:59  grosch
+ * added module Pointers in order to handle pointers on 64 bit platforms
+ *
+ * Revision 1.18  2006/07/17 16:40:05  grosch
+ * fixed bug at small block sizes (< MinSizeSmallBlock)
+ *
+ * Revision 1.17  2005/05/23 10:31:32  grosch
+ * increased MaxSizeSmallBlock from 63 to 127
+ *
+ * Revision 1.16  2000/09/04 13:07:22  grosch
+ * fixed bug: MinSizeSmallBlock has to be >= MaxAlign
+ *
+ * Revision 1.15  2000/04/18 16:18:27  grosch
+ * made it work for alignment of 1
+ *
+ * Revision 1.14  1997/05/27 11:57:56  grosch
+ * truncation of filenames to 8.3 format
+ *
+ * Revision 1.13  1996/01/17 10:36:22  grosch
+ * added variable MemoryFree
+ *
+ * Revision 1.12  1994/12/29  14:58:24  grosch
+ * adaption to HP cc
+ *
+ * Revision 1.11  1994/06/13  09:41:43  grosch
+ * fix alignment for DEC Alpha
+ *
+ * Revision 1.10  1993/08/18  15:06:51  grosch
+ * rename System and Memory to rSystem and rMemory
+ *
+ * Revision 1.9  1992/12/10  21:49:35  grosch
+ * make ByteCount = 0 work
+ *
+ * Revision 1.8  1992/06/24  12:25:33  grosch
+ * changed cNoMoreSpace from -1 to 0
+ *
+ * Revision 1.7  1992/03/24  13:31:43  grosch
+ * suppress warning message during compilation of C version
+ *
+ * Revision 1.6  1992/01/30  13:23:29  grosch
+ * redesign of interface to operating system
+ *
+ * Revision 1.5  1991/11/21  14:33:17  grosch
+ * new version of RCS on SPARC
+ *
+ * Revision 1.4  90/12/19  11:36:26  grosch
+ * inlined procedure PoolAlloc
+ *
+ * Revision 1.3  90/03/02  17:36:07  grosch
+ * automized handling of machine independent alignment
+ *
+ * Revision 1.2  90/02/28  22:07:02  grosch
+ * comment for alignment on SPARC
+ *
+ * Revision 1.1  89/12/08  20:12:45  grosch
+ * introduced a machine dependent variant for MIPS
+ *
+ * Revision 1.0  88/10/04  11:47:11  grosch
+ * Initial revision
+ *
+ *)
+
+(* Ich, Doktor Josef Grosch, Informatiker, Juli 1986 *)
+
+IMPLEMENTATION MODULE rMemory;
+
+FROM SYSTEM	IMPORT ADDRESS, ADR, TSIZE;
+FROM Pointers	IMPORT PTRDIFF, PTRINT;
+FROM General	IMPORT Max, Log2, MaxAlign, AlignMask;
+FROM rSystem	IMPORT rAlloc;
+FROM IO	IMPORT StdOutput, WriteI, WriteC, WriteN, WriteS, WriteNl;
+
+TYPE
+   tBlockPtr		= POINTER TO tBlock;
+
+CONST
+   MaxSizeSmallBlock	= 127	;   (* 128 - 1    *)
+   MinSizeLargeBlockLog	= 7	;   (* Log2 128   *)
+   MaxSizeLargeBlockLog = 32	;   (* Log2 2**32 *)
+   PoolSize		= 16384	;
+
+TYPE
+   tBlock		= RECORD
+			     Successor	: tBlockPtr	;
+			     Size	: LONGINT	;
+			  END;
+   tSmallBlockRange	= [0 (* MinSizeSmallBlock *) .. MaxSizeSmallBlock];
+   tLargeBlockRange	= [0 (* MinSizeLargeBlockLog *).. MaxSizeLargeBlockLog];
+
+VAR
+   MinSizeSmallBlock	: tSmallBlockRange;
+   SmallChain	: ARRAY tSmallBlockRange OF ADDRESS;
+   LargeChain	: ARRAY tLargeBlockRange OF ADDRESS;
+   PoolFreePtr	: ADDRESS;
+   PoolEndPtr	: ADDRESS;
+   i		: tSmallBlockRange;
+   j		: tLargeBlockRange;
+
+(* Returns a pointer to dynamically allocated	*)
+(* space of size 'ByteCount' bytes.		*)
+
+PROCEDURE Alloc (ByteCount: LONGINT)		: ADDRESS;
+VAR
+   BlockPtr		,
+   CurrentBlock		,
+   PreviousBlock	,
+   BestBlock		,
+   PredecessorBlock	: tBlockPtr;
+   ChainNumber		: CARDINAL;
+   CurrentBlockSize	,
+   BestBlockSize	: LONGINT;
+   j			: tLargeBlockRange;
+   PrevFreePtr		: ADDRESS;
+BEGIN
+   ByteCount := LONGINT (BITSET (ByteCount + MaxAlign - 1) * AlignMask);
+
+   IF ByteCount <= MaxSizeSmallBlock THEN	(* handle small block *)
+      IF LONGCARD (ByteCount) < MinSizeSmallBlock THEN ByteCount := MinSizeSmallBlock; END;
+      IF SmallChain [ByteCount] # NIL THEN	(* obtain block from freelist *)
+	 BlockPtr := SmallChain [ByteCount];
+	 SmallChain [ByteCount] := BlockPtr^.Successor;
+	 RETURN BlockPtr;
+      ELSE					(* obtain block from storage pool *)
+	 IF PTRDIFF (PoolEndPtr, PoolFreePtr) < ByteCount THEN
+						(* release old pool *)
+	    IF PTRDIFF (PoolEndPtr, PoolFreePtr) >= LONGINT (MinSizeSmallBlock) THEN
+	       Free (PTRDIFF (PoolEndPtr, PoolFreePtr), PoolFreePtr);
+	    END;
+	    PoolFreePtr := Alloc (PoolSize);	(* allocate new pool *)
+	    PoolEndPtr  := PoolFreePtr + PoolSize;
+	 END;
+	 PrevFreePtr	:= PoolFreePtr;
+	 INC (PoolFreePtr, CARDINAL (ByteCount));
+	 RETURN PrevFreePtr;
+      END;
+   ELSE						(* handle large block *)
+
+      (* 1. search in LargeChain [Log2 (ByteCount)] using BEST FIT *)
+
+      ChainNumber	:= Log2 (ByteCount);
+      CurrentBlock	:= LargeChain [ChainNumber];
+      PreviousBlock	:= ADR (LargeChain [ChainNumber]);
+      BestBlock		:= NIL;
+      BestBlockSize	:= 1000000000;
+
+      WHILE CurrentBlock # NIL DO
+	 CurrentBlockSize := CurrentBlock^.Size;
+	 IF CurrentBlockSize >= ByteCount THEN	(* exact match *)
+	    IF CurrentBlockSize = ByteCount THEN
+	       PreviousBlock^.Successor := CurrentBlock^.Successor;
+	       RETURN CurrentBlock;
+	    END;
+
+	    IF CurrentBlockSize < BestBlockSize THEN	(* improve approximation *)
+	       BestBlock	:= CurrentBlock;
+	       BestBlockSize	:= CurrentBlockSize;
+	       PredecessorBlock	:= PreviousBlock;
+	    END;
+	 END;
+	 PreviousBlock	:= CurrentBlock;
+	 CurrentBlock	:= CurrentBlock^.Successor;
+      END;
+
+      IF BestBlock # NIL THEN
+	 PredecessorBlock^.Successor := BestBlock^.Successor;
+	 IF LONGCARD (BestBlockSize - ByteCount) >= MinSizeSmallBlock THEN
+	    Free (BestBlockSize - ByteCount,
+		  ADDRESS (BestBlock) + CARDINAL (ByteCount));
+	 END;
+	 RETURN BestBlock;
+      END;
+
+      (* 2. search in LargeChain [j], j > Log2 (ByteCount), using FIRST FIT *)
+
+      FOR j := ChainNumber+1 TO MaxSizeLargeBlockLog DO
+	 CurrentBlock := LargeChain [j];
+	 IF CurrentBlock # NIL THEN
+	    LargeChain [j] := CurrentBlock^.Successor;
+	    IF LONGCARD (CurrentBlock^.Size - ByteCount) >= MinSizeSmallBlock THEN
+	       Free (CurrentBlock^.Size - ByteCount,
+		     ADDRESS (CurrentBlock) + CARDINAL (ByteCount));
+	    END;
+	    RETURN CurrentBlock;
+	 END;
+      END;
+
+      IF ByteCount < PoolSize THEN	(* 3. obtain block from storage pool *)
+	 IF PTRDIFF (PoolEndPtr, PoolFreePtr) < ByteCount THEN
+						(* release old pool *)
+	    IF PTRDIFF (PoolEndPtr, PoolFreePtr) >= LONGINT (MinSizeSmallBlock) THEN
+	       Free (PTRDIFF (PoolEndPtr, PoolFreePtr), PoolFreePtr);
+	    END;
+	    PoolFreePtr := Alloc (PoolSize);	(* allocate new pool *)
+	    PoolEndPtr  := PoolFreePtr + PoolSize;
+	 END;
+	 PrevFreePtr	:= PoolFreePtr;
+	 INC (PoolFreePtr, CARDINAL (ByteCount));
+	 RETURN PrevFreePtr;
+
+      ELSE				(* 4. allocate individual block *)
+	 BlockPtr := rAlloc (ByteCount);
+	 IF BlockPtr # NIL THEN
+	    INC (MemoryUsed, ByteCount);
+	 END;
+	 RETURN BlockPtr;
+      END;
+   END;
+END Alloc;
+
+(* The dynamically allocated space starting at	*)
+(* address 'a' of size 'ByteCount' bytes is	*)
+(* released.					*)
+
+PROCEDURE Free (ByteCount: LONGINT; a: ADDRESS);
+VAR
+   BlockPtr	: tBlockPtr;
+   ChainNumber	: tLargeBlockRange;
+BEGIN
+   ByteCount := LONGINT (BITSET (ByteCount + MaxAlign - 1) * AlignMask);
+
+   BlockPtr := a;
+   IF ByteCount <= MaxSizeSmallBlock THEN
+      IF LONGCARD (ByteCount) < MinSizeSmallBlock THEN ByteCount := MinSizeSmallBlock; END;
+      BlockPtr^.Successor	:= SmallChain [ByteCount];
+      SmallChain [ByteCount]	:= BlockPtr;
+   ELSE
+      ChainNumber		:= Log2 (ByteCount);
+      BlockPtr^.Successor	:= LargeChain [ChainNumber];
+      BlockPtr^.Size		:= ByteCount;
+      LargeChain [ChainNumber]	:= BlockPtr;
+   END;
+END Free;
+
+(*
+PROCEDURE Check (Txt: ARRAY OF CHAR; Ptr: ADDRESS);
+   VAR I: INTEGER;
+   BEGIN
+      IF IsCorrupted (Ptr) THEN
+	 WriteS (StdOutput, Txt);
+	 WriteN (StdOutput, INTEGER (Ptr), 8, 16);
+	 WriteNl (StdOutput);
+	 I := 0; I := 1 DIV I;
+      END;
+   END Check;
+*)
+
+PROCEDURE IsCorrupted (Ptr: ADDRESS): BOOLEAN;
+   BEGIN
+      RETURN PTRINT (Ptr) MOD MinSizeSmallBlock # 0;
+   END IsCorrupted;
+
+PROCEDURE WriteMemory;
+   VAR
+      BlockPtr	: tBlockPtr;
+      Count	: INTEGER;
+      MemoryFree: LONGCARD;
+   BEGIN
+      MemoryFree := PTRDIFF (PoolEndPtr, PoolFreePtr);
+      WriteS (StdOutput, "PoolFreePtr, PoolEndPtr = ");
+      WriteN (StdOutput, PTRINT (PoolFreePtr), 8, 16);
+      WriteC (StdOutput, ' ');
+      WriteN (StdOutput, PTRINT (PoolEndPtr ), 8, 16);
+      WriteNl (StdOutput);
+      WriteNl (StdOutput);
+
+      WriteS (StdOutput, "SmallChain:");
+      WriteNl (StdOutput);
+      FOR i := MinSizeSmallBlock TO MaxSizeSmallBlock DO
+	Count := 0;
+	BlockPtr := SmallChain [i];
+	IF BlockPtr # NIL THEN
+	  WriteI (StdOutput, i, 2);
+	  WriteC (StdOutput, ':');
+	  LOOP
+	    IF BlockPtr = NIL THEN EXIT; END;
+	    IF Count = 8 THEN
+	       WriteNl (StdOutput);
+	       WriteS (StdOutput, "    ");
+	       Count := 0;
+	    END;
+	    INC (Count);
+	    WriteC (StdOutput, ' ');
+	    WriteN (StdOutput, PTRINT (BlockPtr), 8, 16);
+	    INC (MemoryFree, i);
+	    IF IsCorrupted (BlockPtr) THEN WriteS (StdOutput, " <="); EXIT; END;
+	    BlockPtr := BlockPtr^.Successor;
+	  END;
+	  WriteNl (StdOutput);
+	END;
+      END;
+      WriteNl (StdOutput);
+
+      WriteS (StdOutput, "LargeChain:");
+      WriteNl (StdOutput);
+      FOR j := MinSizeLargeBlockLog TO MaxSizeLargeBlockLog DO
+	Count := 0;
+	BlockPtr := LargeChain [j];
+	IF BlockPtr # NIL THEN
+	  WriteI (StdOutput, j, 2);
+	  WriteC (StdOutput, ':');
+	  LOOP
+	    IF BlockPtr = NIL THEN EXIT; END;
+	    IF Count = 5 THEN
+	       WriteNl (StdOutput);
+	       WriteS (StdOutput, "    ");
+	       Count := 0;
+	    END;
+	    INC (Count);
+	    WriteC (StdOutput, ' ');
+	    WriteN (StdOutput, PTRINT (BlockPtr), 8, 16);
+	    IF IsCorrupted (BlockPtr) THEN WriteS (StdOutput, " <="); EXIT; END;
+	    INC (MemoryFree, BlockPtr^.Size);
+	    WriteI (StdOutput, BlockPtr^.Size, 7);
+	    BlockPtr := BlockPtr^.Successor;
+	  END;
+	  WriteNl (StdOutput);
+       END;
+      END;
+      WriteNl (StdOutput);
+      WriteS (StdOutput, "MemoryFree = ");
+      WriteI (StdOutput, MemoryFree, 0);
+      WriteNl (StdOutput);
+      WriteNl (StdOutput);
+   END WriteMemory;
+
+BEGIN
+   MinSizeSmallBlock := Max (TSIZE (tBlockPtr), MaxAlign);
+   FOR i := MinSizeSmallBlock TO MaxSizeSmallBlock DO
+      SmallChain [i] := NIL;
+   END;
+   FOR j := MinSizeLargeBlockLog TO MaxSizeLargeBlockLog DO
+      LargeChain [j] := NIL;
+   END;
+   PoolFreePtr	:= NIL;
+   PoolEndPtr	:= NIL;
+   MemoryUsed	:= 0;
+END rMemory.

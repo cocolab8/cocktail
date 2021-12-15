@@ -1,0 +1,318 @@
+/*
+		    A parser for Oberon-2
+                    =====================
+
+The lexical and syntactic definitions are based on those given in:
+
+    The Programming Language Oberon-2
+    H. M\"{o}ssenb\"{o}ck, N. Wirth
+    Institut f\"{u}r Computersysteme, ETH Z\"{u}rich
+    January 1992
+
+Which is available for ftp as :-
+
+    Oberon/Docu/Oberon2.Report.ps.Z:<anonymous@neptune.inf.ethz.ch>
+    
+The definitions are provided in the hope that they will be
+useful. There is no support implied with this release, but if you
+have any problems, feel free to contact us and we will do our best to
+solve the problem.
+
+enjoy,
+
+Stephen J. Bevan			bevan@cs.man.ac.uk
+
+*/
+
+RULE
+
+Program		= Module .
+
+Case_Item	= <
+		= .
+		= Case_Labels_Sequence ':' Statement_Sequence .
+> .
+Case_Items	= <
+		= Case_Item .
+		= Case_Items '|' Case_Item .
+> .
+Case_Label	= Constant_Expression .
+
+Case_Labels	= <
+		= Case_Label .
+		= Case_Label '..' Case_Label .
+> .
+Case_Labels_Sequence	= <
+		= Case_Labels .
+		= Case_Labels_Sequence ',' Case_Labels .
+> .
+Constant_Declaration	= Ident_Def '=' Constant_Expression ';' .
+
+Constant_Declarations	= <
+		= .
+		= Constant_Declarations Constant_Declaration .
+> .
+Constant_Expression	= Expression .
+
+Declaration_Simple_Item	= <
+		= CONST Constant_Declarations .
+		= TYPE Type_Declarations .
+		= VAR Var_Declarations .
+> .
+Declaration_Simple_Items	= <
+		= .
+		= Declaration_Simple_Items Declaration_Simple_Item .
+> .
+Declaration_Procedure	= <
+		= Procedure_Declaration .
+		= Forward_Declaration .
+> .
+Declaration_Procedures	= <
+		= .
+		= Declaration_Procedures Declaration_Procedure .
+> .
+Declaration_Sequence	= Declaration_Simple_Items Declaration_Procedures .
+
+Designator_Base	= <
+		= Qualified_Ident .
+		= Qualified_Ident '.' Ident .
+		= Qualified_Ident '[' Expression_List ']' .
+		= Qualified_Ident '^' .
+		= Qualified_Ident '(' Optional_Expression_List ')' .
+> .
+Designator	= <
+		= Designator_Base .
+		= Designator '.' Ident .
+		= Designator '[' Expression_List ']' .
+		= Designator '^' .
+		= Designator '(' Optional_Expression_List ')' .
+> .
+Optional_Expression_List	= <
+		= .
+		= Expression_List .
+> .
+Expression	= <
+		= Simple_Expression .
+		= Simple_Expression '='  Simple_Expression .
+		= Simple_Expression '#'  Simple_Expression .
+		= Simple_Expression '<'  Simple_Expression .
+		= Simple_Expression '<=' Simple_Expression .
+		= Simple_Expression '>'  Simple_Expression .
+		= Simple_Expression '>=' Simple_Expression .
+		= Simple_Expression 'IN' Simple_Expression .
+		= Simple_Expression  IS  Simple_Expression .
+> .
+Expression_List	= <
+		= Expression .
+		= Expression_List ',' Expression .
+> .
+Factor		= <
+		= Call .
+		= Real .
+		= Integer .
+		= Char .
+		= String .
+		= Char_or_String .
+		= NIL .
+		= Set .
+		= '(' Expression ')' .
+		= '~' Factor .
+> .
+Formal_Param_Section	= <
+		=     Formal_Param_Section_Idents ':' Type .
+		= VAR Formal_Param_Section_Idents ':' Type .
+> .
+Formal_Param_Section_Idents	= <
+		= Ident .
+		= Formal_Param_Section_Idents ',' Ident .
+> .
+Formal_Param_Sections	= <
+		= .
+		= Formal_Param_Section_List .
+> .
+Formal_Param_Section_List	= <
+		= Formal_Param_Section .
+		= Formal_Param_Section_List ';' Formal_Param_Section .
+> .
+Formal_Params	= <
+		= '(' Formal_Param_Sections ')' .
+		= '(' Formal_Param_Sections ')' ':' Type_Reference .
+> .
+Forward_Declaration	= PROCEDURE '^' Procedure_Declaration_Optional_Receiver Ident_Def Procedure_Declaration_Optional_Formal_Params ';' .
+
+Ident_Def	= <
+		= Ident .
+		= Ident '*' .
+		= Ident '-' .
+> .
+Ident_List	= <
+		= Ident_Def .
+		= Ident_List ',' Ident_Def .
+> .
+If_Else_Ifs	= <
+		= ELSIF Expression THEN Statement_Sequence 'END' .
+		= ELSIF Expression THEN Statement_Sequence ELSE Statement_Sequence 'END' .
+		= ELSIF Expression THEN Statement_Sequence If_Else_Ifs .
+> .
+Import_List	= <
+		= Import_List_Import .
+		= Import_List ',' Import_List_Import .
+> .
+Import_List_Import	= <
+		= Ident .
+		= Ident ':=' Ident .
+> .
+Import_List_Optional	= <
+		= .
+		= 'IMPORT' Import_List ';' .
+> .
+Module		= 'MODULE' Ident_Def ';' Import_List_Optional Declaration_Sequence Module_Optional_Begin_Block 'END' Ident_Def '.' .
+
+Module_Optional_Begin_Block	= <
+		= .
+		= 'BEGIN' Statement_Sequence .
+> .
+Procedure_Declaration	= PROCEDURE Procedure_Declaration_Optional_Receiver Ident_Def Procedure_Declaration_Optional_Formal_Params ';' Declaration_Sequence Procedure_Declaration_Optional_Begin_Block 'END' Ident_Def ';' .
+
+Procedure_Declaration_Optional_Begin_Block	= <
+		= .
+		= 'BEGIN' Statement_Sequence .
+> .
+Procedure_Declaration_Optional_Formal_Params	= <
+		= .
+		= Formal_Params .
+> .
+Procedure_Declaration_Optional_Receiver	= <
+		= .
+		= Receiver .
+> .
+Qualified_Ident	= <
+		= Ident .
+		= Ident '.' Ident .
+> .
+Receiver	= <
+		= '('     Ident ':' Ident ')' .
+		= '(' VAR Ident ':' Ident ')' .
+> .
+Set		= <
+		= '{' '}' .
+		= '{' Set_Element_List '}' .
+> .
+Set_Element	= <
+		= Expression .
+		= Expression '..' Expression .
+> .
+Set_Element_List	= <
+		= Set_Element .
+		= Set_Element_List ',' Set_Element .
+> .
+Simple_Expression	= <
+		= Simple_Expression_Optional_Start Term .
+		= Simple_Expression_Optional_Start Term '+' Simple_Expression_Terms .
+		= Simple_Expression_Optional_Start Term '-' Simple_Expression_Terms .
+		= Simple_Expression_Optional_Start Term OR  Simple_Expression_Terms .
+> .
+Simple_Expression_Terms	= <
+		= Term .
+		= Simple_Expression_Terms '+' Term .
+		= Simple_Expression_Terms '-' Term .
+		= Simple_Expression_Terms OR  Term .
+> .
+Simple_Expression_Optional_Start	= <
+		= '-' .
+		= '+' .
+		= .
+> .
+Statement	= <
+		= .
+   Assignment	= Designator ':=' Expression .
+   Call		= Designator .
+   If		= <
+		= IF Expression THEN Statement_Sequence 'END' .
+		= IF Expression THEN Statement_Sequence ELSE Statement_Sequence 'END' .
+		= IF Expression THEN Statement_Sequence If_Else_Ifs .
+   > .
+   Case		= <
+		= CASE Expression OF Case_Items 'END' .
+   		= CASE Expression OF Case_Items ELSE Statement_Sequence 'END' .
+   > .
+   While	= WHILE Expression DO Statement_Sequence 'END' .
+   Repeat	= REPEAT Statement_Sequence UNTIL Expression .
+   For		= <
+		= 'FOR' Ident ':=' Expression TO Expression DO Statement_Sequence 'END' .
+		= 'FOR' Ident ':=' Expression TO Expression BY Constant_Expression DO Statement_Sequence 'END' .
+
+   > .
+   Loop		= LOOP Statement_Sequence 'END' .
+   With		= <
+		= WITH With_Statements 'END' .
+   		= WITH With_Statements ELSE Statement_Sequence 'END' .
+   > .
+   Exit		= EXIT .
+   Return	= <
+		= RETURN .
+		= RETURN Expression .
+   > .
+> .
+Statement_Sequence	= <
+		= Statement .
+		= Statement_Sequence ';' Statement .
+> .
+Term		= <
+		= Factor .
+		= Term '*' Factor .
+		= Term '/' Factor .
+		= Term DIV Factor .
+		= Term MOD Factor .
+		= Term '&' Factor .
+> .
+Type		= <
+   Type_Reference	= Qualified_Ident .
+   Type_Array	= ARRAY Type_Array_Bounds OF Type .
+   Type_Record	= RECORD Type_Record_Optional_Qualifier Type_Record_Field_List 'END' .
+   Type_Pointer	= POINTER TO Type .
+   Type_Procedure	= PROCEDURE Procedure_Declaration_Optional_Formal_Params .
+> .
+Type_Array_Bounds	= <
+		= .
+		= Constant_Expression .
+		= Type_Array_Bounds ',' Constant_Expression .
+> .
+Type_Declaration	= Ident_Def '=' Type ';' .
+
+Type_Declarations	= <
+		= .
+		= Type_Declarations Type_Declaration .
+> .
+Type_Record_Field	= <
+		= .
+		= Ident_List ':' Type .
+> .
+Type_Record_Field_List	= <
+		= Type_Record_Field .
+		= Type_Record_Field_List ';' Type_Record_Field .
+> .
+Type_Record_Optional_Qualifier	= <
+		= .
+   Record_Base_Type	= '(' Type_Reference ')' .
+> .
+Var_Declaration	= Ident_List ':' Type ';' .
+
+Var_Declarations	= <
+		= .
+		= Var_Declarations Var_Declaration .
+> .
+With_Statement	= Qualified_Ident ':' Type_Reference DO Statement_Sequence .
+
+With_Statements	= <
+		= With_Statement .
+		= With_Statements '|' With_Statement .
+> .
+Terminal	: [Dummy: char] { Dummy := ' '; } <
+   Ident	: .
+   Char		: .
+   Char_or_String : .
+   Integer	: .
+   Real		: .
+   String	: .
+> .

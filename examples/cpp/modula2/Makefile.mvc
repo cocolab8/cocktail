@@ -1,0 +1,39 @@
+CT_LIB	= "$(CT_DIR)"\lib
+INCDIR	= $(CT_LIB)/cplusinc
+CFLAGS	= /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /I$(INCDIR)
+CPPC	= cl /nologo /MT
+LDFLAGS	= $(CT_LIB)\librucpp.lib
+
+all:	ScannerDrv ParserDrv
+
+ParserDrv: ParserDrv.obj Source.obj Scanner.obj Parser.obj
+	link /nologo /incremental:no /out:ParserDrv.exe ParserDrv.obj Source.obj Scanner.obj Parser.obj $(LDFLAGS)
+
+ScannerDrv: ScannerDrv.obj Source.obj Scanner.obj
+	link /nologo /incremental:no /out:ScannerDrv.exe ScannerDrv.obj Source.obj Scanner.obj $(LDFLAGS)
+
+Scanner.rpp Parser.lrk: modula.prs
+	lpp -+xzj modula.prs
+
+modula.rex: modula.scn Scanner.rpp
+	rpp < modula.scn > modula.rex
+
+Scanner.h Scanner.cxx ScannerDrv.cxx Source.h Source.cxx: modula.rex
+	rex -+ds modula.rex
+
+Parser.h Parser.cxx ParserDrv.cxx: Parser.lrk
+	lark -+dips Parser.lrk
+
+ParserDrv.obj:	Parser.h Scanner.h Source.h
+ScannerDrv.obj:	Scanner.h Source.h
+Parser.obj:	Parser.h Scanner.h Source.h
+Scanner.obj:	Scanner.h Source.h
+
+clean:
+	del /F core* *.[ho] *.cxx *.dbg ParserDrv modula.rex Parser.lrk \
+		Scanner.rpp ScannerDrv
+
+.SUFFIXES: .cxx .obj
+
+.cxx.obj:
+	$(CPPC) $(CFLAGS) /c $*.cxx

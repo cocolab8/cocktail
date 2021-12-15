@@ -1,0 +1,12 @@
+(* $Id: ParsDrv.mi,v 1.0 1994/02/08 19:03:04 grosch rel $ *)
+
+$@ MODULE @Drv;
+
+$@ FROM @	IMPORT @, Close@;
+FROM IO		IMPORT CloseIO;
+
+BEGIN
+$@    IF @ () = 0 THEN END;
+$@    Close@;
+   CloseIO;
+$@ END @Drv.

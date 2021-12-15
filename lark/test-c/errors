@@ -1,0 +1,21 @@
+          Information grammar is LR(0)
+i.lrk:   3, 29: Warning     selector out of bounds: A
+i.lrk:   3, 32: Warning     selector out of bounds: dD_9
+i.lrk:   3, 38: Error       selector not declared: B
+i.lrk:   3, 41: Error       selector not declared: e9E_
+i.lrk:   3, 67: Warning     selector out of bounds
+i.lrk:   3, 70: Warning     selector out of bounds
+i.lrk:   3, 73: Warning     selector out of bounds
+i.lrk:   4, 29: Warning     selector out of bounds: A
+i.lrk:   4, 32: Warning     selector out of bounds: dD_9
+i.lrk:   4, 38: Error       selector not declared: B
+i.lrk:   4, 41: Error       selector not declared: e9E_
+i.lrk:   4, 67: Warning     selector out of bounds
+i.lrk:   4, 70: Warning     selector out of bounds
+i.lrk:   4, 73: Warning     selector out of bounds
+i.lrk:   5, 38: Error       selector not declared: B
+i.lrk:   5, 41: Error       selector not declared: e9E_
+i.lrk:   5, 73: Warning     selector out of bounds
+i.lrk:   6, 38: Error       selector not declared: B
+i.lrk:   6, 41: Error       selector not declared: e9E_
+i.lrk:   6, 73: Warning     selector out of bounds

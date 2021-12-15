@@ -1,0 +1,59 @@
+IMPORT { with Strings, Idents; use Strings, Idents; }
+
+GLOBAL {
+type tParsAttribute is record Scan: Scanner.tScanAttribute; end record;
+
+function IsUpper (Ident: tIdent) return Boolean is
+      Name	: tString;
+   begin
+      GetString (Ident, Name);
+      return 'A' <= Element (Name, 1) and Element (Name, 1) <= 'Z';
+   end IsUpper;
+
+# define YYDEBUG
+}
+
+BEGIN { yyDebug := True; }
+
+TOKEN
+   IDENTIFIER	= 1
+   '('		= 2
+   ')'		= 3
+   '++'		= 4
+   ';'		= 5
+   '['		= 6
+   ']'		= 7
+   '{'		= 8
+   '}'		= 9
+
+RULE
+
+compound_statement	: '{' declaration_list statement_list '}'
+			.
+declaration_list	:
+			| declaration_list declaration
+			.
+statement_list		:
+			| statement_list statement
+			.
+declaration		: ? declaration declaration_specifier declarator ';'
+			.
+declaration_specifier	: TYPEDEFname [ Text_Io.Put ("trial action"); Text_Io.New_Line; ]
+				      { Text_Io.Put ("final action"); Text_Io.New_Line; }
+			.
+declarator		: IDENTIFIER  [ Text_Io.Put ("trial action"); Text_Io.New_Line; ]
+				      { Text_Io.Put ("final action"); Text_Io.New_Line; }
+			| '(' declarator ')'
+			| declarator '[' ']'
+			| compound_statement
+			.
+statement		: expression ';'
+			.
+expression		: expression '++'
+			| TYPEDEFname '(' expression ')'	/* cast */
+			| IDENTIFIER  '(' expression ')'	/* call */
+			| IDENTIFIER
+			.
+TYPEDEFname		: IDENTIFIER$i ? { IsUpper ($i.Scan.Ident) }
+			| IDENTIFIER ? IDENTIFIER
+			.

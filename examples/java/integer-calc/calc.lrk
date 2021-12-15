@@ -1,0 +1,64 @@
+/* This demonstrates using a primitive type as the attribute stack:
+   this is suitable for simple applications.
+ */
+
+PARSER parsers.IntCalc SCANNER scanners.IntScan
+
+GLOBAL {
+# define yyParsAttribute int
+# define yyExtendParsAttributes(a) DynArrayInt.extend (a)
+# define yyInitSynAttribute 0
+# define yyScanToPars(a) a.value
+# define YYDEBUG
+}
+
+EXPORT {
+   private int [] regs = new int [26];
+   private java.io.PrintStream stdout = System.out;
+}
+
+LOCAL {
+   int base = 10;
+}
+
+TOKEN
+        DIGIT   = 1, 5
+        LETTER  = 2
+        '+'     = 43
+        '-'     = 45
+        '*'     = 42
+        '/'     = 47
+        '%'     = 37
+        '\n'    = 10
+        '='     = 61
+        '('     = 40
+        ')'     = 41
+
+PREC
+        LEFT    '+'     '-'
+        LEFT    '*'     '/'     '%'
+        LEFT    UNARY
+
+RULE
+
+list    :
+        | list stat '\n'
+        | list '\n'
+        .
+stat    : expr $e               { stdout.print ($e);
+			          stdout.println (); stdout.flush (); }
+        | LETTER $l '=' expr $e { regs [$l] = $e; }
+        .
+expr    : '(' expr $e ')'       { $$ = $e; }
+        | expr $l '+' expr $r   { $$ = $l + $r; }
+        | expr $l '-' expr $r   { $$ = $l - $r; }
+        | expr $l '*' expr $r   { $$ = $l * $r; }
+        | expr $l '/' expr $r   { $$ = $l / $r; }
+        | expr $l '%' expr $r   { $$ = $l % $r; }
+        | '-' expr $e           { $$ = - $e; } PREC UNARY
+        | LETTER $l             { $$ = regs [$l]; }
+        | number $n             { $$ = $n; }
+        .
+number  : DIGIT $d              { if ($d == 0) base = 8; else base = 10; $$ = $d; }
+        | number $n DIGIT $d    { $$ = base * $n + $d; }
+        .

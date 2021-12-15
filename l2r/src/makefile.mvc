@@ -1,0 +1,33 @@
+!INCLUDE ..\..\config.mak
+
+                # C library (reuse)
+REUSE	= ..\..\reuse\c
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE) /I../..
+
+LDFLAGS	= $(REUSE_LIB)
+
+OBJS	= l2r.obj Parser.obj Scanner.obj StringBu.obj
+
+# targets
+
+l2r.exe: $(OBJS)
+	$(CC) /nologo $(OBJS) /link /out:l2r.exe $(LDFLAGS)
+
+install:
+	copy l2r.exe "%ct_dir%"\bin
+
+# dependencies
+
+l2r.obj:	l2r.c Scanner.h Parser.h StringBu.h
+Parser.obj:	Parser.c Parser.h Scanner.h StringBu.h
+Scanner.obj:	Scanner.c Scanner.h StringBu.h
+StringBu.obj:	StringBu.c StringBu.h
+
+clean:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

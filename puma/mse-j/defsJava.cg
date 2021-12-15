@@ -1,0 +1,29 @@
+
+TREE trees.Defs
+
+EXPORT {
+
+}
+
+RULE
+
+
+Ds1	= .
+Ds2	= .
+
+D2	= .
+D3	=  <
+ D3a	= D2 .
+>.
+
+
+Xp	= <
+  Xend	= .
+  Xstep	= Next: Xp <
+    Xroot	= .
+    Xchild	= .
+    Xname	= [ name: String ].
+    Xatt	= [ name: String ].
+  >.
+>.
+

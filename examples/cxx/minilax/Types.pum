@@ -1,0 +1,174 @@
+TRAFO Types PUBLIC
+
+Reduce			/* return type without any ref levels		*/
+
+ReduceToRef		/* return type with ref level 1			*/
+
+Reduce1			/* return type with 1 ref level removed 	*/
+
+RefLevel		/* return number of ref levels of a type 	*/
+
+IsSimpleType		/* check whether a type is simple		*/
+
+IsCompatible		/* check whether two types are compatible 	*/
+
+IsAssignmentCompatible	/* check whether two types are			*/
+			/* assignment compatible			*/
+
+ResultType		/* return the type of the result of		*/
+			/* applying an operator to two operands		*/
+
+CheckParams		/* check a formal list of parameters		*/
+			/* against an actual list of parameters		*/
+
+GetElementType		/* return the type of the elements of		*/
+			/* an array type 				*/
+
+TypeSize		/* return the number of bytes used for		*/
+			/* the internal representation of an		*/
+			/* object of a certain type			*/
+
+Coerce			/* returns the coercion necessary to convert 	*/
+			/* an object of type 't1' to type 't2'		*/
+
+EXTERN nBoolean Error nNoCoercion
+
+GLOBAL {
+# include "Position.h"
+# include "Global.h"
+
+# define Error(Text, Position) gErrors.Message (Text, xxError, Position)
+
+static tpType nBoolean, nNoType;
+static tpCoercions nNoCoercion;
+}
+
+BEGIN {
+   nBoolean	= new Boolean	();
+   nNoType	= new NoType	();
+   nNoCoercion	= new NoCoercion ();
+}
+
+FUNCTION Reduce (Type) Type
+   Ref (t)	RETURN Reduce (t) :- .
+   t		RETURN t :- .
+
+FUNCTION ReduceToRef (Type) Type
+   Ref (t:Ref)	RETURN ReduceToRef (t) :- .
+   t:Ref	RETURN t :- .
+   t		RETURN t :- .
+
+FUNCTION Reduce1 (Type) Type
+   Ref (t)	RETURN t :- .
+   t		RETURN t :- .
+
+FUNCTION RefLevel (Type) int
+   Ref (t)	RETURN RefLevel (t) + 1 :- .
+   _		RETURN 0 :- .
+
+PREDICATE IsSimpleType (Type)
+   Array	:- FAIL; .
+   _		:- .
+
+PREDICATE IsCompatible (Type, Type)
+   Integer	, Integer	:- .
+   Real		, Real		:- .
+   Boolean	, Boolean	:- .
+   Array (t1, Lwb, Upb, _), Array (t2, Lwb, Upb, _) ;
+   Ref (t1)	, t2		;
+   t1		, Ref (t2)	:- IsCompatible (t1, t2); .
+   NoType	, _		:- .
+   _		, NoType	:- .
+   ErrorType	, _		:- .
+   _		, ErrorType	:- .
+
+PREDICATE IsAssignmentCompatible (Type, Type)
+   Integer	, Integer	:- .
+   Real		, Real		:- .
+   Real		, Integer	:- .
+   Boolean	, Boolean	:- .
+   Ref (t1)	, t2		;
+   t1		, Ref (t2)	:- IsAssignmentCompatible (t1, t2); .
+   NoType	, _		:- .
+   _		, NoType	:- .
+   ErrorType	, _		:- .
+   _		, ErrorType	:- .
+
+FUNCTION ResultType (Type, Type, int) Type
+   t:Integer	, Integer	, (Plus)	RETURN t	:- .
+   t:Real	, Real		, (Plus)	RETURN t	:- .
+   t:Integer	, Integer	, (Times)	RETURN t	:- .
+   t:Real	, Real		, (Times)	RETURN t	:- .
+   Integer	, Integer	, (Less)	RETURN nBoolean	:- .
+   Real		, Real		, (Less)	RETURN nBoolean	:- .
+   t:Boolean	, Boolean	, (Less)	RETURN t	:- .
+   t:Boolean	, _		, (Not)		RETURN t	:- .
+   Ref (t1)	, t2		, o		;
+   t1		, Ref (t2)	, o		RETURN ResultType (t1, t2, o) :- .
+   t:NoType	, _		, _		RETURN t	:- .
+   _		, t:NoType	, _		RETURN t	:- .
+   ErrorType	, _		, _		RETURN nNoType	:- .
+   _		, ErrorType	, _		RETURN nNoType	:- .
+   ..						RETURN ErrorType:- .
+
+PROCEDURE CheckParams (Actuals, Formals)
+   NoActual	, NoFormal	:- .
+   NoActual (Pos), _		:-
+      Error ("too few actual parameters"	, Pos); .
+   Actual (_, Expr (Pos, ..)), NoFormal :-
+      Error ("too many actual parameters"	, Pos); .
+
+/* alternative 1 */
+
+   Actual (NextA, Expr (Pos, TypeA, ..)), Formal (_, _, NextF, _, _, TypeF) :-
+      IF ! IsCompatible (TypeA, TypeF) THEN
+	 Error ("parameter type incompatible", Pos);
+      END
+      IF ! (RefLevel (TypeF) - 1 <= RefLevel (TypeA)) THEN
+	 Error ("variable required"		, Pos);
+      END
+      CheckParams (NextA, NextF); .
+
+/* alternative 2 */
+
+   Actual (NextA, Expr (Pos, TypeA, ..)), Formal (_, _, NextF, _, _, TypeF) :-
+      CONDITION ! IsCompatible (TypeA, TypeF);
+      Error ("parameter type incompatible"	, Pos);
+      REJECT; .
+
+   Actual (NextA, Expr (Pos, TypeA, ..)), Formal (_, _, NextF, _, _, TypeF) :-
+      CONDITION ! (RefLevel (TypeF) - 1 <= RefLevel (TypeA));
+      Error ("variable required"		, Pos);
+      REJECT; .
+
+   Actual (NextA, Expr (Pos, TypeA, ..)), Formal (_, _, NextF, _, _, TypeF) :-
+      CheckParams (NextA, NextF); .
+
+/* alternative 3 */
+
+   Actual (NextA, Expr (Pos, TypeA, ..)), Formal (_, _, NextF, _, _, TypeF) :-
+      CheckCompatible (Pos, TypeA, TypeF);
+      CheckRefLevel (Pos, TypeA, TypeF);
+      CheckParams (NextA, NextF); .
+
+PROCEDURE CheckCompatible (tPosition, Type, Type)
+   _	, t1	, t2	:- IsCompatible (t1, t2); .
+   Pos	, ..		:- Error ("parameter type incompatible"	, Pos); .
+
+PROCEDURE CheckRefLevel (tPosition, Type, Type)
+   _	, t1	, t2	:- CONDITION RefLevel (t2) - 1 <= RefLevel (t1); .
+   Pos	, ..		:- Error ("variable required"		, Pos); .
+
+FUNCTION GetElementType (Type) Type
+   Array (t, ..)	RETURN t :- .
+   _			RETURN nNoType :- .
+
+FUNCTION TypeSize (Type) int
+   Array (t, Lwb, Upb, _)	RETURN (Upb - Lwb + 1) * TypeSize (t) :- .
+   _				RETURN 1 :- .
+
+FUNCTION Coerce (t1: Type, t2: Type) Coercions
+   Ref (T1)	, Ref (T2)	RETURN Coerce (T1, T2) :- .
+   Integer	, Real		RETURN IntToReal (NoCoercion ()) :- .
+   Ref (T1)	, T2		RETURN Content (Coerce (T1, T2)) :- .
+   ..				RETURN nNoCoercion :- .

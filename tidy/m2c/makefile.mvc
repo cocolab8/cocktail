@@ -1,0 +1,56 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: tidy.exe
+
+Reader.obj	: Reader.c	\
+	Reader.h	\
+	ReaderSource.h
+
+ReaderSource.obj	: ReaderSource.c	\
+	ReaderSource.h
+
+Writer.obj	: Writer.c	\
+	Writer.h	\
+	Reader.h	\
+	ReaderSource.h	\
+	WriterSource.h
+
+WriterSource.obj	: WriterSource.c	\
+	WriterSource.h
+
+tidy.obj	: tidy.c	\
+	Writer.h	\
+	WriterSource.h	\
+	Reader.h	\
+	ReaderSource.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+tidy_OBJS =	\
+	tidy.obj	\
+	Writer.obj	\
+	WriterSource.obj	\
+	Reader.obj	\
+	ReaderSource.obj
+
+tidy.exe	: $(tidy_OBJS) $(SYSTEM)
+	$(CC) /nologo $(tidy_OBJS) $(SYSTEM) /link /out:tidy.exe $(LDFLAGS)
+
+install:
+	copy tidy.exe "%ct_dir%"\bin
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

@@ -1,0 +1,88 @@
+/*
+FUNCTION Reduce (Type) Type
+   Ref (t)	RETURN Reduce (t)	:- .
+   t		RETURN t		:- .
+*/
++Tree.methods
+   public Tree reduce () { return this; }
+=Tree.methods
++Ref.methods
+   public Tree reduce () { return Type.reduce (); }
+=Ref.methods
+
+/*
+FUNCTION ReduceToRef (Type) Type
+   Ref (t:Ref)	RETURN ReduceToRef (t)	:- .
+   t:Ref	RETURN t		:- .
+   t		RETURN t		:- .
+*/
++Tree.methods
+   public Tree reduceToRef () { return this; }
+=Tree.methods
++Ref.methods
+   public Tree reduceToRef () {
+      if (Type.isType (kRef)) return Type.reduceToRef ();
+      return this;
+   }
+=Ref.methods
+
+/*
+FUNCTION Reduce1 (Type) Type
+   Ref (t)	RETURN t		:- .
+   t		RETURN t		:- .
+*/
++Tree.methods
+   public Tree reduce1 () { return this; }
+=Tree.methods
++Ref.methods
+   public Tree reduce1 () { return Type; }
+=Ref.methods
+
+/*
+FUNCTION RefLevel (Type) int
+   Ref (t)	RETURN RefLevel (t) + 1	:- .
+   _		RETURN 0		:- .
+*/
++Tree.methods
+   public int refLevel () { return 0; }
+=Tree.methods
++Ref.methods
+   public int refLevel () { return Type.refLevel () + 1; }
+=Ref.methods
+
+/*
+PREDICATE IsSimpleType (Type)
+   Array	:- FAIL; .
+   _		:- .
+*/
++Tree.methods
+   public boolean isSimpleType () { return true; }
+=Tree.methods
++Array.methods
+   public boolean isSimpleType () { return false; }
+=Array.methods
+
+/*
+FUNCTION GetElementType (Type) Type
+   Array (t, ..)	RETURN t	:- .
+   _			RETURN NoType	:- .
+*/
++Tree.methods
+   public Type getElementType () { return new NoType (); }
+=Tree.methods
++Array.methods
+   public Type getElementType () { return Type; }
+=Array.methods
+
+/*
+FUNCTION TypeSize (Type) int
+   Array (t, Lwb, Upb, _)	RETURN (Upb - Lwb + 1) * TypeSize (t) :- .
+   _				RETURN 1 :- .
+*/
+
++Tree.methods
+   public int typeSize () { return 1; }
+=Tree.methods
++Array.methods
+   public int typeSize () { return (Upb - Lwb + 1) * Type.typeSize (); }
+=Array.methods

@@ -1,0 +1,56 @@
+CT_LIB	= "$(CT_DIR)"\lib
+INC_DIR	= $(CT_LIB)\include
+TCL_DIR	= C:\Programme\Tcl
+CC	= cl /nologo
+CFLAGS	= /c /I$(INC_DIR) /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
+	# /I$(TCL_DIR)\include /DDRAWTREE
+LINK	= link /nologo /incremental:no
+LINK_LIBS= $(CT_LIB)\libreuse.lib
+	# $(TCL_DIR)\lib\tcl83.lib $(TCL_DIR)\lib\tk83.lib
+OBJS	= main.obj Scanner.obj Parser.obj Tree.obj Trafo.obj deftab.obj
+
+main.exe: $(OBJS)
+	$(LINK) /out:main.exe $(OBJS) $(LINK_LIBS)
+
+debug:	$(OBJS)
+	$(LINK) /out:main.exe $(OBJS) $(LINK_LIBS) /DEBUG
+	bscmake /v *.sbr
+
+Scanner.rpp Parser.lrk: c.prs
+	@echo expect a few informations and warnings
+	lpp -cxzj c.prs
+
+c.rex:	c.scn Scanner.rpp
+	rpp c.scn c.rex
+
+Scanner.h Scanner.c: c.rex
+	@echo expect 2 warnings
+	rex -cdi c.rex
+
+Parser.h Parser.c: Parser.lrk
+	@echo expect 1 conflict message
+	lark -cdiws Parser.lrk
+
+Tree.h Tree.c Tree.TS yyTree.h: c.ast
+	ast -cdimFR4k +D c.ast
+
+Trafo.h Trafo.c yyTrafo.h: c.pum Tree.TS
+	puma -cdi c.pum
+
+
+main.obj: main.c Scanner.h Tree.h Parser.h Trafo.h deftab.h
+Scanner.obj: Scanner.c Scanner.h Tree.h deftab.h
+Parser.obj: Parser.c Parser.h Scanner.h Tree.h Trafo.h deftab.h
+Tree.obj: Tree.c Tree.h yyTree.h
+Trafo.obj: Trafo.c Trafo.h Tree.h deftab.h yyTrafo.h
+deftab.obj: deftab.c deftab.h Tree.h Trafo.h
+
+
+clean:
+	del *.obj *.dbg Scanner.[hc] Parser.[hc] Tree.[hc] Trafo.[hc] \
+		main.exe c.rex Parser.lrk Scanner.rpp yy* Tree.TS
+
+.SUFFIXES: .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) $*.c

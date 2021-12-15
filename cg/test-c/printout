@@ -1,0 +1,72 @@
+make test clean LIB="/home/grosch/lib" CC="cc -pipe"
+ast -ca g.ast; 
+cc -pipe -I/home/grosch/lib/include -I/usr/local/include -c Main.c
+cc -pipe -I/home/grosch/lib/include -I/usr/local/include -c Tree.c
+cc -pipe -o Main Main.o Tree.o -L/usr/local/lib/X11R5/lib -ltk -ltcl -lX11 -lm /home/grosch/lib/libreuse.a
+time Main
++ cmp a aa 
++ cmp b bb 
++ cmp a aaa 
+fopen (a, w)
+fopen (a, r)
+fopen (b, w)
+fopen (b, r)
+fopen (aa, w)
+fopen (bb, w)
+fopen (aaa, w)
+should print:
+1 2 5 3 4 5 4 3 2 1 
+1 2 5 3 4 5 4 3 2 1 
+should print:
+1 5 4 3 2 
+1 5 4 3 2 
+        0.6 real         0.1 user         0.3 sys  
+rm -f Main Tree.* Main.o yyTree.h a aa aaa b bb core*
+make test clean LIB="/home/grosch/lib" CC="gcc -pipe -ansi -pedantic"
+ast -ca g.ast; 
+gcc -pipe -ansi -pedantic -I/home/grosch/lib/include -I/usr/local/include -c Main.c
+gcc -pipe -ansi -pedantic -I/home/grosch/lib/include -I/usr/local/include -c Tree.c
+gcc -pipe -ansi -pedantic -o Main Main.o Tree.o -L/usr/local/lib/X11R5/lib -ltk -ltcl -lX11 -lm /home/grosch/lib/libreuse.a
+time Main
++ cmp a aa 
++ cmp b bb 
++ cmp a aaa 
+fopen (a, w)
+fopen (a, r)
+fopen (b, w)
+fopen (b, r)
+fopen (aa, w)
+fopen (bb, w)
+fopen (aaa, w)
+should print:
+1 2 5 3 4 5 4 3 2 1 
+1 2 5 3 4 5 4 3 2 1 
+should print:
+1 5 4 3 2 
+1 5 4 3 2 
+        0.5 real         0.1 user         0.2 sys  
+rm -f Main Tree.* Main.o yyTree.h a aa aaa b bb core*
+make test clean LIB="/home/grosch/lib" CC="g++ -pipe"
+ast -ca g.ast; 
+g++ -pipe -I/home/grosch/lib/include -I/usr/local/include -c Main.c
+g++ -pipe -I/home/grosch/lib/include -I/usr/local/include -c Tree.c
+g++ -pipe -o Main Main.o Tree.o -L/usr/local/lib/X11R5/lib -ltk -ltcl -lX11 -lm /home/grosch/lib/libreuse.a
+time Main
++ cmp a aa 
++ cmp b bb 
++ cmp a aaa 
+fopen (a, w)
+fopen (a, r)
+fopen (b, w)
+fopen (b, r)
+fopen (aa, w)
+fopen (bb, w)
+fopen (aaa, w)
+should print:
+1 2 5 3 4 5 4 3 2 1 
+1 2 5 3 4 5 4 3 2 1 
+should print:
+1 5 4 3 2 
+1 5 4 3 2 
+        0.5 real         0.1 user         0.2 sys  
+rm -f Main Tree.* Main.o yyTree.h a aa aaa b bb core*

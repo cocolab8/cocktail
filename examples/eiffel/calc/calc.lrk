@@ -1,0 +1,56 @@
+GLOBAL {
+   regs		: ARRAY [INTEGER]
+   base		: INTEGER
+   stdout	: rFILE
+}
+
+LOCAL {
+   n, d		: NumAttr
+   e, l, r	: ExprAttr
+}
+
+BEGIN {
+   !! regs.make (0, 25)
+   !! stdout.make_write_from_fp (stdout.stdout_fp)
+}
+
+TOKEN
+        DIGIT   = 1, 5
+        LETTER  = 2
+        '+'     = 43
+        '-'     = 45
+        '*'     = 42
+        '/'     = 47
+        '%'     = 37
+        '\n'    = 10
+        '='     = 61
+        '('     = 40
+        ')'     = 41
+
+PREC
+        LEFT    '+'     '-'
+        LEFT    '*'     '/'     '%'
+        LEFT    UNARY
+
+RULE
+
+list    :
+        | list stat '\n'
+        .
+stat    : expr $e               { e ?= $e; stdout.putint (e.value)
+			          stdout.new_line; stdout.flush }
+        | LETTER $l '=' expr $e { e ?= $e; n ?= $l; regs.put (e.value, n.value) }
+        .
+expr    : '(' expr $e ')'       { $$ := $e }
+        | expr $l '+' expr $r   { l ?= $l; r ?= $r; l.SetValue (l.value + r.value); $$ := l }
+        | expr $l '-' expr $r   { l ?= $l; r ?= $r; l.SetValue (l.value - r.value); $$ := l }
+        | expr $l '*' expr $r   { l ?= $l; r ?= $r; l.SetValue (l.value * r.value); $$ := l }
+        | expr $l '/' expr $r   { l ?= $l; r ?= $r; l.SetValue (l.value // r.value); $$ := l }
+        | expr $l '%' expr $r   { l ?= $l; r ?= $r; l.SetValue (l.value \\\\ r.value); $$ := l }
+        | '-' expr $e           { e ?= $e; e.SetValue (- e.value); $$ := e } PREC UNARY
+        | LETTER $l             { n ?= $l; !! e.SetValue (regs.item (n.value)); $$ := e }
+        | number $n             { n ?= $n; !! e.SetValue (n.value); $$ := e }
+        .
+number  : DIGIT $d              { n ?= $d; if n.value = 0 then base := 8 else base := 10 end; $$ := $d }
+        | number $n DIGIT $d    { n ?= $n; d ?= $d; n.SetValue (base * n.value + d.value); $$ := n }
+        .

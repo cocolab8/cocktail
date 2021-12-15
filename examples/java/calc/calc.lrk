@@ -1,0 +1,55 @@
+GLOBAL {
+# define yyParsAttribute Scanner.ScanAttribute
+# define YYDEBUG
+}
+
+EXPORT {
+   private int [] regs = new int [26];
+   private java.io.PrintStream stdout = System.out;
+}
+
+LOCAL {
+   int base = 10;
+}
+
+TOKEN
+        DIGIT   = 1, 5
+        LETTER  = 2
+        '+'     = 43
+        '-'     = 45
+        '*'     = 42
+        '/'     = 47
+        '%'     = 37
+        '\n'    = 10
+        '='     = 61
+        '('     = 40
+        ')'     = 41
+
+PREC
+        LEFT    '+'     '-'
+        LEFT    '*'     '/'     '%'
+        LEFT    UNARY
+
+RULE
+
+list    :
+        | list stat '\n'
+        | list '\n'
+        .
+stat    : expr $e               { stdout.print ($e.value);
+			          stdout.println (); stdout.flush (); }
+        | LETTER $l '=' expr $e { regs [$l.value] = $e.value; }
+        .
+expr    : '(' expr $e ')'       { $$ = $e; }
+        | expr $l '+' expr $r   { $l.value = $l.value + $r.value; $$ = $l; }
+        | expr $l '-' expr $r   { $l.value = $l.value - $r.value; $$ = $l; }
+        | expr $l '*' expr $r   { $l.value = $l.value * $r.value; $$ = $l; }
+        | expr $l '/' expr $r   { $l.value = $l.value / $r.value; $$ = $l; }
+        | expr $l '%' expr $r   { $l.value = $l.value % $r.value; $$ = $l; }
+        | '-' expr $e           { $e.value = - $e.value; $$ = $e; } PREC UNARY
+        | LETTER $l             { $l.value = regs [$l.value]; $$ = $l; }
+        | number $n             { $$ = $n; }
+        .
+number  : DIGIT $d              { if ($d.value == 0) base = 8; else base = 10; $$ = $d; }
+        | number $n DIGIT $d    { $n.value = base * $n.value + $d.value; $$ = $n; }
+        .

@@ -1,0 +1,43 @@
+SymIdent x0037 array
+123 0 1 100.
+12.34E-36 .1 .123E+5 12.34 12.34E36 .2E 22.2E+ 22.2E-
+:
+:=
+.
+ .. 
+,
+
+;
+(
+)
+[
+]
++
+*
+<
+ARRAY
+BEGIN
+BOOLEAN
+DO
+ELSE
+END
+FALSE
+IF
+INTEGER
+NOT
+OF
+PROCEDURE
+PROGRAM
+READ
+REAL
+THEN
+TRUE
+VAR
+WHILE
+WRITE
+(* ***) k1
+(* 
+
+*) k2
+(* test
++

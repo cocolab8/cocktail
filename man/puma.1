@@ -1,0 +1,116 @@
+.TH PUMA 1 "" "CoCoLab Germany"
+.SH NAME
+puma - a generator for the analysis and transformation of attributed trees
+.SH SYNOPSIS
+puma [ -options ] [ -y \fItype\fP ] [ -z \fItype\fP ] [ -I \fIdirectory\fP ] [ -l \fIdirectory\fP ] [ \fIfile\fP ]
+.SH DESCRIPTION
+.I puma
+is a tool for the analysis and transformation of attributed trees
+based on pattern matching.
+It generates transformers (named \fITrafo\fP by default) that map
+attributed trees to arbitrary output. As this tool also has to know about the
+structure of the tree this information is communicated from \fIast\fP to
+\fIpuma\fP via a file with the suffix .TS. If
+.I file
+is omitted the specification is read from standard input.
+.SH OPTIONS
+.ta 3i
+.nf
+.IP a
+generate all, same as -di (default)
+.IP d
+generate header file or definition module
+.IP i
+generate implementation part or module
+.IP s
+suppress information and warning messages
+.IP u
+suppress information messages
+.IP m
+use procedure MakeTREE to construct nodes (default: in-line code)
+.IP p
+allow node constructors without parentheses
+.IP f
+signal a runtime error if none of the rules of a procedure matches
+.IP k
+allow non-linear patterns
+.IP n
+check parameters for NoTREE (NULL, null, NIL) and treat as failure
+.IP w
+surround actions by WITH statements
+.IP e
+treat undefined names as error
+.IP v
+treat undefined names as warning
+.IP o
+list undefined names on standard output
+.IP t
+print tree definitions
+.IP r
+print patterns
+.IP x
+generate and print a traversal procedure for all node types (Traverse)
+.IP y\0\fItype\fP
+generate and print a traversal procedure for all node types
+that are reachable from the node type \fItype\fP
+.IP z\0\fItype\fP
+restrict traversal procedure to reach node types of class \fItype\fP, only
+.IP q
+browse internal data structure with text browser
+.IP :
+generate lines not longer than 80 characters
+.IP 6
+generate # line directives
+.IP 7
+touch output files only if necessary
+.IP 8
+report storage consumption
+.IP c
+generate C source code (default: Modula-2)
+.IP c+
+generate simple C++ source code
+.IP c++
+generate proper C++ source code
+.IP J
+generate Java source code
+.IP h
+print help information
+.IP l\0\fIdirectory\fP
+specify the directory where puma finds its data files
+.IP I\0\fIdirectory\fP
+add directory to the list of directories to be searched for IMPORT files
+.SH FILES
+.nf
+.ta 2i
+<tree>.TS	description of the tree grammar
+.sp 0.5
+if output is in C:
+.sp 0.5
+<module>.h	header file of the generated transformer module
+<module>.c	body of the generated transformer module
+yy<module>.h	macro file defining type specific operations
+.sp 0.5
+if output is in C++:
+.sp 0.5
+<module>.h	header file of the generated transformer module
+<module>.cxx	body of the generated transformer module
+yy<module>.h	macro file defining type specific operations
+.sp 0.5
+if output is in Java:
+.sp 0.5
+<module>.java	class of the generated transformer module
+.sp 0.5
+if output is in Modula-2:
+.sp 0.5
+<module>.md	definition module of the generated transformer module
+<module>.mi	implementation module of the generated transformer module
+.fi
+.SH SEE\ ALSO
+.sp 0.5
+J. Grosch:
+"Puma - A Generator for the Transformation of Attributed Trees",
+CoCoLab Germany, Document No. 26
+.sp 0.5
+J. Grosch:
+"Transformation of Attributed Trees Using Pattern Matching",
+CoCoLab Germany, Document No. 27

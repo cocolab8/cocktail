@@ -1,0 +1,37 @@
+sources:	# needed for global makefile
+
+m2c:
+	copy rSystem.c	..\m2c
+	copy rSystem.i	..\m2c
+	copy ratc.h	..\m2c
+	copy rString.h	..\m2c
+	copy systimes.h	..\m2c
+	copy TclTk.c	..\m2c
+	copy Pointers.c	..\m2c
+	copy Pointers.h	..\m2c
+	copy rIntType.h	..\m2c
+	nmake sources M2FLAGS="$(M2FLAGS) -o../m2c" -c -f ../m2c/Makefile
+	cd ..\m2c
+	sed -f ..\src\dos.sed -i IO.c
+	sed -f ..\src\dos.sed -i Strings.c
+
+m :
+	copy rSystem.c	..\m
+	copy rSystem.i	..\m
+	copy ratc.h	..\m
+	copy rString.h	..\m
+	copy systimes.h	..\m
+	copy TclTk.c	..\m
+	copy Pointers.c	..\m
+	copy Pointers.h	..\m
+	copy rIntType.h	..\m
+	nmake sources M2FLAGS="-c -o../m" -c -f ../m/Makefile
+	cd ..\m
+	sed -f ..\src\dos.sed -i IO.c
+	sed -f ..\src\dos.sed -i Strings.c
+	del sed*
+
+CLEAN:	clean
+	del *.obj
+
+clean:

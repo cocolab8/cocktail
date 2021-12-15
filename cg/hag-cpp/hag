@@ -1,0 +1,18 @@
+/* hag */
+
+TREE GLOBAL { Tree t; }
+
+EVAL GLOBAL { extern Tree t; }
+
+PROPERTY RULE
+
+R	= F IN [n IN] [r OUT] { F:n := n; r := F:r; } .
+
+F	=      [n]    [r]     { r   := 1; } <
+
+   P1	= F                   { F   := n <= 1 ? t.mP2 () : t.mP1 ();
+		                F:n := n - 1;
+		                r   := F:r * n; } .
+
+   P2	= .
+> .

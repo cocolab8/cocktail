@@ -1,0 +1,89 @@
+
+TREE trees.Tree
+
+EXPORT {
+
+
+public static int[] a3= {0,1,2,3,4,5,6,7,8,9};
+public static int[] anot3 = {9,9,9,9,9,9,9,9,9,9};
+
+}
+
+GLOBAL {
+
+}
+
+PROPERTY INPUT
+
+RULE
+
+
+Ts1	= .
+Ts2	= .
+
+T1	=  A .
+T2	=  Aa .
+
+A	=  <
+ Aa	= [ b: trees.Defs ] .
+ Ab	= [ b: trees.Defs.D3 ] .
+>.
+
+P1	= [c: P1] <
+  P2	= .
+  P3	= [d: P1] .
+>.
+P4	= [ x: int ] .
+P5	= l:P4 r:P4.
+
+FN	= <
+  FNa	= [ i: int ].
+  FNb1	= a: FN .
+  FNb2	= l: FNa  r: FN .
+  FNc	= a: FN <
+    FNc1	= [d] .
+  >.
+>.
+
+Slist	= <
+Sempty	= .
+Sitem	= Next: Slist <
+Snest	= Slist .
+Snumber	= [n].
+  >.
+>.
+Snotused	=. // so we get a yyabort at the end of Sprint.
+
+V1	= [a] [b].
+V2	= V1 <
+  V2a	= .
+>.
+V3	= [a: String] [b: String].
+V4	= [r: int[]].
+
+Xe	= [name: String]  attr: Xas  children: Xes .
+Xas	= <
+  NoXa	= .
+  Xa	= Next: Xas REVERSE   [name: String]  [value: String].
+>.
+Xes	= <
+  NoXe	= .
+  AnXe	= Next: Xes  Xe.
+>.
+
+T1A	= <
+ T1B	= <
+  T1C	= .
+ >.
+>.
+T2A	= <
+ T2B	= <
+  T2C	= .
+ >.
+>.
+T3A	= <
+ T3B	= <
+  T3C	= .
+ >.
+>.
+

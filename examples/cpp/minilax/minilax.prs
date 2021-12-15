@@ -1,0 +1,145 @@
+PARSER
+
+EXPORT {# include "Tree.h"}
+
+GLOBAL {# include "ExtTree.h"}
+
+PREC	LEFT	'<'				/* operator precedence	*/
+	LEFT	'+'
+	LEFT	'*'
+	LEFT	NOT
+
+PROPERTY INPUT
+
+RULE						/* concrete syntax	*/
+
+Prog		= PROGRAM Ident ';' 'DECLARE' Decls 'BEGIN' Stats 'END' '.' .
+Decls		= <
+   Decls1	= Decl .
+   Decls2	= Decls ';' Decl .
+> .
+Decl		= <
+   Var		= Ident ':' Type .
+   Proc0	= PROCEDURE Ident ';' 'DECLARE' Decls 'BEGIN' Stats 'END' .
+   Proc		= PROCEDURE Ident '(' Formals ')' ';'
+				      'DECLARE' Decls 'BEGIN' Stats 'END' .
+> .
+Formals		= <
+   Formals1	= Formal .
+   Formals2	= Formals ';' Formal .
+> .
+Formal		= <
+   Value	= Ident ':' Type .
+   Ref		= VAR Ident ':' Type .
+> .
+Type		= <
+   Int		= INTEGER .
+   Real		= REAL .
+   Bool		= BOOLEAN .
+   Array	= ARRAY '[' Lwb: IntegerConst '..' Upb: IntegerConst ']' OF Type .
+> .
+Stats		= <
+   Stats1	= Stat .
+   Stats2	= Stats ';' Stat .
+> .
+Stat		= <
+   Assign	= Adr ':=' Expr .
+   Call0	= Ident .
+   Call		= Ident '(' Actuals ')' .
+   If		= IF Expr THEN Then: Stats ELSE Else: Stats 'END' .
+   While	= WHILE Expr DO Stats 'END' .
+   Read		= READ '(' Adr ')' .
+   Write	= WRITE '(' Expr ')' .
+> .
+Actuals		= <
+   Expr1	= Expr .
+   Expr2	= Actuals ',' Expr .
+> .
+Expr		= <
+   Less		= Lop: Expr '<' Rop: Expr .
+   Plus		= Lop: Expr '+' Rop: Expr .
+   Times	= Lop: Expr '*' Rop: Expr .
+   Not		= NOT Expr .
+   '()'		= '(' Expr ')' .
+   IConst	= IntegerConst .
+   RConst	= RealConst .
+   False	= FALSE .
+   True		= TRUE .
+   Adr		= <
+      Name	= Ident .
+      Index	= Adr '[' Expr ']' .
+   > .
+> .
+
+					/* terminals (with attributes)	*/
+
+Ident		: [Ident: tIdent] { Ident	:= gIdents.NoIdent; } .
+IntegerConst	: [Integer	] { Integer	:= 0		; } .
+RealConst	: [Real : float ] { Real	:= 0.0		; } .
+
+MODULE Tree
+			/* import functions for tree construction	*/
+PARSER GLOBAL {
+static tTree nInteger, nReal, nBoolean;
+}
+
+BEGIN {
+   nInteger	= t.mInteger	();
+   nReal	= t.mReal	();
+   nBoolean	= t.mBoolean	();
+}
+			/* attributes for tree construction		*/
+DECLARE
+  Decls Decl Formals Formal Type Stats Stat Actuals Expr = [Tree: tTree] .
+
+RULE			/* tree construction =				*/
+			/* mapping: concrete syntax -> abstract syntax	*/
+
+Prog	= { => { t.TreeRoot = t.mMiniLax (t.mProc (t.mNoDecl (), Ident:Ident,
+		 Ident:Position, t.mNoFormal (), t.ReverseTree (Decls:Tree),
+		 t.ReverseTree (Stats:Tree)));};				} .
+Decls1	= { Tree := {Decl:Tree->\Decl.Next = t.mNoDecl (); Tree = Decl:Tree;};	} .
+Decls2	= { Tree := {Decl:Tree->\Decl.Next = Decls:Tree; Tree = Decl:Tree;};	} .
+Var	= { Tree := t.mVar (NoTree, Ident:Ident, Ident:Position, t.mRef (Type:Tree));}.
+Proc0	= { Tree := t.mProc (NoTree, Ident:Ident, Ident:Position, t.mNoFormal (),
+		    t.ReverseTree (Decls:Tree), t.ReverseTree (Stats:Tree));	} .
+Proc	= { Tree := t.mProc (NoTree, Ident:Ident, Ident:Position, t.ReverseTree
+	   (Formals:Tree), t.ReverseTree (Decls:Tree), t.ReverseTree (Stats:Tree));} .
+Formals1= { Tree := {Formal:Tree->\Formal.Next = t.mNoFormal ();
+		    Tree = Formal:Tree;};					} .
+Formals2= { Tree := {Formal:Tree->\Formal.Next = Formals:Tree;
+		    Tree = Formal:Tree;};					} .
+Value	= { Tree := t.mFormal (NoTree, Ident:Ident, Ident:Position,
+		    t.mRef (Type:Tree));					} .
+Ref	= { Tree := t.mFormal (NoTree, Ident:Ident, Ident:Position,
+		    t.mRef (t.mRef (Type:Tree)));				} .
+Int	= { Tree := nInteger;							} .
+Real	= { Tree := nReal;							} .
+Bool	= { Tree := nBoolean;							} .
+Array	= { Tree := t.mArray (Type:Tree, Lwb:Integer, Upb:Integer, Lwb:Position);} .
+Stats1	= { Tree := {Stat:Tree->\Stat.Next = t.mNoStat (); Tree = Stat:Tree;};	} .
+Stats2	= { Tree := {Stat:Tree->\Stat.Next = Stats:Tree; Tree = Stat:Tree;};	} .
+Assign	= { Tree := t.mAssign (NoTree, Adr:Tree, Expr:Tree, ':=':Position);	} .
+Call0	= { Tree := t.mCall (NoTree, t.mNoActual (Ident:Position), Ident:Ident,
+		    Ident:Position);						} .
+Call	= { Tree := t.mCall (NoTree, t.ReverseTree (Actuals:Tree), Ident:Ident,
+		    Ident:Position);						} .
+If	= { Tree := t.mIf (NoTree, Expr:Tree, t.ReverseTree (Then:Tree),
+		    t.ReverseTree (Else:Tree));					} .
+While	= { Tree := t.mWhile (NoTree, Expr:Tree, t.ReverseTree (Stats:Tree));	} .
+Read	= { Tree := t.mRead (NoTree, Adr:Tree);					} .
+Write	= { Tree := t.mWrite (NoTree, Expr:Tree);				} .
+Expr1	= { Tree := t.mActual (t.mNoActual (Expr:Tree->\Expr.Pos), Expr:Tree);	} .
+Expr2	= { Tree := t.mActual (Actuals:Tree, Expr:Tree);			} .
+Less	= { Tree := t.mBinary ('<':Position, Lop:Tree, Rop:Tree, Less);		} .
+Plus	= { Tree := t.mBinary ('+':Position, Lop:Tree, Rop:Tree, Plus);		} .
+Times	= { Tree := t.mBinary ('*':Position, Lop:Tree, Rop:Tree, Times);	} .
+Not	= { Tree := t.mUnary (NOT:Position, Expr:Tree, Not);			} .
+IConst	= { Tree := t.mIntConst (IntegerConst:Position, IntegerConst:Integer);	} .
+RConst	= { Tree := t.mRealConst (RealConst:Position, RealConst:Real);		} .
+False	= { Tree := t.mBoolConst (FALSE:Position, rfalse);			} .
+True	= { Tree := t.mBoolConst (TRUE:Position, rtrue);			} .
+Name	= { Tree := t.mIdent (Ident:Position, Ident:Ident);			} .
+Index	= { Tree := t.mIndex ('[':Position, Adr:Tree, Expr:Tree);		} .
+
+END Tree

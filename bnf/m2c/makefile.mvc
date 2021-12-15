@@ -1,0 +1,47 @@
+!INCLUDE ..\..\config.mak
+
+FRONT	= ..\..\front\m2c
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(FRONT) /I$(REUSE)
+
+LDFLAGS	= $(FRONT)\libfront.lib $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: bnf.exe
+
+ArgCheck.obj	: ArgCheck.c	\
+	ArgCheck.h
+
+MakeBNF.obj	: MakeBNF.c	\
+	MakeBNF.h	\
+	ArgCheck.h
+
+bnf.obj	: bnf.c	\
+	MakeBNF.h	\
+	ArgCheck.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+bnf_OBJS =	\
+	bnf.obj	\
+	MakeBNF.obj	\
+	ArgCheck.obj
+
+bnf.exe	: $(bnf_OBJS) $(SYSTEM)
+	$(CC) /nologo $(bnf_OBJS) $(SYSTEM) /link /out:bnf.exe $(LDFLAGS)
+
+install:
+	if not exist "%ct_dir%"\lib\lalr\ mkdir "%ct_dir%"\lib\lalr
+	copy bnf.bat "%ct_dir%"\bin\bnf.bat
+	copy bnf.exe "%ct_dir%"\lib\lalr
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

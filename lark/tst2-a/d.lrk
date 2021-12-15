@@ -1,0 +1,82 @@
+IMPORT { with Strings, Idents; use Strings, Idents; }
+
+GLOBAL {
+type tParsAttribute is record Scan: Scanner.tScanAttribute; end record;
+
+function IsUpper (Ident: tIdent) return Boolean is
+      Name	: tString;
+   begin
+      GetString (Ident, Name);
+      return 'A' <= Element (Name, 1) and Element (Name, 1) <= 'Z';
+   end IsUpper;
+
+# define YYDEBUG
+
+stack: array (0..10) of Integer; stack_ptr, from, r: Integer; a: Scanner.tScanAttribute;
+
+# define Push(x)	stack_ptr := stack_ptr + 1; stack (stack_ptr) := x
+# define Pop(x)		x := stack (stack_ptr); stack_ptr := stack_ptr - 1
+# define stack_is_empty	stack_ptr = 0
+}
+
+BEGIN { stack_ptr := 0; yyDebug := True; -- GetLookahead (2) }
+
+TOKEN
+   IDENTIFIER	= 1
+   '('		= 2
+   ')'		= 3
+   '++'		= 4
+   ';'		= 5
+   '['		= 6
+   ']'		= 7
+   '{'		= 8
+   '}'		= 9
+
+START compound_statement declaration_list
+
+RULE
+
+compound_statement	: '{'
+			     [ #S    r := BufferOn (False, False);
+			       #SBTR Push (BufferPosition); ]
+			  declaration_list 
+			     [ Pop (from);
+			       r := ReParse (yydeclaration_list, from, BufferPosition, True, True);
+			       if stack_is_empty then
+			          r := BufferOff;
+				  BufferClear;
+				  ErrorMessages (True);
+				  SemActions (True);
+				  GetAttribute (2, a);
+				  r := GetLookahead (2);
+			       end if; ]
+			  statement_list
+			  '}'
+			.
+declaration_list	:
+			| declaration_list declaration
+			.
+statement_list		:
+			| statement_list statement
+			.
+declaration		: ? declaration declaration_specifier declarator ';'
+			.
+declaration_specifier	: TYPEDEFname [ Text_Io.Put ("trial action"); Text_Io.New_Line; ]
+				      { Text_Io.Put ("final action"); Text_Io.New_Line; }
+			.
+declarator		: IDENTIFIER  [ Text_Io.Put ("trial action"); Text_Io.New_Line; ]
+				      { Text_Io.Put ("final action"); Text_Io.New_Line; }
+			| '(' declarator ')'
+			| declarator '[' ']'
+			| compound_statement
+			.
+statement		: expression ';'
+			.
+expression		: expression '++'
+			| TYPEDEFname '(' expression ')'	/* cast */
+			| IDENTIFIER  '(' expression ')'	/* call */
+			| IDENTIFIER
+			.
+TYPEDEFname		: IDENTIFIER$i ? { IsUpper ($i.Scan.Ident) }
+			| IDENTIFIER ? IDENTIFIER
+			.

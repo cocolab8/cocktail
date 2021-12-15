@@ -1,0 +1,23 @@
+MC	= mc
+MC_CMD	= $(MC) -d ../../../reuse/src
+
+SOURCES	= Scanner.md Scanner.mi Parser.md Parser.mi ParserDrv.mi
+
+ParserDrv:	$(SOURCES)
+	echo p ParserDrv 	mocka
+
+Scanner.rpp Parser.lrk:	oberon.prs
+	lpp -xzj oberon.prs
+
+oberon.rex:	oberon.scn Scanner.rpp
+	rpp < oberon.scn > oberon.rex
+
+Scanner.md Scanner.mi:	oberon.rex
+	rex -d oberon.rex
+
+Parser.md Parser.mi ParserDrv.mi:	Parser.lrk
+	lark -dips Parser.lrk
+
+clean:
+	del /F Scanner.m? Parser.m? ParserDrv.mi ParserDrv
+	del /F core *.[dor] _Debug oberon.rex Parser.lrk Scanner.rpp *.bak

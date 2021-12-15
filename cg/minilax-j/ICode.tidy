@@ -1,0 +1,166 @@
++import
+// import ICode.*;
+# include "ICodeIntConst.h"
+=import
+
++Tree.methods
+   public void Code () {}
+=Tree.methods
+
++MiniLax.methods
+      public void Code () { Proc.Code (); }
+=MiniLax.methods
+
++Proc.methods
+      public void Code () {
+	Proc3 p = (Proc3)(((Decls) Next).DeclsIn);
+	ICode.Emit (ENT, p.DataSize - p.ParSize, 0);
+	Stats.Code ();
+	ICode.Emit (RET, 0, 0);
+	Decls.Code ();
+	Next.Code ();
+      }
+=Proc.methods
+
++Var.methods
+      public void Code () {
+	Next.Code ();
+      }
+=Var.methods
+
++Assign.methods
+      public void Code () {
+	Adr.Code (); Adr.Co.Code ();
+	Expr.Code (); Expr.Co.Code ();
+	ICode.Emit (STI, 0, 0);
+	Next.Code ();
+      }
+=Assign.methods
+
++Call.methods
+      public void Code () {
+	Proc3 p = (Proc3) Object;
+	ICode.Emit (MST, Level2 - p.Level, 0);
+	Actuals.Code ();
+	ICode.Emit (JSR, p.ParSize - 3, p.Label);
+	Next.Code ();
+      }
+=Call.methods
+
++If.methods
+      public void Code () {
+	Expr.Code (); Expr.Co.Code ();
+	ICode.Emit (FJP, Label1, 0);
+	Then.Code ();
+	ICode.Emit (JMP, Label2, 0);
+	Else.Code ();
+	Next.Code ();
+      }
+=If.methods
+
++While.methods
+      public void Code () {
+	ICode.Emit (JMP, Label2, 0);
+	Stats.Code ();
+	Expr.Code (); Expr.Co.Code ();
+	ICode.Emit (INV, 0, 0);
+	ICode.Emit (FJP, Label1, 0);
+	Next.Code ();
+      }
+=While.methods
+
++Read.methods
+      public void Code () {
+	Adr.Code (); Adr.Co.Code ();
+	ICode.Emit (REA, TypeCode, 0);
+	ICode.Emit (STI, 0, 0);
+	Next.Code ();
+      }
+=Read.methods
+
++Write.methods
+      public void Code () {
+	Expr.Code (); Expr.Co.Code ();
+	ICode.Emit (WRI, TypeCode, 0);
+	Next.Code ();
+      }
+=Write.methods
+
++Actual.methods
+      public void Code () {
+	Expr.Code (); Expr.Co.Code ();
+	Next.Code ();
+      }
+=Actual.methods
+
++Binary.methods
+      public void Code () {
+	Lop.Code (); Lop.Co.Code ();
+	Rop.Code (); Rop.Co.Code ();
+	if (Operator == Times) ICode.Emit (MUL, TypeCode, 0);
+	if (Operator == Plus) ICode.Emit (ADD, TypeCode, 0);
+	if (Operator == Less) ICode.Emit (LES, TypeCode, 0);
+      }
+=Binary.methods
+
++Unary.methods
+      public void Code () {
+	Expr.Code (); Expr.Co.Code ();
+	ICode.Emit (INV, 0, 0);
+      }
+=Unary.methods
+
++IntConst.methods
+      public void Code () {
+	ICode.Emit (LDC, IntType, Value);
+      }
+=IntConst.methods
+
++RealConst.methods
+      public void Code () {
+	ICode.EmitReal (LDC, RealType, (float) Value);
+      }
+=RealConst.methods
+
++BoolConst.methods
+      public void Code () {
+	if (Value == true) ICode.Emit (LDC, BoolType, TrueCode);
+	if (Value == false) ICode.Emit (LDC, BoolType, FalseCode);
+      }
+=BoolConst.methods
+
++Index.methods
+      public void Code () {
+	if (Type2.yyKind () != kArray) return;
+	Array a = (Array) Type2;
+	Adr.Code (); Adr.Co.Code ();
+	Expr.Code (); Expr.Co.Code ();
+	ICode.Emit (CHK, a.Lwb, a.Upb);
+	ICode.Emit (LDC, IntType, a.Lwb);
+	ICode.Emit (SUB, IntType, 0);
+	ICode.Emit (IXA, Types.TypeSize (a.Type), 0);
+      }
+=Index.methods
+
++Identifier.methods
+      public void Code () {
+	if (Object.yyKind () != Defs.kVar3) return;
+	Var3 v = (Var3) Object;
+	ICode.Emit (LDA, Level2 - v.Level, v.Offset);
+      }
+=Identifier.methods
+
++Content.methods
+      public void Code () {
+	ICode.Emit (LDI, 0, 0);
+	Next.Code ();
+      }
+=Content.methods
+
++IntToReal.methods
+      public void Code () {
+	ICode.Emit (FLT, 0, 0);
+	Next.Code ();
+      }
+=IntToReal.methods
+

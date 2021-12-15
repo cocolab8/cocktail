@@ -1,0 +1,40 @@
+Tree.check: parent = E2
+r                = 10
+l                = 11
+Thing            = NoTree
+Next             = 80dc230
+o                = 14
+c2               = 15
+t                = 80dc22e
+t2               =  Thing
+
+
+selector: Thing, child = NoTree
+
+Tree.check: parent = E2
+r                = 10
+l                = 11
+Thing            = NoTree
+Next             = 80dc47f
+o                = 14
+c2               = 15
+t                = 80dc480
+t2               =  Thing
+
+
+selector: Thing, child = NoTree
+
+Tree.check: parent = E2
+r                = 810
+l                = 811
+Thing            = NoTree
+Next             = 80de9c8
+o                = 814
+c2               = 815
+t                = 80de9d5
+t2               =  PosThing
+  pos              =   81,  2
+
+
+selector: Thing, child = NoTree
+

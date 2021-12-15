@@ -1,0 +1,348 @@
+MODULE AbstractSyntax /* ------------------------------------------ */
+
+TREE IMPORT  {
+FROM Idents	IMPORT tIdent;
+FROM Position	IMPORT tPosition;
+}
+GLOBAL  {
+FROM Idents	IMPORT tIdent;
+FROM Position	IMPORT tPosition;
+
+(* # define yyALLOC(ptr, size) ptr := Memory.Alloc (size);	*)
+(* # define yyFREE(ptr, size)  Memory.Free (size, ptr);		*)
+}
+EVAL Semantic
+
+PROPERTY INPUT
+
+RULE
+
+MiniLax		= Proc .
+Decls		= <
+   NoDecl	= .
+   Decl		= Next: Decls REV [Ident: tIdent] [Pos: tPosition] <
+      Var	= Type .
+      Formal	= Type .
+      Proc	= Formals:Decls Decls Stats [Label OUT] .
+   >.
+>.
+Type		= <
+   Integer	= .
+   Real		= .
+   Boolean	= .
+   Array	= Type OUT            [Lwb] [Upb] [Pos: tPosition] .
+   Ref		= Type OUT .
+   NoType	= .
+   ErrorType	= .
+>.
+Stats		= <
+   NoStat	= .
+   Stat		= Next: Stats REV <
+      Assign	= Adr Expr            [Pos: tPosition] .
+      Call	= Actuals             [Ident: tIdent] [Pos: tPosition] .
+      If	= Expr Then: Stats Else: Stats .
+      While	= Expr Stats .
+      Read	= Adr .
+      Write	= Expr .
+   >.
+>.
+Actuals		= <
+   NoActual	=                     [Pos: tPosition OUT] .
+   Actual	= Next: Actuals REV Expr .
+>.
+Expr		=                     [Pos: tPosition] <
+   Binary	= Lop: Expr Rop: Expr [Operator: SHORTCARD] .
+   Unary	= Expr                [Operator: SHORTCARD] .
+   IntConst	=                     [Value		OUT] .
+   RealConst	=                     [Value: REAL	OUT] .
+   BoolConst	=                     [Value: BOOLEAN	OUT] .
+   Adr		= <
+      Index	= Adr Expr .
+      Ident	=                     [Ident: tIdent] .
+   >.
+>.
+Coercions	= <
+   NoCoercion	= .
+   Coercion	= Next: Coercions OUT <
+      Content	= .		/* fetch contents of location	 */
+      IntToReal	= .		/* convert integer value to real */
+   >.
+>.
+
+END AbstractSyntax
+
+MODULE Output /* -------------------------------------------------- */
+
+PROPERTY OUTPUT
+
+DECLARE
+   Decls			= [Level: SHORTINT INH] [Offset THREAD] .
+   Proc				= [ParSize] [DataSize] .
+   Decls Stats Actuals Expr	= [Env: tTree INH] .
+   Call Ident			= [Object: tTree] .
+   Read Write Binary		= [TypeCode: SHORTCARD] .
+   Expr				= Type Co: Coercions .
+   Index			= Type2: Type .
+
+END Output
+
+MODULE Objects /* -------------------------------------------------- */
+
+DECLARE
+   Decls	= [Objects: tTree OUT THREAD] .
+   Proc		= [Objects: tTree OUT] .
+
+RULE
+
+MiniLax	= { Proc:	ObjectsIn	:= nNoObject			; } .
+Decl	= { Next:	ObjectsIn	:= DEP (SELF, ObjectsIn)	;
+			ObjectsOut	:= Next:	ObjectsOut	; } .
+Proc	= { Formals:	ObjectsIn	:= nNoObject			;
+			Objects		:= Decls:	ObjectsOut	; 
+			ParSize		:= Formals:	OffsetOut	;
+			DataSize	:= Decls:	OffsetOut	; } .
+Call	= {		Object		:= Identify (Ident, Env)	; } .
+Ident	= {		Object		:= Identify (Ident, Env)	; } .
+
+END Objects
+
+MODULE Formals /* -------------------------------------------------- */
+
+DECLARE Actuals = [Formals: tTree] .
+
+RULE
+
+Call	= { Actuals:	Formals	:= GetFormals (Object)			;
+	    => { CheckParams (Actuals, Actuals:Formals); }		; } .
+Actual	= { Next:	Formals	:= {IF Formals^.Kind = Formal
+				    THEN Next:Formals := Formals^.Formal.\Next
+				    ELSE Next:Formals := Formals
+				    END;}				; } .
+
+END Formals
+
+MODULE Env /* -------------------------------------------------- */
+
+RULE
+
+MiniLax	= { Proc:	Env	:= NIL					; } .
+Proc	= { Stats:	Env	:= DEP (SELF, (Env, Objects))		;
+	    Decls:	Env 	:= Stats:Env				;
+	    Env AFTER OffsetOut						; } .
+
+END Env
+
+MODULE Type /* -------------------------------------------------- */
+
+RULE
+
+Expr	= { 		Type	:= nNoType				; } .
+Binary	= { 		Type	:= ResultType (Lop:Type, Rop:Type, Operator); } .
+Unary	= { 		Type	:= ResultType (Expr:Type, nNoType, Operator); } .
+IntConst  = { 		Type	:= nInteger				; } .
+RealConst = { 		Type	:= nReal    				; } .
+BoolConst = { 		Type	:= nBoolean 				; } .
+Adr	= { 		Type	:= nNoType				; } .
+Index	= { 		Type	:= mRef (GetElementType (Type2))	;
+			Type2	:= Reduce (Adr:Type)			; } .
+Ident	= { 		Type	:= GetType (Object)			; } .
+
+END Type
+
+MODULE TypeCode /* -------------------------------------------------- */
+
+DECLARE Read Write Binary = [Type2: tTree] .
+
+RULE
+
+Read	= {		Type2	 := Reduce (Adr:Type)			;
+			TypeCode := ICodeType [Type2^.Kind]		; } .
+Write	= {		Type2	 := Reduce (Expr:Type)			;
+			TypeCode := ICodeType [Type2^.Kind]		; } .
+Binary	= {		Type2	 := Reduce (Rop:Type)			;
+			TypeCode := ICodeType [Type2^.Kind]		; } .
+
+END TypeCode
+
+MODULE Co /* -------------------------------------------------- */
+
+RULE
+
+Assign	= { Adr :	Co := Coerce (Adr :Type, ReduceToRef (Adr:Type));
+	    Expr:	Co := Coerce (Expr:Type, Reduce (Adr:Type))	; } .
+If	= { Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+While	= { Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+Read	= { Adr :	Co := Coerce (Adr :Type, ReduceToRef (Adr:Type)); } .
+Write	= { Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+Actual	= { Expr:	Co := {
+	       IF Formals^.Kind = NoDecl
+	       THEN Expr:Co := mNoCoercion ();
+	       ELSE Expr:Co := Coerce (Expr:Type, Reduce1 (Formals^.Formal.Type));
+	       END; }							; } .
+Binary	= { Lop :	Co := Coerce (Lop :Type, Reduce (Lop:Type))	;
+	    Rop :	Co := Coerce (Rop :Type, Reduce (Rop:Type))	; } .
+Unary	= { Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+Index	= { Adr :	Co := Coerce (Adr :Type, ReduceToRef (Adr:Type));
+	    Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+
+END Co
+
+MODULE Offset /* -------------------------------------------------- */
+
+RULE
+
+MiniLax	= { Proc:	OffsetIn	:= 0				; } .
+Decl	= {		OffsetOut	:= Next:	OffsetOut	; } .
+Proc	= { Formals:	OffsetIn	:= 3				; } .
+Var	= { Next:	OffsetIn	:= OffsetIn + TypeSize (Reduce1 (Type)); } .
+Formal	= { Next:	OffsetIn	:= OffsetIn + 1			; } .
+
+END Offset
+
+MODULE Level /* -------------------------------------------------- */
+
+RULE
+
+MiniLax	= { Proc:	Level	:= 0					; } .
+Proc	= { Formals:	Level	:= 		Level + 1		;
+	    Decls:	Level	:= Formals:	Level			; } .
+
+END Level
+
+MODULE Conditions /* -------------------------------------------------- */
+
+RULE
+
+Decl	= { CHECK NOT IsDeclared (Ident, ObjectsIn)
+	       ==> Error ("identifier already declared"		, Pos)		; } .
+Formal	= { CHECK IsSimpleType (Reduce1 (Type))
+	       ==> Error ("value parameter must have simple type", Pos)		; } .
+Array	= { CHECK Lwb <= Upb
+	       ==> Error ("lower bound exceeds upper bound"	, Pos)		; } .
+Assign	= { CHECK IsAssignmentCompatible (Adr:Type, Expr:Type)
+	       ==> Error ("types not assignment compatible"	, Pos)		; } .
+Call	= { CHECK Object^.Kind # NoDecl
+	       ==> Error ("identifier not declared"		, Pos) AND_THEN
+	    CHECK IsObjectKind (Object, Proc)
+	       ==> Error ("only procedures can be called"	, Pos)		; } .
+If	= { CHECK IsType (Reduce (Expr:Type), Boolean)
+	       ==> Error ("boolean expression required"		, Expr:Pos)	; } .
+While	= { CHECK IsType (Reduce (Expr:Type), Boolean)
+	       ==> Error ("boolean expression required"		, Expr:Pos)	; } .
+Read	= { CHECK IsSimpleType (Reduce (Adr:Type))
+	       ==> Error ("simple type operand required"	, Adr:Pos)	; } .
+Write	= { CHECK IsSimpleType (Reduce (Expr:Type))
+	       ==> Error ("simple type operand required"	, Expr:Pos)	; } .
+Binary	= { CHECK Type^.Kind # ErrorType
+	       ==> Error ("operand types incompatible"		, Pos)		; } .
+Unary	= { CHECK Type^.Kind # ErrorType
+	       ==> Error ("operand types incompatible"		, Pos)		; } .
+Index	= { CHECK IsType (Reduce (Adr:Type), Array)
+	       ==> Error ("only arrays can be indexed"		, Adr:Pos)	;
+	    CHECK IsType (Reduce (Expr:Type), Integer)
+	       ==> Error ("integer expression required"		, Expr:Pos)	; } .
+Ident	= { CHECK Object^.Kind # NoDecl
+	       ==> Error ("identifier not declared"		, Pos) AND_THEN
+	    CHECK IsObjectKind (Object, Var) OR IsObjectKind (Object, Formal)
+	       ==> Error ("variable required"			, Pos)		; } .
+
+END Conditions
+
+MODULE Miscellaneous /* -------------------------------------------------- */
+
+TREE IMPORT	{
+FROM SYSTEM	IMPORT ADDRESS;
+
+PROCEDURE Error (Text: ARRAY OF CHAR; Position: tPosition);
+
+CONST
+   Plus		= 1;
+   Times	= 2;
+   Less		= 3;
+   Not		= 4;
+}
+
+GLOBAL		{
+FROM Strings	IMPORT tString, ArrayToString;
+
+PROCEDURE Error (Text: ARRAY OF CHAR; Position: tPosition);
+   BEGIN
+      Errors.Message (Text, Errors.Error, Position);
+   END Error;
+}
+
+EVAL GLOBAL	{
+FROM SYSTEM	IMPORT ADDRESS;
+FROM Idents	IMPORT tIdent;
+FROM Tree	IMPORT tTree, mBoolean, mInteger, mReal, mRef, mNoType, mNoDecl,
+			Integer, Real, Boolean, Array, NoType, ErrorType, IsType, Error,
+			Formal, NoDecl, Proc, Var, mNoCoercion;
+FROM Types	IMPORT IsAssignmentCompatible, IsSimpleType, CheckParams, Reduce1,
+			ReduceToRef, Coerce, GetElementType, Reduce, ResultType, TypeSize;
+FROM ICodeInt	IMPORT IntType, RealType, BoolType;
+
+VAR nInteger, nReal, nBoolean, nNoType, nNoObject	: tTree;
+VAR ICodeType	: ARRAY [Integer .. ErrorType] OF [IntType .. BoolType];
+
+PROCEDURE IsDeclared	(Ident: tIdent; Objects: tTree): BOOLEAN;
+   BEGIN
+      WHILE Objects^.Kind # NoDecl DO
+	 IF Objects^.Decl.Ident = Ident THEN RETURN TRUE; END;
+	 Objects := Objects^.Decl.ObjectsIn;
+      END;
+      RETURN FALSE;
+   END IsDeclared;
+
+PROCEDURE Identify	(Ident: tIdent; Env: tTree): tTree;
+   VAR Objects	: tTree;
+   BEGIN
+      WHILE Env # NIL DO
+	 Objects := Env^.Proc.Objects;
+	 WHILE Objects^.Kind # NoDecl DO
+	    IF Objects^.Decl.Ident = Ident THEN RETURN Objects; END;
+	    Objects := Objects^.Decl.ObjectsIn;
+	 END;
+	 Env := Env^.Proc.Env;
+      END;
+      RETURN nNoObject;
+   END Identify;
+
+PROCEDURE IsObjectKind	(Object: tTree; Kind: SHORTCARD): BOOLEAN;
+   BEGIN
+      RETURN (Object^.Kind = Kind) OR (Object^.Kind = NoDecl);
+   END IsObjectKind;
+
+PROCEDURE GetFormals	(Object: tTree): ADDRESS;
+   BEGIN
+      IF Object^.Kind = Proc THEN
+	 RETURN Object^.Proc.Formals;
+      ELSE
+	 RETURN nNoObject;
+      END;
+   END GetFormals;
+
+PROCEDURE GetType	(Object: tTree): ADDRESS;
+   BEGIN
+      IF (Object^.Kind = Var) OR (Object^.Kind = Formal) THEN
+	 RETURN Object^.Var.Type;
+      ELSE
+	 RETURN mNoType ();
+      END;
+   END GetType;
+}
+
+BEGIN	{
+   nNoObject	:= mNoDecl	();
+   nInteger	:= mInteger	();
+   nReal	:= mReal	();
+   nBoolean	:= mBoolean	();
+   nNoType	:= mNoType	();
+
+   ICodeType [Integer	] := IntType	;
+   ICodeType [Real	] := RealType	;
+   ICodeType [Boolean	] := BoolType	;
+   ICodeType [NoType	] := BoolType	;
+   ICodeType [ErrorType	] := BoolType	;
+}
+
+END Miscellaneous

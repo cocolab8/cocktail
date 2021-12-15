@@ -1,0 +1,37 @@
+lark -+div d.lark; 
+          Information reduce reduce conflict dynamically repaired at state: 7
+                      on lookahead: IDENTIFIER 
+          Information reduce reduce conflict dynamically repaired at state: 8
+                      on lookahead: IDENTIFIER ( { 
+          Information shift reduce conflict dynamically repaired at state: 35
+                      on lookahead: ( 
+          Information reduce reduce conflict dynamically repaired at state: 35
+                      on lookahead: ( 
+          Information shift reduce conflict dynamically repaired at state: 36
+                      on lookahead: ( 
+          Information reduce reduce conflict dynamically repaired at state: 36
+                      on lookahead: ( 
+          Information grammar is not LR(1)
+
+ conflict repair   explicit implicit  LALR(2)  dynamic unsolved    total
+------------------------------------------------------------------------
+ shift-reduce             0        0        0        2        0        2
+reduce-reduce             0        0        0        4        0        4
+------------------------------------------------------------------------
+ total                    0        0        0        6        0        6
+rex -+ds d.rex; 
+Warning: in start state STD the default action may be triggered by:
+ \0 \1 \2 \3 \4 \5 \6 \7 \8 \11 \12 \13 \14 \15 \16 \17
+ \18 \19 \20 \21 \22 \23 \24 \25 \26 \27 \28 \29 \30 \31 '!' '"'
+ '#' '$' '%' '&' ''' '*' '+' ',' '-' '.' '/' '0' '1' '2' '3' '4'
+ '5' '6' '7' '8' '9' ':' '<' '=' '>' '?' '@' '\' '^' '`' '|' '~'
+
+rm -f ScannerDrv.cxx
+g++ -I/home/grosch/lib/include -g -pipe -DYYDEBUG -c ParserDrv.cxx
+g++ -I/home/grosch/lib/include -g -pipe -DYYDEBUG -c Source.cxx
+g++ -I/home/grosch/lib/include -g -pipe -DYYDEBUG -c Scanner.cxx
+g++ -I/home/grosch/lib/include -g -pipe -DYYDEBUG -c Parser.cxx
+g++ -I/home/grosch/lib/include -g -pipe -DYYDEBUG -o ParserDrv ParserDrv.o Source.o Scanner.o Parser.o /home/grosch/lib/librucpp.a
+ParserDrv < in1 > o && diff out1 o
+ParserDrv < in2 > o && diff out2 o
+ParserDrv < in3 > o && diff out3 o

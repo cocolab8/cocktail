@@ -1,0 +1,5 @@
+This directory contains two resource files for javadoc:
+'standard.properties.original' is the file as included in the documentation
+pack for Sun JDK 1.2.  'standard.properties' is a copy of the same file which
+has been edited to change the HTML generated for the 'reuse' package - see
+the 'doc' target in cocktail/de/cocolab/reuse/Makefile.

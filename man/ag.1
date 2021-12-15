@@ -1,0 +1,146 @@
+.TH AG 1 "" "CoCoLab Germany"
+.SH NAME
+ag \- generator for attribute evaluators
+.SH SYNOPSIS
+ag [ -options ] [ +options ] [ -l\fIdirectory\fP ] [ \fIfiles\fP ]
+.SH DESCRIPTION
+.I Ag
+generates a program module to evaluate an attribute computation specified by
+an attribute grammar.
+A typical application is the semantic analysis phase in a compiler.
+The input
+.I file
+contains an attribute grammar which describes the structure of all
+possible trees, the attributes, and the attribute computations.
+.I Ag
+checks whether the attribute grammar is
+.I ordered
+(OAG) or
+.I well-defined
+(WAG) and generates an evaluator consisting out of recursive procedures. If
+.I file
+is omitted the specification is read from standard input.
+.SH OPTIONS
+Normal options are introduced by -, some advanced options are introduced by +.
+.ta 0.5i 3i
+.nf
+.IP A
+generate all, same as -DI (default)
+.IP D
+generate header file or definition module
+.IP I
+generate implementation part or module
+.IP K
+generate an evaluator based on a stack automaton (default: recursive procedures)
+.IP L
+generate a (lazy) evaluator for WAG (default: OAG)
+.IP W
+suppress warnings
+.IP B
+allow missing attribute computations in extended node types
+.IP V
+print visit sequences
+.IP M
+print summary of all node types (rules) from source
+.IP P
+print dependency relations DP
+.IP S
+print dependency relations SNC
+.IP N
+print dependency relations DNC
+.IP O
+print dependency relations OAG
+.IP G
+print attribute instances sorted by declaration order
+.IP E
+print attribute instances sorted by evaluation order
+.IP C
+print dependencies introduced for total order (completion)
+.IP T
+generate evaluator with trace output (all actions, T = XZ)
+.IP U
+trace only node types specified in file TraceTab
+.IP X
+trace attribute evaluation actions with values
+.IP Y
+trace attribute evaluation actions without values
+.IP Z
+trace visit actions
+.IP +J
+start dialog system
+.IP Q
+browse internal data structure with text browser
+.IP 0
+optimize attribute storage
+.IP 1
+print inserted copy rules
+.IP 2
+print inherited attribute computation rules
+.IP 3
+print attribute storage assignment
+.IP 5
+generate source code to check for cyclic dependencies
+.IP 6
+generate # line directives
+.IP 7
+touch output files only if necessary
+.IP 8
+report storage consumption
+.IP 9
+generate source code to measure stack size
+.IP c
+generate C source code (default: Modula-2)
+.IP c+
+generate simple C++ source code
+.IP c++
+generate proper C++ source code
+.IP J
+generate Java source code
+.IP H
+print help information for evaluator module
+.IP +H
+print advanced help
+.IP l\fIdir\fP
+specify the directory dir where ag finds its tables
+.SH FILES
+.nf
+.ta 2i
+if output is in C:
+.sp 0.5
+<module>.h	header file of the generated evaluator module
+<module>.c	body of the generated evaluator module
+yy<module>.h	macro definitions
+.sp 0.5
+if output is in C++:
+.sp 0.5
+<module>.h	header file of the generated evaluator module
+<module>.cxx	body of the generated evaluator module
+yy<module>.h	macro definitions
+.sp 0.5
+if output is in Java:
+.sp 0.5
+<module>.java	class file of the generated evaluator class
+.sp 0.5
+if output is in Modula-2:
+.sp 0.5
+<module>.md	definition module of the generated evaluator module
+<module>.mi	implementation module of the generated evaluator module
+.fi
+.SH SEE\ ALSO
+.sp 0.5
+J. Grosch:
+"Ast - A Generator for Abstract Syntax Trees",
+CoCoLab Germany, Document No. 15
+.sp 0.5
+J. Grosch:
+"Ag - An Attribute Evaluator Generator",
+CoCoLab Germany, Document No. 16
+.sp 0.5
+J. Grosch:
+"Object-Oriented Attribute Grammars", in: A. E. Harmanci, E. Gelenbe (Eds.):
+Proceedings of the Fifth International Symposium on Computer and Information Sciences
+(ISCIS V), Cappadocia, Nevsehir, Turkey, 807-816, Oct. 1990
+.sp 0.5
+J. Grosch:
+"Object-Oriented Attribute Grammars",
+CoCoLab Germany, Document No. 23

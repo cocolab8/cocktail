@@ -1,0 +1,445 @@
+/*
+   Copyright (c) 1998 Dr. Josef Grosch, CoCoLab - Datenverarbeitung
+
+   This file contains proprietary and confidential information and
+   remains the property of CoCoLab. Use, disclosure, or reproduction
+   is prohibited except as permitted by express written license agreement
+   with CoCoLab.
+
+   Phone: +49-7841-669144
+   Fax  : +49-7841-669145
+   Email: grosch@cocolab.com
+*/
+
+/*
+
+		   C Abstract Syntax
+		   =================
+
+		     conforming to:
+
+			 ANSI C
+	 ISO/IEC 9899:1990 Programming languages -- C
+
+*/
+
+/* Ich, Doktor Josef Grosch, Informatiker, July 1996 / Dec. 1998 */
+
+MODULE abstract_syntax
+
+TREE IMPORT {
+# include "Position.h"
+# include "StringM.h"
+# include "Idents.h"
+
+typedef	unsigned long	us_long;
+typedef	unsigned char	us_char;
+
+				/* specifiers				*/
+
+typedef	us_long		tspecifier;
+
+# define c_typedef		0x00000001
+# define c_friend		0x00000002
+					/* storage_class_specifier	*/
+# define c_auto			0x00000004
+# define c_register		0x00000008
+# define c_static		0x00000010
+# define c_extern		0x00000020
+# define c_mutable		0x00000040
+					/* function_specifier		*/
+# define c_inline		0x00000080
+# define c_virtual		0x00000100
+# define c_explicit		0x00000200
+					/* type_constructor		*/
+# define c_class		0x00000400
+# define c_enum			0x00000800
+					/* cv_qualifier			*/
+# define c_const		0x00001000
+# define c_volatile		0x00002000
+					/* simple_type_specifier	*/
+# define c_char			0x00004000
+# define c_wchar_t		0x00008000
+# define c_bool			0x00010000
+# define c_short		0x00020000
+# define c_int			0x00040000
+# define c_long			0x00080000
+# define c_signed		0x00100000
+# define c_unsigned		0x00200000
+# define c_float		0x00400000
+# define c_double		0x00800000
+# define c_void			0x01000000
+					/* access_specifier		*/
+# define c_private		0x10000000
+# define c_protected		0x20000000
+# define c_public		0x40000000
+
+				/* subsets				*/
+
+# define c_typedef_friend	0x00000003
+# define c_storage_class	0x0000007c
+# define c_function		0x00000380
+# define c_type_constructor	0x00000c00
+# define c_cv_qualifier		0x00003000
+# define c_simple_type		0x01ffc000
+# define c_access		0x70000000
+
+				/* operators				*/
+
+typedef char		toperator;
+
+# define op_none		 0
+					/* conventional operators */
+# define op_address_of		 1
+# define op_and			 2
+# define op_and_and		 3
+# define op_assignment		 4
+# define op_comma		 5
+# define op_complement		 6
+# define op_divide		 7
+# define op_equal		 8
+# define op_greater		 9
+# define op_greater_equal	10
+# define op_indirect		11
+# define op_less		12
+# define op_less_equal		13
+# define op_lshift		14
+# define op_minus		15
+# define op_modulo		16
+# define op_negate		17
+# define op_not			18
+# define op_not_equal		19
+# define op_or			20
+# define op_or_or		21
+# define op_plus		22
+# define op_post_decr		23
+# define op_post_incr		24
+# define op_pre_decr		25
+# define op_pre_incr		26
+# define op_rshift		27
+# define op_times		28
+# define op_xor			29
+					/* GCC extensions */
+# define op_minimum		30
+# define op_maximum		31
+					/* member access */
+# define op_dot			32
+# define op_arrow		33
+
+				/* kinds of symbols */
+
+typedef unsigned short tkind;
+
+# define k_ident		0x0001
+# define k_typedef		0x0002
+# define k_enum			0x0004
+# define k_class		0x0008
+# define k_namespace		0x0010
+# define k_template		0x0020
+# define k_function		0x0040
+# define k_parameter		0x0080
+# define k_label		0x0100
+# define k_struct		0x0200
+# define k_union		0x0400
+# define k_friend		0x0800
+# define k_all			0xffff
+
+extern void write_kind ARGS ((FILE * file, tkind kind));
+}
+
+EXPORT {
+typedef tobject *	thash_table;
+}
+
+GLOBAL {
+# define writeus_long(a)	fprintf (yyf, "%ld", a);
+
+# define writetoperator(a)	fputs (operators [a], yyf);
+
+static char * operators [] = {
+   ""			, /* op_none		*/
+   "&"			, /* op_address_of	*/
+   "&"			, /* op_and		*/
+   "&&"			, /* op_and_and		*/
+   "="			, /* op_assignment	*/
+   ","			, /* op_comma		*/
+   "~"			, /* op_complement	*/
+   "/"			, /* op_divide		*/
+   "=="			, /* op_equal		*/
+   ">"			, /* op_greater		*/
+   ">="			, /* op_greater_equal	*/
+   "*"			, /* op_indirect	*/
+   "<"			, /* op_less		*/
+   "<="			, /* op_less_equal	*/
+   "<<"			, /* op_lshift		*/
+   "-"			, /* op_minus		*/
+   "%"			, /* op_modulo		*/
+   "-"			, /* op_negate		*/
+   "!"			, /* op_not		*/
+   "!="			, /* op_not_equal	*/
+   "|"			, /* op_or		*/
+   "||"			, /* op_or_or		*/
+   "+"			, /* op_plus		*/
+   "--"			, /* op_post_decr	*/
+   "++"			, /* op_post_incr	*/
+   "--"			, /* op_pre_decr	*/
+   "++"			, /* op_pre_incr	*/
+   ">>"			, /* op_rshift		*/
+   "*"			, /* op_times		*/
+   "^"			, /* op_xor		*/
+   "<?"			, /* op_minimum		*/
+   ">?"			, /* op_maximum		*/
+   "."			, /* op_dot		*/
+   "->"			, /* op_arrow		*/
+};
+
+# define writetkind(a)		write_kind (yyf, a);
+
+void write_kind
+# ifdef HAVE_ARGS
+   (FILE * file, tkind kind)
+# else
+   (file, kind) FILE * file; tkind kind;
+# endif
+{
+   if (kind & k_ident		) fprintf (file, "ident     ");
+   if (kind & k_typedef		) fprintf (file, "typedef   ");
+   if (kind & k_enum		) fprintf (file, "enum      ");
+   if (kind & k_class		) fprintf (file, "class     ");
+   if (kind & k_struct		) fprintf (file, "struct    ");
+   if (kind & k_union		) fprintf (file, "union     ");
+   if (kind & k_namespace	) fprintf (file, "namespace ");
+   if (kind & k_function	) fprintf (file, "function  ");
+   if (kind & k_parameter	) fprintf (file, "parameter ");
+   if (kind & k_label		) fprintf (file, "label     ");
+}
+
+# define writetspecifier(a)	write_specifier (yyf, a);
+
+void write_specifier
+# ifdef HAVE_ARGS
+   (FILE * file, tspecifier specifier)
+# else
+   (file, specifier) FILE * file; tspecifier specifier;
+# endif
+{
+   if (specifier & c_typedef	) (void) fputs ("typedef "	, file);
+   if (specifier & c_friend	) (void) fputs ("friend "	, file);
+   if (specifier & c_auto	) (void) fputs ("auto "		, file);
+   if (specifier & c_register	) (void) fputs ("register "	, file);
+   if (specifier & c_static	) (void) fputs ("static "	, file);
+   if (specifier & c_extern	) (void) fputs ("extern "	, file);
+   if (specifier & c_mutable	) (void) fputs ("mutable "	, file);
+   if (specifier & c_inline	) (void) fputs ("inline "	, file);
+   if (specifier & c_virtual	) (void) fputs ("virtual "	, file);
+   if (specifier & c_explicit	) (void) fputs ("explicit "	, file);
+   if (specifier & c_class	) (void) fputs ("class "	, file);
+   if (specifier & c_enum	) (void) fputs ("enum "		, file);
+   if (specifier & c_const	) (void) fputs ("const "	, file);
+   if (specifier & c_volatile	) (void) fputs ("volatile "	, file);
+   if (specifier & c_char	) (void) fputs ("char "		, file);
+   if (specifier & c_wchar_t	) (void) fputs ("wchar_t "	, file);
+   if (specifier & c_bool	) (void) fputs ("bool "		, file);
+   if (specifier & c_short	) (void) fputs ("short "	, file);
+   if (specifier & c_int	) (void) fputs ("int "		, file);
+   if (specifier & c_long	) (void) fputs ("long "		, file);
+   if (specifier & c_signed	) (void) fputs ("signed "	, file);
+   if (specifier & c_unsigned	) (void) fputs ("unsigned "	, file);
+   if (specifier & c_float	) (void) fputs ("float "	, file);
+   if (specifier & c_double	) (void) fputs ("double "	, file);
+   if (specifier & c_void	) (void) fputs ("void "		, file);
+   if (specifier & c_private	) (void) fputs ("private "	, file);
+   if (specifier & c_protected	) (void) fputs ("protected "	, file);
+   if (specifier & c_public	) (void) fputs ("public "	, file);
+}
+}
+
+PROPERTY INPUT
+
+RULE
+
+translation_unit	= statement_l .
+
+statement_l		= <
+  nostatement		= .
+  statement		= next: statement_l REV [pos: tPosition] <
+    declaration		= <
+      name_declaration	= name: id_expression <
+	specifier_declaration	= [specifiers: tspecifier] <
+	  data_declaration	= type <
+	    data_decl		= .
+	    init_decl		= expression .
+	    bit_field_decl	= expression .
+	  > .
+	  function_declaration	= specifier_l type ctor_init: expression_l statement_l <
+	    function_decl	= .
+	    function_old_decl	= declaration_l: statement_l .
+	  > .
+	> .
+      > .
+      ellipsis_decl	= .
+      list_decl		= specifier_l type declaration_l: statement_l .
+    > .
+    executable_stmt	= <
+      break_stmt	= .
+      case_stmt		= expression .
+      compound_stmt	= statement_l .
+      continue_stmt	= .
+      default_stmt	= .
+      do_stmt		= statement expression .
+      expr_stmt		= expression .
+      for_stmt		= init: expression test: expression incr: expression statement .
+      goto_stmt		= name: id_expression .
+      if_stmt		= expression then: statement Else: statement_l .
+      labeled_stmt	= [ident: tIdent] .
+      null_stmt		= .
+      return_stmt	= expression .
+      switch_stmt	= expression statement .
+      while_stmt	= expression statement .
+    > .
+  > .
+> .
+	/* The node types simple_type, enum_type, class_type, and name_type do
+	   not represent source code directly. The concrete syntax of C++ and C
+	   has the declared object at this place. It makes much more sense to
+	   have the element type at this place in order to have a compact
+	   description of the type. Therefore the above node types are a
+	   converted representation of the specifier list (type_specifier_seq
+	   or decl_specifier_seq) associated with the current type.
+	 */
+type			= <
+  notype		= .
+  simple_type		= [specifiers: tspecifier] .
+  enum_type		= [s_enum: s_enum] .
+  class_type		= [s_class: s_class] [member_scope: tTree] .
+  name_type		= [name: id_expression] .
+  structured_type	= type <
+    pointer		= specifier_l .
+    array		= expression .
+    function_type	= <
+      function		= parameters: statement_l	/* declarations only */
+			  specifier_l exceptions: notype_id .	/* C++ only */
+      function_old	= identifier_l .
+    > .
+  > .
+> .
+specifier_l		= <
+  nospecifier		= .
+  specifier		= next: specifier_l REV <
+    s_typedef		= .	/* storage_class_specifier */
+    s_extern		= .
+    s_static		= .
+    s_auto		= .
+    s_register		= .
+    s_short		= .	/* type_adjective */
+    s_long		= .
+    s_signed		= .
+    s_unsigned		= .
+    s_const		= .	/* type_qualifier */
+    s_volatile		= .
+    s_void		= .	/* simple_type_specifier */
+    s_char		= .
+    s_int		= .
+    s_float		= .
+    s_double		= .
+    s_named		= name: id_expression <
+      s_type_constructor= [type: type] <
+					/* struct and union specifier */
+	s_class		= [kind: tkind]
+			  base_class_l: nobase_class	/* C++ only */
+			  members: statement_l .	/* declarations only */
+					/* enum_specifier */
+	s_enum		= enumerator_l .
+      > .
+      s_type_name	= .
+    > .
+    s_typeof		= expression .			/* GCC extension */
+  > .
+> .
+nobase_class		= .
+
+notype_id		= .
+
+enumerator_l		= <
+  noenumerator		= .
+  enumerator		= next: enumerator_l REV
+			  [ident: tIdent] [pos: tPosition] expression .
+> .
+identifier_l		= <
+  noidentifier		= .
+  identifier		= next: identifier_l REV
+			  [ident: tIdent] [pos: tPosition] .
+> .
+expression_l		= <
+  noexpression		= .
+  expression_e		= next: expression_l REV expression .
+> .
+expression		= <
+  id_expression		= <
+    no_name		= .		/* missing optional id_expression */
+    ident		= [pos: tPosition] [ident: tIdent] .
+  > .
+  no_expression		= .		/* missing optional expression */
+  expression_pos	= [pos: tPosition] <
+    aggregate_expr	= expression_l .		/* initializer */
+    assign_expr		= lval: expression [Operator: toperator] rval: expression .
+    binary_expr		= lop: expression [Operator: toperator] rop: expression .
+    call_expr		= expression expression_l .	/* function call */
+    cast_expr		= [Operator: toperator] specifier_l type expression .
+    conditional_expr	= condition: expression true_expr: expression false_expr: expression .
+    mem_access_expr	= expression [Operator: toperator] name: id_expression .
+    parentheses_expr	= expression .
+    sizeof_expr		= expression .
+    subscript_expr	= base: expression index: expression .
+    type_expr		= specifier_l type .
+    unary_expr		= [Operator: toperator] expression .
+    constant_expr	= [type: tspecifier] <
+      char_const	= [value: tStringRef] .
+      float_const	= [value: tStringRef] .
+      int_const		= [value: us_long] .
+      string_const	= [value: tStringRef] .
+      string_list	= expression_l .
+    > .
+  > .
+> .
+
+END abstract_syntax
+
+MODULE symbole_table
+
+TREE GLOBAL {
+# define beginobjects(a) a = NoTree;
+# define beginscope(a)	a = NoTree;
+# define beginTree(a)	a = NoTree;
+# define beginrbool(a)	a = rfalse;
+# define begintkind(a)	a = k_ident;
+}
+
+DECLARE
+   translation_unit, function_declaration, compound_stmt, s_class
+		= [scope	: scope       ] .
+
+   ident, identifier
+		= [object	: object      ] .
+
+   expression	= [typ		: type	      ] .
+
+RULE
+
+object		= next		: object    IN REV /* next declared object */
+		 [ident		: tIdent    IN]
+		 [pos		: tPosition IN]
+		 [kind		: tkind     IN]
+		 [object	: Tree      IN]	/* ptr to object in tree */
+		 [collision	: object      ]	/* next object in hash chain */
+		  .
+
+scope		= scope			REV IN	/* enclosing scope	*/
+		 [kind		: tkind     IN]	/* kind of scope	*/
+		 [object	: Tree      IN]	/* defining object in tree */
+		  objects	: object    IN	/* declared objects	*/
+		 [hash_table	: thash_table ]	/* pointer to hash table */
+		 [hash_table_size: us_long    ]	/* size of hash table	*/
+		  .
+
+END symbole_table

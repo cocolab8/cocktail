@@ -1,0 +1,573 @@
+/***********************************************************************
+ *                                                                     *
+ * Parser Specification and Structure Tree Build-Up for Modula-3       * 
+ * Compiler Monaco                                                     *
+ *                                                                     *
+ * Author...........: Heiko Kiessling, cand. inform.                   *
+ *                      University of Karlsruhe, Germany               *
+ * Date of Creation.: 01.07.90                                         *
+ * Last change......: 20.03.91                                         *
+ * Revision.........: 1.1                                              *
+ * History..........: 11.01.91 Revised syntax concerning the new key-  *
+ *                               words ANY and OVERRIDES as stated in  *
+ *                               the language update of 19.12.90 (gen- *
+ *                               eric units not implemented up to now) *
+ *                               => Rev. 1.1                           *
+ *                                                                     *
+ ***********************************************************************/
+
+PARSER
+
+GLOBAL {
+   FROM Idents	IMPORT tIdent, NoIdent;
+}
+
+PREC
+   LEFT 'OR'
+   LEFT 'AND'
+   NONE 'NOT'
+   LEFT '=' '#' '<' '<=' '>=' '>' 'IN'
+   LEFT '+' '-' '&'
+   LEFT '*' '/' 'DIV' 'MOD'
+   NONE '^'
+   LEFT '(' '[' '{'
+
+RULE
+
+/* Compilation unit productions */
+
+Compilation		= <
+  UnsafeUnit		= 'UNSAFE' Unit .
+  SafeUnit		= Unit .
+> .
+
+Unit			= <
+  Interface		= TestInterface Ident1: Ident ';' Imports Declarations
+    			  'END' Ident2: Ident '.' .
+  Module		= TestModule Ident1: Ident Exports ';' Imports Block
+    			  Ident2: Ident '.' .
+> .
+
+TestInterface		= 'INTERFACE' .
+
+TestModule		= 'MODULE' .
+
+Exports			= <
+  NoExport		= .
+  Exported		= 'EXPORTS' ExportList .
+> .
+
+ExportList		= Ident <
+  LastExpedInterface	= .
+  MoreExpedInterfaces	= ',' ExportList .
+> .
+
+Imports			= <
+  NoImport		= .
+  MoreImports		= Import Imports .
+> .
+
+Import			= <
+  ImportQualified	= 'IMPORT' ImportList ';' .
+  ImportUnqualified	= 'FROM' Ident 'IMPORT' ImportList ';' .
+> .
+
+ImportList		= Ident <
+  LastImportedIdent	= .
+  MoreImportedIdents	= ',' ImportList .
+> .
+
+Block			= Declarations 'BEGIN' Stmts 'END' .
+
+Declarations		= <
+  NoDeclaration		= .
+  MoreDeclarations	= Declaration Declarations .
+> .
+
+Declaration		= <
+  Constants		= 'CONST' ConstDecls .
+  Types			= 'TYPE' TypeDecls .
+  Exceptions		= 'EXCEPTION' ExceptionDecls .
+  Variables		= 'VAR' VariableDecls .
+  Procedure		= ProcedureHead <
+    Header		= ';' .
+    ProcConst		= '=' Block Ident ';' .
+  > .
+  Revelations		= 'REVEAL' RevelationDecls .
+> .
+
+ConstDecls		= <
+  NoConstDecl		= .
+  MoreConstDecls	= ConstDecl ';' ConstDecls .
+> .
+
+ConstDecl		= Ident <
+  TypedConst		= ':' Type '=' Expr .
+  Const			= '=' Expr .
+> .
+
+TypeDecls		= <
+  NoTypeDecl		= .
+  MoreTypeDecls		= TypeDecl ';' TypeDecls .
+> .
+
+TypeDecl		= Ident <
+  Transparent		= '=' Type .
+  Opaque		= '<:' Type .
+> .
+
+ExceptionDecls		= <
+  NoExceptionDecl	= .
+  MoreExceptionDecls	= ExceptionDecl ';' ExceptionDecls .
+> .
+
+ExceptionDecl		= Ident <
+  NoExceptionParam	= .
+  ExceptionParam	= '(' Type ')' .
+> .
+
+VariableDecls		= <
+  NoVariableDecl	= .
+  MoreVariableDecls	= VariableDecl ';' VariableDecls .
+> .
+
+VariableDecl		= VarIDList <
+  InitVar		= ':=' Expr .
+  TypedVar		= ':' Type <
+    NoInitValue		= .
+    InitValue		= ':=' Expr .
+  > .
+> .
+
+VarIDList		= Ident <
+  LastVarIdent		= .
+  MoreVarIdents		= ',' VarIDList .
+> .
+
+ProcedureHead		= 'PROCEDURE' Ident Signature .
+
+Signature		= '(' Formals ')' ResultType Raises .
+
+Formals			= <
+  NoFormal		= .
+  FormalList		= Formal <
+    FormalsSeparated	= .
+    MoreFormals		= ';' Formals .
+  > .
+> .
+
+Formal			= Mode FormalIDList <
+  DefaultFormal		= ':=' Expr .
+  TypedFormal		= ':' Type <
+    NoDefaultVal	= .
+    DefaultVal		= ':=' Expr .
+  > .
+>.
+
+FormalIDList		= Ident <
+  LastFormalIdent	= .
+  MoreFormalIdents	= ',' FormalIDList .
+> .
+
+Mode			= <
+  Value			= <
+    Explicit		= 'VALUE' .
+    Implicit		= .
+  > .
+  Var			= 'VAR' .
+  ReadOnly		= 'READONLY' .
+> .
+
+ResultType		= <
+  NoResult		= .
+  Result		= ':' Type .
+> .
+
+Raises			= <
+  Default		= .
+  RaisesAny		= 'RAISES' 'ANY' .
+  Specified		= 'RAISES' RaisesSet .
+> .
+
+RaisesSet		= '{' ExceptionIDList '}' .
+
+ExceptionIDList		= <
+  NoExceptionID		= .
+  ExceptionIDs		= ExceptionID <
+    LastExceptionID	= .
+    MoreExceptionIDs	= ',' ExceptionIDs .
+  > .
+> . 
+
+RevelationDecls		= <
+  NoRevelationDecl	= .
+  MoreRevelationDecls	= RevelationDecl ';' RevelationDecls .
+> .
+
+RevelationDecl		= SimpleTypeID <
+  Definitive		= '=' StrippedType .
+  Partial		= '<:' Type .
+> .
+
+/* Statement productions */
+
+Stmts			= <
+  NoStmt		= .
+  StmtList		= Stmt <
+    StmtsSeparated	= .
+    MoreStmts		= ';' Stmts .
+  > .
+> .
+
+Stmt			= <
+  AssignStmt		= LSide: Expr ':=' RSide: Expr .
+  BlockStmt		= Block .
+  CallStmt		= Expr '(' Actuals ')' .
+  CaseStmt		= 'CASE' Expr 'OF' Cases <
+    NoDefaultCase	= 'END' .
+    DefaultCase		= 'ELSE' Stmts 'END' .
+  > .
+  ExitStmt		= 'EXIT' .
+  EvalStmt		= 'EVAL' Expr .
+  ForStmt		= 'FOR' Ident ':=' From: Expr 'TO' To: Expr <
+    Step		= 'BY' By: Expr 'DO' Stmts 'END' .
+    NoStep		= 'DO' Stmts 'END' .
+  > .
+  IfStmt		= 'IF' Expr 'THEN' Stmts ElsIfs .
+  LockStmt		= 'LOCK' Expr 'DO' Stmts 'END' .
+  LoopStmt		= 'LOOP' Stmts 'END' .
+  RaiseStmt		= 'RAISE' ExceptionID <
+    NoExceptionArg	= .
+    ExceptionArg	= '(' Expr ')' .
+  > .
+  RepeatStmt		= 'REPEAT' Stmts 'UNTIL' Expr .
+  ReturnStmt		= 'RETURN' <
+    Void		= .
+    Valid		= Expr .
+  > .
+  TCaseStmt		= 'TYPECASE' Expr 'OF' Tcases <
+    NoDefaultTcase	= 'END' .
+    DefaultTcase	= 'ELSE' Stmts 'END' .
+  > .
+  TryXptStmt		= 'TRY' Stmts 'EXCEPT' Handlers <
+    NoDefaultHandler	= 'END' .
+    DefaultHandler	= 'ELSE' Else: Stmts 'END' .
+  > .
+  TryFinStmt		= 'TRY' Stmts 'FINALLY' Finally: Stmts 'END' .
+  WhileStmt		= 'WHILE' Expr 'DO' Stmts 'END' .
+  WithStmt		= 'WITH' Bindings 'DO' Stmts 'END' .
+> .
+
+Actuals			= <
+  NoActual		= .
+  ActualList		= Actual <
+    LastActual		= .
+    MoreActuals		= ',' ActualList .
+  > .
+> .
+
+Actual			= <
+  PositionArg		= Expr .
+  KeywordArg		= Ident ':=' Expr .
+  TypeArg		= StrippedType .
+> .
+
+Cases			= <
+  NoCases		= .
+  CaseList1		= '|' CaseList2 .
+  CaseList2		= Case <
+    LastCase		= .
+    MoreCases		= '|' CaseList2 .
+  > .
+> .
+
+Case			= Labels '=>' Stmts .
+
+Labels			= Label <
+  LastLabels		= .
+  MoreLabels		= ',' Labels .
+> .
+
+Label			= From: Expr <
+  NoRange		= .
+  RangesTo		= '..' To: Expr .
+> .
+
+ElsIfs			= <
+  NoElsIfs		= <
+    NoElse		= 'END' .
+    Else		= 'ELSE' Else: Stmts 'END' .
+  > .
+  MoreElsIfs		= 'ELSIF' Expr 'THEN' Then: Stmts ElsIfs.
+> .
+
+Tcases			= <
+  NoTcases		= .
+  TcaseList1		= '|' TcaseList2 .
+  TcaseList2		= Tcase <
+    LastTcase		= .
+    MoreTcases		= '|' TcaseList2 .
+  > .
+> .
+
+Tcase			= <
+  NoVarInit		= TypeList '=>' Stmts .
+  VarInit		= Type '(' Ident ')' '=>' Stmts .
+> .
+
+TypeList		= Type <
+  LastTypeElt		= .
+  MoreTypeElts		= ',' TypeList .
+> .
+  
+Handlers		= <
+  NoHandler		= .
+  HandlerList1		= '|' HandlerList2 .
+  HandlerList2		= Handler <
+    LastHandler		= .
+    MoreHandlers	= '|' HandlerList2 .
+  > .
+> .
+
+Handler			= <
+  NoHandlerParam	= DediExceptions '=>' Stmts .
+  HandlerParam		= ExceptionID '(' Ident ')' '=>' Stmts .
+> .
+
+DediExceptions		= ExceptionID <
+  LastDediException	= .
+  MoreDediExceptions	= ',' DediExceptions .
+> . 
+
+Bindings		= Binding <
+  LastBinding		= .
+  MoreBindings		= ',' Bindings .
+> .
+
+Binding			= Ident '=' Expr .
+
+Type			= <
+  ElementaryType	= TypeID .
+  CompositeType		= StrippedType .
+> .
+
+TypeID			= <
+  NestedTypeID		= '(' TypeID ')' .
+  UnnestedTypeID	= SimpleTypeID . 
+> .
+
+SimpleTypeID		= <
+  UnqualifiedTypeID	= Ident .
+  QualifiedTypeID	= Qualifier: Ident '.' Ident .
+> .
+
+StrippedType		= <
+  ArrayType		= 'ARRAY' <
+    OpenArray		= 'OF' Type .
+    FixedArray		= IndexTypeList 'OF' Type .
+  > .
+  PackedType		= 'BITS' Expr 'FOR' Type .
+  EnumType		= '{' <
+    EmptyEnum		= '}' .
+    NonEmptyEnum	= ValueList '}' .
+  > .
+  ObjectType		= Class .
+  ProcedureType		= 'PROCEDURE' Signature .
+  RecordType		= 'RECORD' Fields 'END' .
+  RefType		= <
+    OrdRefType		= Brand 'REF' Type . 
+    UntracedRefType	= 'UNTRACED' OrdRefType .
+  > .
+  SetType		= 'SET' 'OF' Type .
+  SubrangeType		= '[' From: Expr '..' To: Expr ']' .
+  TypeExpr		= '(' StrippedType ')' .
+> .
+
+IndexTypeList		= Type <
+  LastIndexTypeElt	= .
+  MoreIndexTypeElts	= ',' IndexTypeList .
+> .
+
+ValueList		= Ident <
+  LastValue		= .
+  MoreValues		= ',' ValueList .
+> .
+
+Class			= <
+  RootType		= <
+    SystemRoot		= 'ROOT' .
+    UserRoot		= Brand 'OBJECT' Fields Methods Overrides 'END' .
+  > . 
+  UntracedRootType	= 'UNTRACED' RootType .
+  DerivedFromTypename	= SimpleTypeID Brand 'OBJECT' Fields Methods Overrides
+    			  'END' .
+  DerivedFromStruct	= ObjectType Brand 'OBJECT' Fields Methods Overrides
+    			  'END' .
+> .
+
+Brand			= <
+  NotBranded		= .
+  Branded		= 'BRANDED' <
+    NoBrandID		= .
+    BrandID		= TextLiteral .
+  > .
+> .
+
+Fields			= <
+  NoField		= .
+  FieldList		= Field <
+    FieldsSeparated	= .
+    MoreFields		= ';' Fields .
+  > .
+> . 
+
+Field			= FieldIDList <
+  DefaultField		= ':=' Expr .
+  TypedField		= ':' Type <
+    NoDefaultValue	= .
+    DefaultValue	= ':=' Expr .
+  > .
+> .
+
+FieldIDList		= Ident <
+  LastFieldIdent	= .
+  MoreFieldIdents	= ',' FieldIDList .
+> .
+
+Methods			= <
+  NoMethodSection	= .
+  MethodSection		= 'METHODS' MethodList .
+> .
+
+MethodList		= <
+  NoMethod		= .
+  MoreMethods		= Method <
+    MethodsSeparated	= .
+    MethodsContinued	= ';' MethodList .
+  > .
+> .
+
+Method			= Ident Signature <
+  NoDefaultMethod	= .
+  DefaultMethod		= ':=' ProcedureID .
+> .
+
+Overrides		= <
+  NoOverrideSection	= .
+  OverrideSection	= 'OVERRIDES' OverrideList .
+> .
+
+OverrideList		= <
+  NoOverride		= .
+  MoreOverrides		=  Ident ':=' ProcedureID <
+    OverridesSeparated	= .
+    OverridesContinued	= ';' OverrideList .
+  > .
+> .
+
+
+
+/* Expression productions */
+
+Expr			= <
+  SimpleExpr		= <
+    IdentExpr		= <
+      NestedIdentExpr	= '(' IdentExpr ')' .
+      UnnestedIdentExpr	= Ident .
+    > .
+    QualIdentExpr	= <
+      NestedQualIdentExpr	= '(' QualIdentExpr ')' .
+      UnnestedQualIdentExpr	= Qualifier: Ident '.' Ident .
+    > .
+  > .
+  CompositeExpr		= StrippedExpr .
+> .
+
+StrippedExpr		= <
+  Binary		= <
+    Or			= LOp: Expr 'OR'  ROp: Expr .
+    And			= LOp: Expr 'AND' ROp: Expr .
+    Equal		= LOp: Expr '='   ROp: Expr .
+    NotEqual		= LOp: Expr '#'   ROp: Expr .
+    Less		= LOp: Expr '<'   ROp: Expr .
+    LessOrEqual		= LOp: Expr '<='  ROp: Expr .
+    Greater		= LOp: Expr '>'   ROp: Expr .
+    GreaterOrEqual	= LOp: Expr '>='  ROp: Expr .
+    Element		= LOp: Expr 'IN'  ROp: Expr .
+    Plus		= LOp: Expr '+'   ROp: Expr .
+    Minus		= LOp: Expr '-'   ROp: Expr .
+    Concat		= LOp: Expr '&'   ROp: Expr .
+    Multiply		= LOp: Expr '*'   ROp: Expr .
+    DivReal		= LOp: Expr '/'   ROp: Expr .
+    DivInteger		= LOp: Expr 'DIV' ROp: Expr .
+    Modulo		= LOp: Expr 'MOD' ROp: Expr .
+  > .
+  Unary			= <
+    UnaryNot		= 'NOT' Expr .
+    UnaryPlus		= '+' Expr PREC '*' .
+    UnaryMinus		= '-' Expr PREC '*' .
+  > .
+  Deref			= Expr '^' .
+  DotSelectors		= <
+    DotSelectorN	= '(' StrippedExpr ')' '.' Ident .
+    DotSelectorD	= Deref '.' Ident .
+    DotSelectorE	= EltSelector '.' Ident .
+    DotSelectorF	= FunctionCall '.' Ident .
+    DotSelectorC	= Constructor '.' Ident .
+    DotSelectorI	= NestedIdentExpr '.' Ident .
+    DotSelectorQ	= QualIdentExpr '.' Ident .
+    MoreDotSelectors	= DotSelectors '.' Ident .
+  > .
+  EltSelector		= Expr '[' Indices ']' .
+  FunctionCall		= Expr '(' Actuals ')' .
+  IntegerConst		= IntegerLiteral .
+  RealConst		= RealLiteral .
+  LongRealConst		= LongRealLiteral .
+  ExtendedConst		= ExtendedLiteral .
+  CharConst		= CharLiteral .
+  TextConst		= TextLiteral .
+  Constructor		= <
+    CompConstructor	= StrippedType '{' InitElts '}' .
+    SimpleConstructor	= SimpleExpr '{' InitElts '}' .
+  > .
+  NestedStrippedExpr	= '(' StrippedExpr ')' .
+> .
+
+Indices			= Expr <
+  LastIndex		= .
+  MoreIndices		= ',' Indices .
+> .
+
+InitElts		= <
+  NoElt			= .
+  InitEltList		= InitElt <
+    Stopped		= .
+    Continued		= ',' '..' .
+    MoreInitElts	= ',' InitElts .
+  > .
+> .
+
+InitElt			= <
+  SimpleElt		= Expr .
+  RangeElt		= From: Expr '..' To: Expr .
+  KeywordElt		= Ident ':=' Expr .
+> .
+
+ExceptionID		= <
+  UnqualifiedExceptionID = Ident .
+  QualifiedExceptionID	= Qualifier: Ident '.' Ident .
+> .
+
+ProcedureID		= <
+  UnqualifiedProcedureID = Ident .
+  QualifiedProcedureID	= Qualifier: Ident '.' Ident .
+  ImportedDefaultMethod	= Interface: Ident '.' ObjectType: Ident '.' Ident .
+> .
+
+Ident          : [Ident   : tIdent	] { Ident    := NoIdent			; } .
+IntegerLiteral : [Integer : INTEGER	] { Integer  := 0			; } .
+RealLiteral    : [Real    : REAL	] { Real     := 0.0			; } .
+LongRealLiteral: [LongReal: LONGREAL	] { LongReal := 0.0			; } .
+ExtendedLiteral: [Extended: LONGREAL	] { Extended := 0.0			; } .
+TextLiteral    : [Text    : tString	] { Text     := { AssignEmpty (Text); }	; } .
+CharLiteral    : [Char    : tIdent	] { Char     := NoIdent			; } .

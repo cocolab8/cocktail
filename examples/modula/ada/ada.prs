@@ -1,0 +1,2027 @@
+/*****************************************************************************
+*                                                                            *
+*                        ANSI Ada LALR Grammar                               *
+*                                                                            *
+* ========================================================================== *
+*                                                                            *
+*    Based on the grammar published by Philippe Charles and Gerald Fisher    *
+*    in  the  Ada  LETTERS,  September,  October  82  and  on the grammar    *
+*    written by Guido  Persch for Ada 80.  Adapted to the  Karlsruhe  Ada    *
+*    by Bernhard Mulder. Syntax error recovery by Peter Dencker.             *
+*                                                                            *
+*    This  grammar  is  organized in the same order as the syntax  summary   *
+*    in  appendix  E of the AdaLRM. The original productions are  given as   *
+*    comments first. Auxiliary  syntactic  categories  are  introduced  to   *
+*    achieve  the  LALR-property.                                            *
+*    Reserved  words  are  written in  upper case.  The lexical categories   *
+*    numeric_literal, stringliteral etc. are viewed as terminals.            *
+*    The  rules for  pragmas as  stated in chapter 2, section B, have been   *
+*    incorporated  in  the  grammar.  Comments are included whenever there   *
+*    are deviations from the syntax given in appendix E of the LRM.          *
+*                                                                            *
+*****************************************************************************/
+
+PARSER
+
+GLOBAL	{ FROM Scanner IMPORT BeginScanner; }
+
+BEGIN	{ BeginScanner; }
+
+RULE
+
+/*------------------------------------------------------------------
+  10.1 Compilation Units - (root of the grammar)
+------------------------------------------------------------------*/
+
+root		= compilation .
+
+/*******************************************************************
+*                                                                  *
+*              2. Lexical Elements                                 *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  2.8 Pragmas
+------------------------------------------------------------------*/
+
+/* pragma ::= PRAGMA identifier [( argument_association {, argument_association} )] ; */
+
+pragma		= <
+		= 'PRAGMA' identifier ';' .
+		= 'PRAGMA' identifier '(' argument_association_list ')' ';' .
+> .
+
+/* argument_association ::= [identifier =>] name | [identifier =>] expression */
+
+argument_association	= <
+		= expression .
+		= identifier '=>' expression .
+> .
+
+/* name is included under expression */
+
+argument_association_list	= <
+		= argument_association .
+		= argument_association_list ',' argument_association .
+> .
+
+/*******************************************************************
+*                                                                  *
+*              3. Declaration and Types                            *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  3.1 Declarations
+------------------------------------------------------------------*/
+/*
+  basic_declaration ::=
+    object_declaration     | number_declaration
+  | type_declaration       | subtype_declaration
+  | subprogram_declaration | package_declaration
+  | task_declaration       | generic_declaration
+  | exception_declaration  | generic_instantiation
+  | renaming_declaration   | deferred_constant_declaration
+*/
+
+basic_declaration	= <
+		= object_declaration .
+		= number_declaration .
+		= type_declaration .
+		= subtype_declaration .
+		= subprogram_declaration .
+		= package_declaration .
+		= task_declaration .
+		= generic_declaration .
+		= exception_declaration .
+		= generic_instantiation .
+		= renaming_declaration .
+> .
+
+/* deferred_constant_declaration is included under object_declaration. */
+
+/*------------------------------------------------------------------
+  3.2 Object and Number Declarations
+------------------------------------------------------------------*/
+/*
+  object_declaration ::=
+    identifier_list : [CONSTANT] subtype_indication [:= expression] ;
+  | identifier_list : [CONSTANT] constrained_array_definition [:= expression] ;
+*/
+
+object_declaration	= <
+		= identifier_list ':' subtype_indication initialization_option ';' .
+		= identifier_list ':' 'CONSTANT' subtype_indication ':=' expression ';' .
+		= identifier_list ':' 'CONSTANT' type_mark ';' .
+		= identifier_list ':' constrained_array_definition initialization_option ';' .
+		= identifier_list ':' 'CONSTANT' constrained_array_definition initialization_option ';' .
+> .
+
+/* number_declaration ::= identifier_list : CONSTANT := expression ; */
+
+number_declaration	= identifier_list ':' 'CONSTANT' ':=' expression ';' .
+
+/* identifier_list ::= identifier {',' identifier} */
+
+identifier_list	= <
+		= identifier .
+		= identifier_list ',' identifier .
+> .
+
+/* ---------- */
+
+initialization_option	= <
+		= .
+		= ':=' expression .
+> .
+
+/*------------------------------------------------------------------
+  3.2 Types and Subtypes
+------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------
+  3.3.1 Type Declarations
+------------------------------------------------------------------*/
+
+/* type_declaration ::= full_type_declaration | incomplete_type_declaration | private_type_declaration */
+
+type_declaration	= <
+		= full_type_declaration .
+		= incomplete_type_declaration .
+		= private_type_declaration .
+> .
+
+/* full_type_declaration ::= TYPE identifier [discriminant_part] IS type_definition ; */
+
+full_type_declaration	= <
+		= 'TYPE' identifier 'IS' type_definition ';' .
+		= 'TYPE' identifier discriminant_part 'IS' type_definition ';' .
+> .
+
+/*
+  type_definition ::=
+    enumeration_type_definition | integer_type_definition
+  | real_type_definition        | array_type_definition
+  | record_type_definition      | access_type_definition
+  | derived_type_definition
+*/
+
+type_definition	= <
+		= enumeration_type_definition .
+		= integer_type_definition .
+		= real_type_definition .
+		= array_type_definition .
+		= record_type_definition .
+		= access_type_definition .
+		= derived_type_definition .
+> .
+
+/*------------------------------------------------------------------
+  3.3.2 Subtype Declarations
+------------------------------------------------------------------*/
+
+/* subtype_declaration ::= SUBTYPE identifier IS subtype_indication ; */
+
+subtype_declaration	= 'SUBTYPE' identifier 'IS' subtype_indication ';' .
+
+/* subtype_indication ::= type_mark [constraint] */
+
+subtype_indication1	= <
+		= type_mark range_constraint .
+		= type_mark fixed_point_constraint .
+		= type_mark floating_point_constraint .
+> .
+subtype_indication2	= <
+		= type_mark .
+		= name1 general_aggregate .
+> .
+subtype_indication	= <
+		= subtype_indication1 .
+		= subtype_indication2 .
+> .
+
+/* type_mark ::= name */
+
+type_mark	= name1 .
+
+/*
+  constraint ::=
+    range_constraint        | floating_point_constraint
+  | fixed_point_constraint  | index_constraint
+  | discriminant_constraint
+
+  All the rules are substituted in the rule for subtype_indication.
+*/
+/*------------------------------------------------------------------
+  3.4 Derived Type Definition
+------------------------------------------------------------------*/
+
+/* derived_type_definiton ::= NEW subtype_indication */
+
+derived_type_definition	= 'NEW' subtype_indication .
+
+/*------------------------------------------------------------------
+  3.5 Scalar Types
+------------------------------------------------------------------*/
+
+/* range_constraint ::= RANGE range */
+
+/* range ::= attribute | simple_expression .. simple_expression */
+
+range_constraint	= 'RANGE' range .
+range		= <
+		= attribute .
+		= simple_expression '..' simple_expression .
+> .
+
+/*------------------------------------------------------------------
+  3.5.1 Enumeration Types
+------------------------------------------------------------------*/
+/*
+  enumeration_type_definition ::=
+  ( enumeration_literal_specification {, enumeration_literal_specification} )
+*/
+
+enumeration_type_definition	= '(' enumeration_literal_specification_list ')' .
+
+/* enumeration_literal_specification ::= enumeration_literal */
+
+enumeration_literal_specification	= enumeration_literal .
+
+/* enumeration_literal ::= identifier | characterliteral */
+
+enumeration_literal	= <
+		= identifier .
+		= characterliteral .
+> .
+
+/* ---------- */
+
+enumeration_literal_specification_list	= <
+		= enumeration_literal_specification .
+		= enumeration_literal_specification_list ',' enumeration_literal_specification .
+> .
+
+/*------------------------------------------------------------------
+  3.5.4 Integer Types
+------------------------------------------------------------------*/
+
+/* integer_type_definition ::= range_constraint */
+
+integer_type_definition	= range_constraint .
+
+/*------------------------------------------------------------------
+  3.5.6 Real Types
+------------------------------------------------------------------*/
+
+/* real_type_definition ::= floating_point_constraint | fixed_point_constraint */
+
+real_type_definition	= <
+		= floating_point_constraint .
+		= fixed_point_constraint .
+> .
+
+/*------------------------------------------------------------------
+  3.5.7 Floating Point Types
+------------------------------------------------------------------*/
+
+/* floating_point_constraint ::= floating_accuracy_definition [range_constraint] */
+
+floating_point_constraint	= floating_accuracy_definition range_constraint_option .
+
+/* floating_accuracy_definition ::= 'DIGITS' simple_expression */
+
+floating_accuracy_definition	= 'DIGITS' simple_expression .
+
+/* ---------- */
+
+range_constraint_option	= <
+		= .
+		= range_constraint .
+> .
+
+/*------------------------------------------------------------------
+  3.5.9 Fixed Point Types
+------------------------------------------------------------------*/
+
+/* fixed_point_constraint ::= fixed_accuracy_definition [range_constraint] */
+
+fixed_point_constraint	= fixed_accuracy_definition range_constraint_option .
+
+/* fixed_accuracy_definition ::= 'DELTA' simple_expression */
+
+fixed_accuracy_definition	= 'DELTA' simple_expression .
+
+/*------------------------------------------------------------------
+  3.6 Array Types
+------------------------------------------------------------------*/
+
+/* array_type_definition ::= unconstrained_array_definition | constrained_array_definition */
+
+array_type_definition	= <
+		= unconstrained_array_definition .
+		= constrained_array_definition .
+> .
+
+/*
+  unconstrained_array_definition ::=
+    ARRAY ( index_subtype_definition {, index_subtype_definition} ) OF subtype_indication
+*/
+
+unconstrained_array_definition	= 'ARRAY' '(' index_subtype_definition_list ')' 'OF' subtype_indication .
+
+/* constrained_array_definition ::= ARRAY index_constraint OF subtype_indication */
+
+constrained_array_definition	= 'ARRAY' index_constraint 'OF' subtype_indication .
+
+/* index_subtype_definition ::= type_mark RANGE <> */
+
+index_subtype_definition	= type_mark 'RANGE' '<>' .
+
+/* index_constraint ::= ( discrete_range {, discrete_range} ) */
+
+index_constraint	= '(' discrete_range_list ')' .
+
+/* discrete_range ::= subtype_indication | range */
+
+discrete_range1	= <
+		= subtype_indication1 .
+		= simple_expression '..' simple_expression .
+> .
+discrete_range	= <
+		= discrete_range1 .
+		= attribute .
+		= type_mark .
+> .
+
+/* ---------- */
+
+index_subtype_definition_list	= <
+		= index_subtype_definition .
+		= index_subtype_definition_list ',' index_subtype_definition .
+> .
+discrete_range_list	= <
+		= discrete_range .
+		= discrete_range_list ',' discrete_range .
+> .
+
+/*------------------------------------------------------------------
+  3.7 Record Types
+------------------------------------------------------------------*/
+/*
+  record_type_definition ::=
+     RECORD
+        component_list
+     END RECORD
+*/
+
+record_type_definition	= 'RECORD' component_list 'END' 'RECORD' .
+
+/*
+  component_list ::=
+    component_declaration {component_declaration}
+  | {component_declaration} variant_part
+  | null ;
+*/
+
+component_list	= <
+		= pragma_record component_declaration_list_option component_declaration pragma_list_option .
+		= pragma_record component_declaration_list_option variant_part pragma_list_option .
+		= pragma_record 'NULL' ';' pragma_list_option .
+> .
+
+/* component_declaration ::= identifier_list : component_subtype_definition [:= expression] ; */
+
+/* component_subtype_definition ::= subtype_indication */
+
+component_declaration	= identifier_list ':' subtype_indication initialization_option ';' .
+
+/* ---------- */
+
+pragma_record	= <
+		= .
+		= pragma_record pragma .
+> .
+pragma_list_option	= <
+		= .
+		= pragma_list_option pragma .
+> .
+component_declaration_list_option	= <
+		= .
+		= component_declaration_list_option component_declaration pragma_list_option .
+> .
+
+/*------------------------------------------------------------------
+  3.7.1 Discriminants
+------------------------------------------------------------------*/
+
+/* discriminant_part ::= ( discriminant_specification {; discriminant_specification} ) */
+
+discriminant_part	= '(' discriminant_specification_list ')' .
+
+/* discriminant_specification ::= identifier_list : type_mark [:= expression] */
+
+discriminant_specification	= identifier_list ':' type_mark initialization_option .
+
+/* ---------- */
+
+discriminant_specification_list	= <
+		= discriminant_specification .
+		= discriminant_specification_list ';' discriminant_specification .
+> .
+
+/*------------------------------------------------------------------
+  3.7.2 Discriminant Constraints
+------------------------------------------------------------------*/
+/*
+  discriminant_constraint ::= ( discriminant_association  {, discriminant_association} )
+
+  discriminant_association ::= [simple_name {| simple_name} =>] expression
+
+  A discriminant constraint is a special case of aggregate. See general_aggregate (4.3).
+*/
+/*------------------------------------------------------------------
+  3.7.3 Variant Parts
+------------------------------------------------------------------*/
+/*
+  variant_part ::=
+    CASE simple_name IS
+       variant
+      {variant}
+    END CASE
+*/
+
+variant_part	= 'CASE' simple_name 'IS' pragma_variants variant_list 'END' 'CASE' ';' .
+
+/* variant ::= WHEN choice {|choice} => component_list */
+
+variant		= 'WHEN' choice_list '=>' inner_record_list .
+
+/* choice ::= simple_expression | discrete_range | OTHERS | simple_name */
+
+choice		= <
+		= discrete_range1 .
+		= simple_expression .
+		= 'OTHERS' .
+> .
+
+/* simple_name is included under simple_expression. */
+/* ---------- */
+
+inner_record_list	= <
+		= pragma_inner_record component_declaration_list_option component_declaration pragma_list_option .
+		= pragma_inner_record component_declaration_list_option variant_part pragma_list_option .
+		= pragma_inner_record 'NULL' ';' pragma_list_option .
+> .
+pragma_inner_record	= <
+		= .
+		= pragma_inner_record pragma .
+> .
+pragma_variants	= <
+		= .
+		= pragma_variants pragma .
+> .
+variant_list	= <
+		= variant .
+		= variant_list variant .
+> .
+choice_list	= <
+		= choice .
+		= choice_list '|' choice .
+> .
+
+/*------------------------------------------------------------------
+  3.8 Access Types
+------------------------------------------------------------------*/
+
+/* access_type_definition ::= ACCESS subtype_indication */
+
+access_type_definition	= 'ACCESS' subtype_indication .
+
+/*------------------------------------------------------------------
+  3.8.1 Incomplete Type Declarations
+------------------------------------------------------------------*/
+
+/* incomplete_type_declaration ::= TYPE identifier [discriminant_part] ; */
+
+incomplete_type_declaration	= <
+		= 'TYPE' identifier ';' .
+		= 'TYPE' identifier discriminant_part ';' .
+> .
+
+/*------------------------------------------------------------------
+  3.9 Declarative Parts
+------------------------------------------------------------------*/
+
+/* declarative_part ::= {basic_declarative_item} {later_declarative_item} */
+
+declarative_part	= <
+		= basic_declarative_item_list_option .
+		= basic_declarative_item_list_option body later_declarative_item_list_option .
+> .
+
+/* A body is the only later_declarative_item that is not also a
+   basic_declarative_item. It is therefor used also as the dividing
+   point between the two lists of declarative items. */
+
+/* basic_declarative_item ::= basic_declaration | representation_clause | use_clause */
+
+basic_declarative_item	= <
+		= basic_declaration .
+		= representation_clause .
+		= use_clause .
+		= pragma .
+> .
+
+/*
+  later_declarative_item ::= body
+  | subprogram_declaration | package_declaration
+  | task_declaration       | generic_declaration
+  | use_clause             | generic_instantiation
+*/
+
+later_declarative_item	= <
+		= body .
+		= subprogram_declaration .
+		= package_declaration .
+		= task_declaration .
+		= generic_declaration .
+		= use_clause .
+		= generic_instantiation .
+		= pragma .
+> .
+
+/* body ::= proper_body | body_stub */
+
+body		= <
+		= proper_body .
+		= body_stub .
+> .
+
+/* proper_body ::= subprogram_body | package_body | task_body */
+
+proper_body	= <
+		= subprogram_body .
+		= package_body .
+		= task_body .
+> .
+
+/* ---------- */
+
+basic_declarative_item_list_option	= <
+		= .
+		= basic_declarative_item_list_option basic_declarative_item .
+> .
+later_declarative_item_list_option	= <
+		= .
+		= later_declarative_item_list_option later_declarative_item .
+> .
+
+/*******************************************************************
+*                                                                  *
+*              4. Names and Expressions                            *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  4.1 Names
+------------------------------------------------------------------*/
+/*
+  name ::= simple_name
+  | characterliteral   | operator_symbol
+  | indexed_component  | slice
+  | selected_component | attribute
+*/
+
+name		= <
+		= name1 .
+		= name2 .
+> .
+name1		= <
+		= simple_name .
+		= characterliteral .
+		= operator_symbol .
+		= selected_component .
+> .
+name2		= <
+		= indexed_component .
+		= simple_attribute .
+> .
+
+/* This definition of name includes function_call.
+   Parameterless functions are recognized as simple_name or selected_component.
+   function_call with parameters are recognized as indexed_component.
+   slice is included under indexed_component. */
+
+/* simple_name ::= identifier */
+
+simple_name	= identifier .
+
+/* prefix ::= name | function_call */
+
+/* prefix and function_call are included under name. */
+/* ---------- */
+
+expanded_name	= <
+		= identifier .
+		= operator_symbol .
+		= expanded_name '.' identifier .
+		= expanded_name '.' operator_symbol .
+> .
+
+/*------------------------------------------------------------------
+  4.1.1 Indexed Components
+------------------------------------------------------------------*/
+
+/* indexed_component ::= prefix ( expression {, expression} ) */
+
+/* indexed component has been replaced by the following rule: */
+
+indexed_component	= <
+		= name1 general_aggregate .
+		= indexed_component general_aggregate .
+		= indexed_attribute .
+> .
+indexed_attribute	= simple_attribute general_aggregate .
+
+/*------------------------------------------------------------------
+  4.1.2 Slices
+------------------------------------------------------------------*/
+
+/* slice ::= prefix ( discrete_range ) */
+
+/* slice is included under indexed_component. */
+
+/*------------------------------------------------------------------
+  4.1.3 Selected Components
+------------------------------------------------------------------*/
+
+/* selected_component ::= prefix . selector */
+
+/* selector ::= simple_name | characterliteral | operator_symbol | ALL */
+
+selected_component	= <
+		= name_dot simple_name .
+		= name_dot characterliteral .
+		= name_dot operator_symbol .
+		= name_dot 'ALL' .
+> .
+name_dot		= <
+		= name1 '.' .
+		= name2 '.' .
+> .
+
+/*------------------------------------------------------------------
+  4.1.4 Attributes
+------------------------------------------------------------------*/
+
+/* attribute ::= prefix ' attribute_designator */
+
+attribute	= <
+		= simple_attribute .
+		= indexed_attribute .
+> .
+simple_attribute	= <
+		= name1 "'" attribute_designator .
+		= name2 "'" attribute_designator .
+> .
+
+/* attribute_designator ::= simple_name [( expression )] */
+
+attribute_designator	= simple_name .
+
+/*
+  DIGITS, DELTA and RANGE are attribute designators that are reserved words.
+  The scanner returns these designators as reserved words or as identifiers as required.
+
+  The optional attribute argument is included under indexed_component.
+  {name -> indexed_component -> name general_aggregate
+  -> attribute '(' componentassociation ')' -..->
+  name "'" identifier '(' expression ')'}.
+*/
+/*------------------------------------------------------------------
+  4.3 Aggregates
+------------------------------------------------------------------*/
+
+/* aggregate ::= ( component_association {, component_association} ) */
+
+aggregate	= <
+		= component_association_list2 ')' .
+		= '(' choice_list '=>' expression ')' .
+> .
+component_association_list2	= <
+		= component_association1 ',' component_association .
+		= component_association_list2 ',' component_association .
+> .
+component_association1	= '(' component_association .
+
+/* component_association ::= [choice {| choice} =>] expression */
+
+component_association	= <
+		= expression .
+		= choice_list '=>' expression .
+> .
+
+/* The class general_aggregate is introduced to generalize component associations.
+   It includes discrete_range and is used for slices and constraints. */
+
+general_aggregate	= '(' general_component_association_list ')' .
+general_component_association	= <
+		= component_association .
+		= discrete_range1 .
+> .
+
+/* ---------- */
+
+general_component_association_list	= <
+		= general_component_association .
+		= general_component_association_list ',' general_component_association .
+> .
+
+/*------------------------------------------------------------------
+  4.4 Expressions
+------------------------------------------------------------------*/
+/*
+  expression ::=
+    relation {AND relation} | relation {AND THEN relation}
+  | relation {OR  relation} | relation {OR  ELSE relation}
+  | relation {XOR relation}
+*/
+
+expression	= <
+		= relation .
+		= and_relation_list .
+		= or_relation_list .
+		= xor_relation_list .
+		= and_then_relation_list .
+		= or_else_relation_list .
+> .
+
+/*
+  relation ::=
+    simple_expression [relational_operator simple_expresion]
+  | simple_expression [NOT] 'IN' range
+  | simple_expresion  [NOT] 'IN' type_mark
+*/
+
+relation	= <
+		= simple_expression .
+		= simple_expression relational_operator simple_expression .
+		= simple_expression 'IN' range .
+		= simple_expression 'NOT' 'IN' range .
+		= simple_expression 'IN' type_mark .
+		= simple_expression 'NOT' 'IN' type_mark .
+> .
+
+/* simple_expression ::= [unary_adding_operator] term {binary_adding_operator term} */
+
+simple_expression	= <
+		= term .
+		= unary_operator term .
+		= simple_expression binary_adding_operator term .
+> .
+
+/* term ::= factor {multiplying_operator factor} */
+
+term		= <
+		= factor .
+		= term multiplying_operator factor .
+> .
+
+/* factor ::= primary [** primary] | ABS primary | NOT primary */
+
+factor		= <
+		= primary .
+		= primary '**' primary .
+		= 'ABS' primary .
+		= 'NOT' primary .
+> .
+
+/*
+  primary ::=
+    numeric_literal | NULL | aggregate | stringliteral
+  | name | allocator | function_call | type_conversion
+  | qualified_expression | ( expression )
+*/
+
+primary		= <
+		= numeric_literal .
+		= 'NULL' .
+		= aggregate .
+		= name .
+		= allocator .
+		= qualified_expression .
+		= '(' expression ')' .
+> .
+
+/* stringliteral is included in name as operator_symbol.
+   function_call is included under name.
+   type_conversion is included under name. */
+/* ---------- */
+
+numeric_literal	= <
+		= integerliteral .
+		= realliteral .
+> .
+and_relation_list	= <
+		= relation 'AND' relation .
+		= and_relation_list 'AND' relation .
+> .
+or_relation_list	= <
+		= relation 'OR' relation .
+		= or_relation_list 'OR' relation .
+> .
+xor_relation_list	= <
+		= relation 'XOR' relation .
+		= xor_relation_list 'XOR' relation .
+> .
+and_then_relation_list	= <
+		= relation 'AND' 'THEN' relation .
+		= and_then_relation_list 'AND' 'THEN' relation .
+> .
+or_else_relation_list	= <
+		= relation 'OR' 'ELSE' relation .
+		= or_else_relation_list 'OR' 'ELSE' relation .
+> .
+
+/*------------------------------------------------------------------
+  4.5 Operators and Expression Evaluation
+------------------------------------------------------------------*/
+
+/* logical_operator ::= AND | OR |XOR */
+
+/* relational_operator ::= = | /= | < | <= | > | >= */
+
+relational_operator	= <
+		= '=' .
+		= '/=' .
+		= '<' .
+		= '<=' .
+		= '>' .
+		= '>=' .
+> .
+
+/* binary_adding_operator ::= + | - | & */
+
+binary_adding_operator	= <
+		= '+' .
+		= '-' .
+		= '&' .
+> .
+
+/* unary_adding_operator ::= + | - */
+
+unary_operator	= <
+		= '+' .
+		= '-' .
+> .
+
+/* multiplying_operator ::= * | / | MOD | REM */
+
+multiplying_operator	= <
+		= '*' .
+		= '/' .
+		= 'MOD' .
+		= 'REM' .
+> .
+
+/* highest_precedence_operator ::= ** | ABS | NOT */
+
+/*------------------------------------------------------------------
+  4.6 Type Conversions
+------------------------------------------------------------------*/
+
+/* type_conversion ::= type_mark ( expression ) */
+
+/* type_conversion is included under name ( indexed_component ). */
+
+/*------------------------------------------------------------------
+  4.7 Qualified Expressions
+------------------------------------------------------------------*/
+
+/* qualified_expression ::= type_mark ' ( expression ) | type_mark ' aggregate */
+
+/* To avoid conflicts type_mark is replaced by the more general name. */
+
+qualified_expression	= <
+		= name1 "'" '(' expression ')' .
+		= name1 "'" aggregate .
+> .
+
+/*------------------------------------------------------------------
+  4.8 Allocators
+------------------------------------------------------------------*/
+
+/* allocator ::= NEW subtype_indication | NEW qualified_expression */
+
+/* To avoid conflicts, and because the subtype_indication can only
+   contain an index or discriminant constraint, these rules are replaced by */
+
+allocator	= <
+		= 'NEW' subtype_indication2 .
+		= 'NEW' qualified_expression .
+> .
+
+/*******************************************************************
+*                                                                  *
+*              5. Statements                                       *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  5.1 Simple and Compound Statements - Sequences of Statements
+------------------------------------------------------------------*/
+
+/* sequence_of_statements ::= statement {statement} */
+
+sequence_of_statements	= pragma_stmts statement_list .
+
+/* statement ::= {label} simple_statement | {label} compound_statement */
+
+statement	= <
+		= label_list simple_statement .
+		= label_list compound_statement .
+		= simple_statement .
+		= compound_statement .
+> .
+
+/*
+  simple_statement ::= null_statement
+  | assignment_statement | procedure_call_statement
+  | exit_statement       | return_statement
+  | goto_statement       | entry_call_statement
+  | delay_statement      | abort_statement
+  | raise_statement      | code_statement
+*/
+
+simple_statement	= <
+		= null_statement .
+		= assignment_statement .
+		= exit_statement .
+		= return_statement .
+		= goto_statement .
+		= delay_statement .
+		= abort_statement .
+		= raise_statement .
+		= code_statement .
+		= call_statement .
+> .
+
+/*
+  procedure_ and entry_call_statement are included under the (following) last rule:
+
+  compound_statement ::=
+  | if_statement     | case_statement
+  | loop_statement   | block_statement
+  | accept_statement | select_statement
+*/
+
+compound_statement	= <
+		= if_statement .
+		= case_statement .
+		= loop_statement .
+		= block_statement .
+		= accept_statement .
+		= select_statement .
+> .
+
+/* label ::= << simple_name >> */
+
+label		= '<<' simple_name '>>' .
+
+/* null_statement ::= NULL ; */
+
+null_statement	= 'NULL' ';' .
+
+/* ---------- */
+
+statement_list	= <
+		= statement .
+		= statement_list statement .
+		= statement_list pragma .
+> .
+pragma_stmts	= <
+		= .
+		= pragma_stmts pragma .
+> .
+label_list	= <
+		= label .
+		= label_list label .
+> .
+
+/*------------------------------------------------------------------
+  5.2 Assignment Statement
+------------------------------------------------------------------*/
+
+/* assignment_statement ::= name := expression ; */
+
+assignment_statement	= name ':=' expression ';' .
+
+/*------------------------------------------------------------------
+  5.3 If Statements
+------------------------------------------------------------------*/
+/*
+  if_statement ::=
+    IF condition THEN
+      sequence_of_statements
+   {ELSIF condition THEN
+      sequence_of_statements}
+   [ELSE
+      sequence_of_statements]
+    END IF ;
+*/
+
+if_statement	= if_list if_else_option 'END' 'IF' ';' .
+if_list		= <
+		= 'IF' condition 'THEN' sequence_of_statements .
+		= if_list 'ELSIF' condition 'THEN' sequence_of_statements .
+> .
+if_else_option	= <
+		= .
+		= 'ELSE' sequence_of_statements .
+> .
+
+/* condition ::= expression */
+
+condition	= expression .
+
+/*------------------------------------------------------------------
+  5.4 Case Statements
+------------------------------------------------------------------*/
+/*
+  case_statement ::=
+    CASE expression IS
+      case_statement_alternative
+     {case_statement_alternative}
+    END CASE ;
+*/
+
+case_statement	= 'CASE' expression 'IS' pragma_alternatives case_statement_alternative_list 'END' 'CASE' ';' .
+
+/* case_statement_alternative ::= WHEN choice {| choice} => sequence_of_statements */
+
+case_statement_alternative	= 'WHEN' choice_list '=>' sequence_of_statements .
+
+/* ---------- */
+
+case_statement_alternative_list	= <
+		= case_statement_alternative .
+		= case_statement_alternative_list case_statement_alternative .
+> .
+pragma_alternatives	= <
+		= .
+		= pragma_alternatives pragma .
+> .
+
+/*------------------------------------------------------------------
+  5.5 Loop Statements
+------------------------------------------------------------------*/
+/*
+  loop_statement ::=
+    [simple_name :]
+      [iteration_scheme] LOOP
+        sequence_of_statements
+      END LOOP [simple_name] ;
+*/
+
+loop_statement	= <
+		= simple_name ':' iteration_scheme 'LOOP' sequence_of_statements 'END' 'LOOP' simple_name ';' .
+		= iteration_scheme 'LOOP' sequence_of_statements 'END' 'LOOP' ';' .
+> .
+
+/* iteration_scheme ::= WHILE condition | FOR loop_parameter_specification */
+
+/* loop_parameter_specification ::= identifier 'IN' [REVERSE] discrete_range */
+
+iteration_scheme	= <
+		= .
+		= 'WHILE' condition .
+		= 'FOR' identifier 'IN' 'REVERSE' discrete_range .
+		= 'FOR' identifier 'IN' discrete_range .
+> .
+
+/*------------------------------------------------------------------
+  5.6 Block Statements
+------------------------------------------------------------------*/
+/*
+  block_statement ::=
+    [simple_name :]
+      [DECLARE
+        declarative_part]
+      BEGIN
+        sequence_of_statements
+      [EXCEPTION
+        exception_handler
+       {exception_handler}]
+      END [simple_name] ;
+*/
+
+block_statement	= <
+		= simple_name ':' declare_option 'BEGIN' sequence_of_statements exception_handler_list_option 'END' simple_name ';' .
+		= declare_option 'BEGIN' sequence_of_statements exception_handler_list_option 'END' ';' .
+> .
+
+/* ---------- */
+
+declare_option	= <
+		= .
+		= 'DECLARE' declarative_part .
+> .
+exception_handler_list_option	= <
+		= .
+		= 'EXCEPTION' pragma_alternatives exception_handler_list .
+> .
+exception_handler_list	= <
+		= exception_handler .
+		= exception_handler_list exception_handler .
+> .
+
+/*------------------------------------------------------------------
+  5.7  Exit Statements
+------------------------------------------------------------------*/
+
+/* exit_statement ::= EXIT [name] [WHEN condition] ; */
+
+exit_statement	= <
+		= 'EXIT' ';' .
+		= 'EXIT' name ';' .
+		= 'EXIT' 'WHEN' condition ';' .
+		= 'EXIT' name 'WHEN' condition ';' .
+> .
+
+/*------------------------------------------------------------------
+  5.8 Return Statements
+------------------------------------------------------------------*/
+
+/* return_statement ::= RETURN [expression] ; */
+
+return_statement	= <
+		= 'RETURN' ';' .
+		= 'RETURN' expression ';' .
+> .
+
+/*------------------------------------------------------------------
+  5.9 Goto Statements
+------------------------------------------------------------------*/
+
+/* goto_statement ::= GOTO name ; */
+
+goto_statement	= 'GOTO' name ';' .
+
+/*******************************************************************
+*                                                                  *
+*              6. Subprograms                                      *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  6.1 Subprogram declarations
+------------------------------------------------------------------*/
+
+/* subprogram_declaration ::= subprogram_specification ; */
+
+subprogram_declaration	= subprogram_specification ';' .
+
+/*
+  subprogram_specification ::=
+    PROCEDURE identifier [formal_part]
+  | FUNCTION  designator [formal_part] RETURN type_mark
+*/
+
+subprogram_specification	= <
+		= 'PROCEDURE' identifier formal_part_option .
+		= 'FUNCTION' designator formal_part_option 'RETURN' type_mark .
+> .
+subprogram_specification_IS	= <
+		= 'PROCEDURE' identifier 'IS' .
+		= 'PROCEDURE' identifier formal_part 'IS' .
+		= 'FUNCTION' designator formal_part_option 'RETURN' type_mark 'IS' .
+> .
+
+/* designator ::= identifier | operator_symbol */
+
+designator	= <
+		= identifier .
+		= operator_symbol .
+> .
+
+/* operator_symbol ::= stringliteral */
+
+operator_symbol	= stringliteral .
+
+/* formal_part ::= ( parameter_specification {; parameter_specification} ) */
+
+formal_part	= '(' parameter_specification_list ')' .
+
+/* parameter_specification ::= identifier_list : mode type_mark [:= expression] */
+
+/* mode ::= ['IN'] | 'IN' 'OUT' | 'OUT' */
+
+parameter_specification	= <
+		= identifier_list ':' type_mark initialization_option .
+		= identifier_list ':' 'IN' type_mark initialization_option .
+		= identifier_list ':' 'IN' 'OUT' type_mark initialization_option .
+		= identifier_list ':' 'OUT' type_mark initialization_option .
+> .
+
+/* ---------- */
+
+parameter_specification_list	= <
+		= parameter_specification .
+		= parameter_specification_list ';' parameter_specification .
+> .
+formal_part_option	= <
+		= .
+		= formal_part .
+> .
+
+/*------------------------------------------------------------------
+  6.3 Subprogram Bodies
+------------------------------------------------------------------*/
+/*
+  subprogram_body ::=
+    subprogram_specification IS
+      [declarative_part]
+    BEGIN
+      sequence_of_statements
+   [EXCEPTION
+      exception_handler
+     {exception_handler}]
+    END [designator] ;
+*/
+
+subprogram_body	= <
+		= subprogram_specification_IS declarative_part 'BEGIN' sequence_of_statements exception_handler_list_option 'END' ';' .
+		= subprogram_specification_IS declarative_part 'BEGIN' sequence_of_statements exception_handler_list_option 'END' designator ';' .
+> .
+
+/*------------------------------------------------------------------
+  6.4 Subprogram Calls
+------------------------------------------------------------------*/
+/*
+  procedure_call_statement ::= name [actual_parameter_part] ;
+
+  function_call ::= name [actual_parameter_part]
+
+  actual_parameter_part ::= (parameter_association {, parameter_association} )
+
+  parameter_association ::= [formal_parameter =>] actual_parameter
+
+  formal_parameter ::= simple_name
+
+  actual_parameter ::= expression | name | type_mark ( name )
+
+  procedure_call_statement is included under the rule given below for call_statement.
+  Note that the actual parameter_part is contained in the class general_aggregate.
+  function_call is included under name.
+*/
+
+call_statement	= name ';' .
+
+/*******************************************************************
+*                                                                  *
+*              7. Packages                                         *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  7.1 Package Structure
+------------------------------------------------------------------*/
+
+/* package_declaration ::= package_specification */
+
+package_declaration	= package_specification ';' .
+
+/*
+  package_specification ::=
+    PACKAGE identifier IS
+     {basic_declarative_item}
+   [PRIVATE
+     {basic_declarative_item}]
+    END [simple_name]
+*/
+
+package_specification	= 'PACKAGE' identifier 'IS' basic_declarative_item_list_options1 private_part_option 'END' simple_name_option .
+
+/*
+  package_body ::=
+    PACKAGE BODY simple_name IS
+      [declarative_part]
+   [BEGIN
+      sequence_of_statements
+   [EXCEPTION
+       exception_handler
+      {exception_handler}]]
+    END [simple_name] ;
+*/
+
+package_body	= 'PACKAGE' 'BODY' simple_name 'IS' declarative_part statements_option 'END' simple_name_option ';' .
+
+/* ---------- */
+
+statements_option	= <
+		= .
+		= 'BEGIN' sequence_of_statements exception_handler_list_option .
+> .
+basic_declarative_item_list_options1	= <
+		= .
+		= basic_declarative_item_list_options1 basic_declarative_item .
+> .
+private_part_option	= <
+		= .
+		= 'PRIVATE' basic_declarative_item_list_options1 .
+> .
+simple_name_option	= <
+		= .
+		= simple_name .
+> .
+
+/*------------------------------------------------------------------
+  7.4 Private Type and Deferred Constant Declarations
+------------------------------------------------------------------*/
+
+/* private_type_declaration ::= TYPE identifier [discriminant_part] IS [LIMITED] PRIVATE ; */
+
+private_type_declaration	= <
+		= 'TYPE' identifier 'IS' 'PRIVATE' ';' .
+		= 'TYPE' identifier 'IS' 'LIMITED' 'PRIVATE' ';' .
+		= 'TYPE' identifier discriminant_part 'IS' 'PRIVATE' ';' .
+		= 'TYPE' identifier discriminant_part 'IS' 'LIMITED' 'PRIVATE' ';' .
+> .
+
+/* deferred_constant_declaration ::= identifier_list : CONSTANT type_mark ; */
+
+/* deferred_constant_declaration is included under object_declaration. */
+
+/*******************************************************************
+*                                                                  *
+*              8. Visibility Rules                                 *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  8.4 Use Clauses
+------------------------------------------------------------------*/
+
+/* use_clause ::= USE name {, name} ; */
+
+use_clause	= 'USE' name_list ';' .
+
+/*------------------------------------------------------------------
+  8.5 Renaming Declarations
+------------------------------------------------------------------*/
+/*
+  renaming_declaration ::=
+    identifier : type_mark   RENAMES name ;
+  | identifier : EXCEPTION   RENAMES name ;
+  | PACKAGE identifier       RENAMES name ;
+  | subprogram_specification RENAMES name ;
+*/
+
+renaming_declaration	= <
+		= identifier_list ':' type_mark 'RENAMES' name ';' .
+		= identifier_list ':' 'EXCEPTION' 'RENAMES' name ';' .
+		= 'PACKAGE' identifier 'RENAMES' name ';' .
+		= subprogram_specification 'RENAMES' name ';' .
+> .
+
+/* identifier_list in the above two rules must contain only one identifier */
+
+/*******************************************************************
+*                                                                  *
+*              9. Tasks                                            *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  9.1 Task Specifications and Task Bodies
+------------------------------------------------------------------*/
+
+/* task_declaration ::= task_specification ; */
+
+task_declaration	= task_specification ';' .
+
+/*
+  task_specification ::=
+    TASK [TYPE] identifier [IS
+      {entry_declaration}
+      {representation_clause}
+    END [simple_name]]
+*/
+
+task_specification	= <
+		= 'TASK' identifier task_specifier .
+		= 'TASK' 'TYPE' identifier task_specifier .
+> .
+task_specifier	= <
+		= .
+		= 'IS' pragma_decls entry_declaration_list_option representation_clause_list_option 'END' simple_name_option .
+> .
+
+/*
+  task_body ::=
+    TASK BODY simple_name IS
+      [declarative_part]
+    BEGIN
+      sequence_of_statements
+   [EXCEPTION
+      exception_handler
+     {exception_handler}]
+    END [simple_name] ;
+*/
+
+task_body	= 'TASK' 'BODY' simple_name 'IS' declarative_part 'BEGIN' sequence_of_statements exception_handler_list_option 'END' simple_name_option ';' .
+
+/* ---------- */
+
+pragma_decls	= <
+		= .
+		= pragma_decls pragma .
+> .
+entry_declaration_list_option	= <
+		= .
+		= entry_declaration_list .
+> .
+entry_declaration_list	= <
+		= entry_declaration .
+		= entry_declaration_list pragma .
+		= entry_declaration_list entry_declaration .
+> .
+representation_clause_list_option	= <
+		= .
+		= representation_clause_list .
+> .
+representation_clause_list	= <
+		= representation_clause .
+		= representation_clause_list representation_clause .
+		= representation_clause_list pragma .
+> .
+
+/*------------------------------------------------------------------
+  9.5 Entries, Entry Calls and Accept Statements
+------------------------------------------------------------------*/
+
+/* entry_declaration ::= ENTRY identifier [( discrete_range )] [formal_part] ; */
+
+entry_declaration	= <
+		= 'ENTRY' identifier formal_part_option ';' .
+		= 'ENTRY' identifier '(' discrete_range ')' formal_part_option ';' .
+> .
+
+/*
+  entry_call_statement ::= name [actual_parameter_part] ;
+
+  The above rule is handled by call_statement.
+
+  accept_statement ::=
+    ACCEPT simple_name [( entry_index )] [formal_part] [DO
+      sequence_of_statements
+    END [simple_name]] ;
+
+  entry_index ::= expression
+*/
+
+accept_statement	= <
+		= accept_part ';' .
+		= accept_part 'DO' sequence_of_statements 'END' simple_name_option ';' .
+> .
+accept_part	= <
+		= 'ACCEPT' simple_name formal_part_option .
+		= 'ACCEPT' simple_name '(' expression ')' formal_part_option .
+> .
+
+/*------------------------------------------------------------------
+  9.6 Delay Statements, Durations and Time
+------------------------------------------------------------------*/
+
+/* delay_statement ::= DELAY simple_expression ; */
+
+delay_statement	= 'DELAY' simple_expression ';' .
+
+/*------------------------------------------------------------------
+  9.7 Select Statements
+------------------------------------------------------------------*/
+
+/* select_statement ::= selective_wait | conditional_entry_call | timed_entry_call */
+
+select_statement	= <
+		= selective_wait .
+		= conditional_entry_call .
+		= timed_entry_call .
+> .
+
+/*------------------------------------------------------------------
+  9.7.1 Selective Waits
+------------------------------------------------------------------*/
+/*
+  selective_wait ::=
+    SELECT
+      select_alternative
+   {OR
+      select_alternative}
+   [ELSE
+      sequence_of_statements]
+    END SELECT ;
+*/
+
+selective_wait	= 'SELECT' pragma_stmts select_alternative_list select_else_option 'END' 'SELECT' ';' .
+
+/* pragma_stmts starts a stmts, which will be changed later to a
+   select_clauses. Necessary because of LALR-conflict with 9.7.3 */
+
+/* select_alternative ::= [WHEN condition =>] selective_wait_alternative */
+
+select_alternative	= <
+		= selective_wait_alternative .
+		= 'WHEN' condition '=>' pragma_stmts selective_wait_alternative .
+> .
+
+/* selective_wait_alternative ::= accept_alternative | delay_alternaitve | terminate_alternative */
+
+selective_wait_alternative	= <
+		= accept_alternative .
+		= delay_alternative .
+		= terminate_alternative .
+> .
+
+/* accept_alternatve ::= accept_statement [sequence_of_statements] */
+
+accept_alternative	= accept_statement sequence_of_statements_option .
+
+/* delay_alternative ::= delay_statement [sequence_of_statements] */
+
+delay_alternative	= delay_statement sequence_of_statements_option .
+
+/* terminate_alternative ::= TERMINATE ; */
+
+terminate_alternative	= 'TERMINATE' ';' .
+
+/* ---------- */
+
+select_else_option	= <
+		= .
+		= 'ELSE' sequence_of_statements .
+> .
+select_alternative_list	= <
+		= select_alternative .
+		= select_alternative_list 'OR' pragma_list_option select_alternative .
+> .
+
+/* preceding statement in preceding statement list */
+
+sequence_of_statements_option	= <
+		= .
+		= sequence_of_statements_option pragma .
+		= sequence_of_statements_option statement .
+> .
+
+/*------------------------------------------------------------------
+  9.7.2 Conditional Entry Calls
+------------------------------------------------------------------*/
+/*
+  conditional_entry_call ::=
+    SELECT
+      entry_call_statement
+     [sequence_of_statements]
+    ELSE
+      sequence_of_statements
+    END SELECT ;
+*/
+
+conditional_entry_call	= 'SELECT' pragma_stmts call_statement sequence_of_statements_option 'ELSE' sequence_of_statements 'END' 'SELECT' ';' .
+
+/*------------------------------------------------------------------
+  9.7.3 Timed Entry Calls
+------------------------------------------------------------------*/
+/*
+  timed_entry_call ::=
+    SELECT
+      entry_call_statement
+     [sequence_of_statements]
+    OR
+      delay_alternative
+    END SELECT ;
+*/
+
+timed_entry_call	= 'SELECT' pragma_stmts call_statement sequence_of_statements_option 'OR' pragma_stmts delay_alternative 'END' 'SELECT' ';' .
+
+/*------------------------------------------------------------------
+  9.10 Abort Statements
+------------------------------------------------------------------*/
+
+/* abort_statement ::= 'ABORT' name {, name} ; */
+
+abort_statement	= 'ABORT' name_list ';' .
+
+/* ---------- */
+
+name_list	= <
+		= name .
+		= name_list ',' name .
+> .
+
+/*******************************************************************
+*                                                                  *
+*              10. Program Structure and Compilation Issues        *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  10.1 Compilation Units - Library Units
+------------------------------------------------------------------*/
+
+/* compilation ::= {compilation_unit} */
+
+compilation	= <
+		= .
+		= pragma_list compilation_unit1 compilation_list_option .
+		= compilation_list .
+> .
+
+/* compilation_unit ::= context_clause library_unit | context_clause secondary_unit */
+
+compilation_unit	= context_clause library_or_secondary_unit pragmas .
+
+/*
+  The syntactic overlap of library_unit and secondary_unit leads to the
+  merging of these classes.
+
+  library_unit ::=
+    subprogram_declaration | package_declaration
+  | generic_declaration    | generic_instantiation
+  | subprogram_body
+
+  secondary_unit ::= library_unit_body | subunit
+
+  library_unit_body ::= subprogram_body | package_body
+*/
+
+library_or_secondary_unit	= <
+		= subprogram_declaration .
+		= package_declaration .
+		= generic_declaration .
+		= generic_instantiation .
+		= subprogram_body .
+		= package_body .
+		= subunit .
+> .
+
+/* ---------- */
+
+compilation_unit1	= context_elem_list_option1 library_or_secondary_unit pragmas .
+pragma_list	= <
+		= pragma .
+		= pragma_list pragma .
+> .
+compilation_list	= <
+		= compilation_unit .
+		= compilation_list compilation_unit .
+> .
+compilation_list_option	= <
+		= .
+		= compilation_list_option compilation_unit .
+> .
+pragmas		= <
+		= .
+		= pragmas pragma .
+> .
+
+/*------------------------------------------------------------------
+  10.1.1 Context Clauses - With Clauses
+------------------------------------------------------------------*/
+
+/* context_clause ::= {with_clause {use_clause}} */
+
+context_clause	= context_elem_list_option .
+context_elem_list_option	= <
+		= .
+		= context_elem_list_option context_elem .
+> .
+context_elem_list_option1	= <
+		= .
+		= context_elem_list_option1 context_elem .
+> .
+context_elem	= with_clause use_clause_list_option .
+
+/* with_clause ::= WITH simple_name {, simple_name} ; */
+
+with_clause	= 'WITH' with_name_list ';' list_pragma_list_option .
+
+/* ---------- */
+
+with_name_list	= <
+		= simple_name .
+		= with_name_list ',' simple_name .
+> .
+use_clause_list_option	= <
+		= .
+		= use_clause_list_option use_clause list_pragma_list_option .
+> .
+list_pragma_list_option	= <
+		= .
+		= list_pragma_list_option pragma .
+> .
+
+/* close preceding list by making it a member of yet another list.
+   Pragma sequence goes in next to top list on stack. */
+
+/*------------------------------------------------------------------
+  10.2 Subunits of Compilation Units
+------------------------------------------------------------------*/
+/*
+  body_stub ::=
+    subprogram_specification IS SEPARATE ;
+  | PACKAGE BODY simple_name IS SEPARATE ;
+  | TASK    BODY simple_name IS SEPARATE ;
+*/
+
+body_stub	= <
+		= subprogram_specification_IS 'SEPARATE' ';' .
+		= 'PACKAGE' 'BODY' simple_name 'IS' 'SEPARATE' ';' .
+		= 'TASK' 'BODY' simple_name 'IS' 'SEPARATE' ';' .
+> .
+
+/* subunit ::= SEPARATE ( name ) proper_body */
+
+subunit		= 'SEPARATE' '(' name ')' proper_body .
+
+/*******************************************************************
+*                                                                  *
+*              11. Exceptions                                      *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  11.1 Exception Declarations
+------------------------------------------------------------------*/
+
+/* exception_declaration ::= identifier_list : EXCEPTION ; */
+
+exception_declaration	= identifier_list ':' 'EXCEPTION' ';' .
+
+/*------------------------------------------------------------------
+  11.2 Exception Handlers
+------------------------------------------------------------------*/
+
+/* exception_handler ::= WHEN exception_choice {| exception_choice} => sequence_of_statements */
+
+exception_handler	= 'WHEN' exception_choice_list '=>' sequence_of_statements .
+
+/* exception_choice ::= name | OTHERS */
+
+exception_choice	= <
+		= name .
+		= 'OTHERS' .
+> .
+
+/* ---------- */
+
+exception_choice_list	= <
+		= exception_choice .
+		= exception_choice_list '|' exception_choice .
+> .
+
+/*------------------------------------------------------------------
+  11.3 Raise Statements
+------------------------------------------------------------------*/
+
+/* raise_statement ::= RAISE [name] ; */
+
+raise_statement	= <
+		= 'RAISE' ';' .
+		= 'RAISE' name ';' .
+> .
+
+/*******************************************************************
+*                                                                  *
+*              12. Generic Units                                   *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  12.1 Generic Declarations
+------------------------------------------------------------------*/
+
+/* generic_declaration ::= generic_specification ; */
+
+generic_declaration	= generic_specification ';' .
+
+/*
+  generic_specification ::=
+    generic_formal_part subprogram_specification
+  | generic_formal_part package_specification
+*/
+
+generic_specification	= <
+		= generic_formal_part subprogram_specification .
+		= generic_formal_part package_specification .
+> .
+
+/* generic_formal_part ::= GENERIC {generic_parameter_declaration} */
+
+generic_formal_part	= 'GENERIC' generic_parameter_declaration_list_option .
+
+/*
+  generic_parameter_declaration ::=
+    identifier_list : ['IN' ['OUT']] type_mark [:= expression] ;
+  | TYPE identifier IS generic_type_definition ;
+  | private_type_declaration
+  | WITH subprogram_specification [IS name] ;
+  | WITH subprogram_specification [IS <>] ;
+*/
+
+generic_parameter_declaration	= <
+		= parameter_specification ';' .
+		= 'TYPE' identifier 'IS' generic_type_definition ';' .
+		= private_type_declaration .
+		= 'WITH' subprogram_specification ';' .
+		= 'WITH' subprogram_specification 'IS' name ';' .
+		= 'WITH' subprogram_specification 'IS' '<>' ';' .
+> .
+
+/*
+  generic_type_definition ::= ( <> ) | RANGE <> | DIGITS <> | DELTA <> |
+    array_type_definition  | access_type_definition
+*/
+
+generic_type_definition	= <
+		= '(' '<>' ')' .
+		= 'RANGE' '<>' .
+		= 'DIGITS' '<>' .
+		= 'DELTA' '<>' .
+		= array_type_definition .
+		= access_type_definition .
+> .
+
+/* ---------- */
+
+generic_parameter_declaration_list_option	= <
+		= .
+		= generic_parameter_declaration_list_option generic_parameter_declaration .
+> .
+
+/*------------------------------------------------------------------
+  12.3 Generic Instantiation
+------------------------------------------------------------------*/
+/*
+  generic_instantiation ::=
+    PACKAGE   identifier IS NEW name [generic_actual_part] ;
+  | PROCEDURE identifier IS NEW name [generic_actual_part] ;
+  | FUNCTION  designator IS NEW name [generic_actual_part] ;
+*/
+
+generic_instantiation	= <
+		= 'PACKAGE' identifier 'IS' 'NEW' expanded_name generic_actual_part_option ';' .
+		= 'FUNCTION' designator 'IS' 'NEW' expanded_name generic_actual_part_option ';' .
+		= 'PROCEDURE' identifier 'IS' 'NEW' expanded_name generic_actual_part_option ';' .
+> .
+
+/* generic_actual_part ::= ( generic_association {, generic_association} ) */
+
+generic_actual_part	= '(' generic_association_list ')' .
+
+/* generic_association ::= [generic_formal_parameter =>] generic_actual_parameter */
+
+generic_association	= <
+		= generic_actual_parameter .
+		= generic_formal_parameter '=>' generic_actual_parameter .
+> .
+
+/* generic_formal_parameter ::= simple_name | operator_symbol */
+
+generic_formal_parameter	= <
+		= simple_name .
+		= operator_symbol .
+> .
+
+/* generic_actual_parameter ::= expression | name | type_mark */
+
+generic_actual_parameter	= expression .
+
+/* name and type_mark are included under expression. */
+/* ---------- */
+
+generic_actual_part_option	= <
+		= .
+		= generic_actual_part .
+> .
+generic_association_list	= <
+		= generic_association .
+		= generic_association_list ',' generic_association .
+> .
+
+/*******************************************************************
+*                                                                  *
+*              13. Representation Clauses and Implementation       *
+*                  Dependent Features				   *
+*                                                                  *
+*******************************************************************/
+
+/*------------------------------------------------------------------
+  13.1 Representation Clauses
+------------------------------------------------------------------*/
+
+/* representation_clause ::= type_representation_clause | address_clause */
+
+representation_clause	= <
+		= type_representation_clause .
+		= address_clause .
+> .
+
+/*
+  type_representation_clause ::= length_clause
+  | enumeration_representation_clause
+  | record_representation_clause
+*/
+
+type_representation_clause	= <
+		= length_clause .
+		= enumeration_representation_clause .
+		= record_representation_clause .
+> .
+
+/*------------------------------------------------------------------
+  13.2 Length Clause
+------------------------------------------------------------------*/
+
+/* length_clause ::= FOR attribute USE simple_expression ; */
+
+length_clause	= 'FOR' attribute 'USE' simple_expression ';' .
+
+/*------------------------------------------------------------------
+  13.3 Enumeration Represetation Clauses
+------------------------------------------------------------------*/
+
+/* enumeration_representation_clause ::= FOR simple_name USE aggregate ; */
+
+enumeration_representation_clause	= 'FOR' simple_name 'USE' aggregate ';' .
+
+/*------------------------------------------------------------------
+  13.4 Record Representation Clauses
+------------------------------------------------------------------*/
+/*
+  record_representation_clause ::=
+    FOR simple_name USE
+      RECORD [alignment_clause]
+        {component_clause}
+      END RECORD ;
+*/
+
+record_representation_clause	= 'FOR' simple_name 'USE' 'RECORD' alignment_clause_option component_clause_list_option 'END' 'RECORD' ';' .
+
+/* alignment_clause ::= AT MOD simple_expression ; */
+
+alignment_clause	= 'AT' 'MOD' simple_expression ';' .
+
+/* component_clause ::= name AT simple_expression RANGE range ; */
+
+component_clause	= name 'AT' simple_expression 'RANGE' range ';' .
+
+/* ---------- */
+
+alignment_clause_option	= <
+		= pragmas .
+		= pragmas alignment_clause .
+> .
+component_clause_list_option	= <
+		= .
+		= component_clause_list .
+> .
+component_clause_list	= <
+		= component_clause .
+		= component_clause_list pragma .
+		= component_clause_list component_clause .
+> .
+
+/*------------------------------------------------------------------
+  13.5 Address Clauses
+------------------------------------------------------------------*/
+
+/* address_clause ::= FOR simple_name USE AT simple_expression ; */
+
+address_clause	= 'FOR' simple_name 'USE' 'AT' simple_expression ';' .
+
+/*------------------------------------------------------------------
+  13.8 Machine Code Insertions
+------------------------------------------------------------------*/
+
+/* code_statement ::= type_mark ' aggregate ; */
+
+code_statement	= name1 "'" aggregate ';' .
+
+/* The name must be a type_mark. The aggregate must be a record_aggregate. */
+
+
+identifier	: [Ident  : tIdent	] { Ident  := NoIdent		; } .
+integerliteral	: [String : tStringRef	] { String := {
+			AssignEmpty (Word); String := PutString (Word);}; } .
+realliteral	: [String : tStringRef	] { String := {
+			AssignEmpty (Word); String := PutString (Word);}; } .
+characterliteral: [Char	  : CHAR	] { Char   := '?'		; } .
+stringliteral	: [String : tStringRef	] { String := {
+			AssignEmpty (Word); String := PutString (Word);}; } .
+/*
+decimalliteral	: .
+basedliteral	: .
+*/

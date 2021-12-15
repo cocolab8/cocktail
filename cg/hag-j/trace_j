@@ -1,0 +1,116 @@
+make Main DATA="5 4 3 2 0"
+make[1]: Entering directory `/home/cocktail/cocktail/cg/hag-j'
+cg -JdimDIT hag
+javac -classpath .:/home/cocktail/lib/reuse.jar:/usr/lib/jdk1.1.7/lib/classes.zip Tree.java Eval.java Main.java
+echo 5 4 3 2 0 | java -classpath .:/home/cocktail/lib/reuse.jar:/usr/lib/jdk1.1.7/lib/classes.zip Main
+R                e F:n                      = 5
+R                v F 1
+P1               e F                        = 80dc3a2
+P1               e F:n                      = 4
+P1               v F 1
+P1               e F                        = 80dc51f
+P1               e F:n                      = 3
+P1               v F 1
+P1               e F                        = 80dc69b
+P1               e F:n                      = 2
+P1               v F 1
+P1               e F                        = 80dc818
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 80dc9e8
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+P1               e r                        = 6
+P1               v parent
+P1               e r                        = 24
+P1               v parent
+P1               e r                        = 120
+P1               v parent
+R                e r                        = 120
+R                v parent
+120
+R                e F:n                      = 4
+R                v F 1
+P1               e F                        = 80dd27d
+P1               e F:n                      = 3
+P1               v F 1
+P1               e F                        = 80dd3fa
+P1               e F:n                      = 2
+P1               v F 1
+P1               e F                        = 80dd577
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 80dd6f4
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+P1               e r                        = 6
+P1               v parent
+P1               e r                        = 24
+P1               v parent
+R                e r                        = 24
+R                v parent
+24
+R                e F:n                      = 3
+R                v F 1
+P1               e F                        = 80ddec7
+P1               e F:n                      = 2
+P1               v F 1
+P1               e F                        = 80de044
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 80de1c1
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+P1               e r                        = 6
+P1               v parent
+R                e r                        = 6
+R                v parent
+6
+R                e F:n                      = 2
+R                v F 1
+P1               e F                        = 80de879
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 80de9f6
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+R                e r                        = 2
+R                v parent
+2
+R                e F:n                      = 0
+R                v F 1
+P1               e F                        = 80defe9
+P1               e F:n                      = -1
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 0
+P1               v parent
+R                e r                        = 0
+R                v parent
+0
+make[1]: Leaving directory `/home/cocktail/cocktail/cg/hag-j'

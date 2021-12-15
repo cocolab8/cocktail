@@ -1,0 +1,164 @@
+(* $Id: DynArray.mi,v 1.15 2008/10/10 12:59:32 grosch Exp $ *)
+
+(*
+ * $Log: DynArray.mi,v $
+ * Revision 1.15  2008/10/10 12:59:32  grosch
+ * fixed function ResizeArray: do not free blocks smaller than MinSizeSmallBlock
+ *
+ * Revision 1.14  2008/09/25 21:04:15  grosch
+ * replaced operation PTRINC by arithmetic with type ADDRESS
+ *
+ * Revision 1.13  2008/09/12 14:20:59  grosch
+ * added module Pointers in order to handle pointers on 64 bit platforms
+ *
+ * Revision 1.12  2006/07/17 16:38:32  grosch
+ * made code work on 64 bit machines
+ *
+ * Revision 1.11  2005/05/23 10:30:32  grosch
+ * added comment in ResizeArray: shrinking does not work with malloc and free
+ *
+ * Revision 1.10  2000/04/18 16:16:28  grosch
+ * improvements and adaptations to the C version
+ *
+ * Revision 1.9  1997/05/27 11:57:56  grosch
+ * truncation of filenames to 8.3 format
+ *
+ * Revision 1.8  1994/06/13 09:41:43  grosch
+ * fix alignment for DEC Alpha
+ *
+ * Revision 1.7  1993/08/18  15:06:51  grosch
+ * rename System and Memory to rSystem and rMemory
+ *
+ * Revision 1.6  1992/08/07  14:45:20  grosch
+ * added error message if out of memory
+ *
+ * Revision 1.5  1991/11/21  14:33:17  grosch
+ * new version of RCS on SPARC
+ *
+ * Revision 1.4  90/03/02  17:36:10  grosch
+ * automized handling of machine independent alignment
+ *
+ * Revision 1.3  90/02/28  22:07:00  grosch
+ * comment for alignment on SPARC
+ *
+ * Revision 1.2  89/12/08  20:12:44  grosch
+ * introduced a machine dependent variant for MIPS
+ *
+ * Revision 1.1  88/10/18  16:30:08  grosch
+ * fixed bug: invariant must hold: ElmtCount * ElmtSize MOD 4 = 0
+ *
+ * Revision 1.0  88/10/04  11:46:52  grosch
+ * Initial revision
+ *
+ *)
+
+(* Ich, Doktor Josef Grosch, Informatiker, Sept. 1987 *)
+
+IMPLEMENTATION MODULE DynArray;
+
+FROM SYSTEM	IMPORT ADDRESS, TSIZE, WORD;
+FROM General	IMPORT Log2, Exp2, MaxAlign, AlignMask, Max;
+FROM rMemory	IMPORT Alloc, Free, MemoryUsed;
+FROM IO		IMPORT StdError, WriteS, WriteNl;
+
+VAR
+   MinSizeSmallBlock	: LONGINT;
+
+(* INVARIANT ElmtCount * AlignedSize (ElmtSize) MOD TSIZE (LONGINT) = 0 *)
+
+PROCEDURE MakeArray    (VAR ArrayPtr	: ADDRESS	;
+			VAR ElmtCount	: LONGINT	;
+			    ElmtSize	: LONGINT)	;
+   BEGIN
+      ElmtSize := AlignedSize (ElmtSize);
+(* fails on 64 bit machines
+      CASE ElmtSize MOD 4 OF
+      | 0   :
+      | 2   : IF ODD (ElmtCount) THEN INC (ElmtCount); END;
+      | 1, 3: INC (ElmtCount, TSIZE (LONGINT) - 1 - (ElmtCount - 1) MOD TSIZE (LONGINT));
+      END;
+*)
+      WHILE ElmtCount * ElmtSize MOD TSIZE (LONGINT) # 0 DO
+        INC (ElmtCount);
+      END;
+      ArrayPtr := Alloc (ElmtCount * ElmtSize);
+      IF ArrayPtr = NIL THEN
+	 WriteS (StdError, "MakeArray: out of memory"); WriteNl (StdError);
+      END;
+   END MakeArray;
+
+PROCEDURE ResizeArray  (VAR ArrayPtr	: ADDRESS	;
+			VAR OldElmtCount: LONGINT	;
+			    NewElmtCount: LONGINT	;
+			    ElmtSize	: LONGINT)	;
+   VAR
+      NewPtr		: ADDRESS;
+      Source, Target	: POINTER TO LONGINT;
+      i, ByteCount	: LONGINT;
+   BEGIN
+      ElmtSize := AlignedSize (ElmtSize);
+(* fails on 64 bit machines
+      CASE ElmtSize MOD 4 OF
+      | 0   :
+      | 2   : IF ODD (NewElmtCount) THEN INC (NewElmtCount); END;
+      | 1, 3: INC (NewElmtCount, TSIZE (LONGINT) - 1 - (NewElmtCount - 1) MOD TSIZE (LONGINT));
+      END;
+*)
+      WHILE NewElmtCount * ElmtSize MOD TSIZE (LONGINT) # 0 DO
+        INC (NewElmtCount);
+      END;
+      IF NewElmtCount < OldElmtCount THEN
+	 (* does not work with malloc and free *)
+	 ByteCount := LONGINT (BITSET (NewElmtCount * ElmtSize + MaxAlign - 1) * AlignMask);
+	 IF OldElmtCount * ElmtSize - ByteCount >= MinSizeSmallBlock THEN
+	    Free (OldElmtCount * ElmtSize - ByteCount, ArrayPtr + CARDINAL (ByteCount));
+	    OldElmtCount := NewElmtCount;
+	 END;
+      ELSIF NewElmtCount > OldElmtCount THEN
+	 NewPtr := Alloc (NewElmtCount * ElmtSize);
+	 IF NewPtr = NIL THEN
+	    WriteS (StdError, "ResizeArray: out of memory"); WriteNl (StdError);
+	 ELSE
+	    Source := ArrayPtr;
+	    Target := NewPtr;
+	    FOR i := 1 TO OldElmtCount * ElmtSize DIV TSIZE (LONGINT) DO
+	       Target ^ := Source ^;
+	       Source := ADDRESS (ADDRESS (Source) + TSIZE (LONGINT));
+	       Target := ADDRESS (ADDRESS (Target) + TSIZE (LONGINT));
+	    END;
+	    Free (OldElmtCount * ElmtSize, ArrayPtr);
+	 END;
+	 ArrayPtr := NewPtr;
+	 OldElmtCount := NewElmtCount;
+      END;
+   END ResizeArray;
+
+PROCEDURE ExtendArray  (VAR ArrayPtr	: ADDRESS	;
+			VAR ElmtCount	: LONGINT	;
+			    ElmtSize	: LONGINT)	;
+   BEGIN
+      ResizeArray (ArrayPtr, ElmtCount, ElmtCount * 2, ElmtSize);
+   END ExtendArray;
+
+PROCEDURE ReleaseArray (VAR ArrayPtr	: ADDRESS	;
+			VAR ElmtCount	: LONGINT	;
+			    ElmtSize	: LONGINT)	;
+   BEGIN
+      ElmtSize := AlignedSize (ElmtSize);
+      Free (ElmtCount * ElmtSize, ArrayPtr);
+   END ReleaseArray;
+
+PROCEDURE AlignedSize  (ElmtSize: LONGINT): LONGINT;
+   VAR Align	: LONGINT;
+   BEGIN
+      IF ElmtSize >= MaxAlign THEN
+	 Align := MaxAlign;
+      ELSE
+	 Align := Exp2 (Log2 (ElmtSize + ElmtSize - 2));
+      END;
+      RETURN ElmtSize + Align - 1 - (ElmtSize - 1) MOD Align;
+   END AlignedSize;
+
+BEGIN
+   MinSizeSmallBlock := Max (TSIZE (ADDRESS), MaxAlign);
+END DynArray.

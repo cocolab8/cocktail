@@ -1,0 +1,148 @@
+MODULE Main2;
+
+FROM rSystem	IMPORT rSystem;
+FROM Checks	IMPORT ErrorCheck;
+FROM Strings	IMPORT tString, ArrayToString;
+FROM StringM	IMPORT NoString;
+FROM Idents	IMPORT MakeIdent;
+FROM IO		IMPORT tFile, ReadOpen, ReadClose, WriteOpen, WriteClose, CloseIO;
+FROM StdIO	IMPORT WriteS, WriteI, WriteC, WriteNl;
+
+FROM tree	IMPORT ttree, Begintree, Closetree, Configuretree;
+FROM treeE	IMPORT IsEqualtree;
+FROM treeF	IMPORT ReleasetreeModule;
+FROM treeN	IMPORT NodeName;
+FROM treeR	IMPORT Reversetree, Foralltree;
+FROM treeb	IMPORT TraversetreeBU;
+FROM treee	IMPORT Drawtree, SetDepthtree, SetBoxtree;
+FROM treef	IMPORT Releasetree;
+FROM treeg	IMPORT Gettree;
+FROM treek	IMPORT Checktree;
+FROM treem	IMPORT mNode, mNode0, mNode1, mNode2;
+FROM treen	IMPORT nNode, nNode0, nNode1, nNode2;
+FROM treeo	IMPORT WritetreeNode;
+FROM treep	IMPORT Puttree;
+FROM treeq	IMPORT Querytree;
+FROM treer	IMPORT Readtree;
+FROM treet	IMPORT TraversetreeTD;
+FROM treew	IMPORT Writetree;
+FROM treey	IMPORT Copytree;
+
+
+VAR n, n1, n2, n3, n4, n5, Root1, Root2, Root3: ttree;
+    f: tFile;
+    i: INTEGER;
+    s: tString;
+
+PROCEDURE PrintMark (t: ttree);
+   BEGIN
+      WriteI (t^.Node.Mark, 0);
+      WriteC (' ');
+   END PrintMark;
+
+BEGIN
+   Begintree;
+
+   Configuretree ("CheckReportNoTree"	, "1"	);
+   Configuretree ("CheckReportNodes"	, "1"	);
+   Configuretree ("DrawBoxHeight"	, "22"	);
+   Configuretree ("DrawBoxWidth"	, "70"	);
+   Configuretree ("DrawDepth"		, "8"	);
+   Configuretree ("DrawLength"		, "25"	);
+   Configuretree ("DrawFileName"	, "g.ast");
+   Configuretree ("TreatTVAasChild"	, "1"	);
+
+   n1 := nNode2 ();
+   n2 := nNode2 ();
+   n3 := nNode1 ();
+   n4 := nNode1 ();
+   n5 := nNode1 ();
+
+   n1^.Node.Mark := 1;
+   n2^.Node.Mark := 2;
+   n3^.Node.Mark := 3;
+   n4^.Node.Mark := 4;
+   n5^.Node.Mark := 5;
+
+   ArrayToString ("1", s); n1^.Node.Ident := MakeIdent (s);
+   ArrayToString ("2", s); n2^.Node.Ident := MakeIdent (s);
+   ArrayToString ("3", s); n3^.Node.Ident := MakeIdent (s);
+   ArrayToString ("4", s); n4^.Node.Ident := MakeIdent (s);
+   ArrayToString ("5", s); n5^.Node.Ident := MakeIdent (s);
+
+   n1^.Node.Hex := 1;
+   n2^.Node.Hex := 2;
+   n3^.Node.Hex := 3;
+   n4^.Node.Hex := 4;
+   n5^.Node.Hex := 5;
+
+   n := n1;
+   n1^.Node2.Child1 := n2;
+   n1^.Node2.Child2 := n2;
+   n1^.Node2.Child3 := mNode0 (0, 1, NoString, 0);
+   n2^.Node2.Child1 := n3;
+   n2^.Node2.Child2 := n5;
+   n2^.Node2.Child3 := mNode0 (0, 1, NoString, 0);
+   n3^.Node1.Child1 := n4;
+   n4^.Node1.Child1 := n3;
+   n5^.Node1.Child1 := n5;
+
+   f := WriteOpen	("a");
+   ErrorCheck		("WriteOpen (a)", f);
+(* WriteS		("WriteOpen (a)"); WriteNl; *)
+   Writetree		(f, n);
+   WriteClose		(f);
+
+   f := ReadOpen	("a");
+   ErrorCheck		("ReadOpen (a)", f);
+(* WriteS		("ReadOpen (a)"); WriteNl; *)
+   Root1 := Readtree	(f);
+   ReadClose		(f);
+
+   f := WriteOpen	("b");
+   ErrorCheck		("WriteOpen (b)", f);
+(* WriteS		("WriteOpen (b)"); WriteNl; *)
+   Puttree		(f, Root1);
+   WriteClose		(f);
+
+   f := ReadOpen	("b");
+   ErrorCheck		("ReadOpen (b)", f);
+(* WriteS		("ReadOpen (b)"); WriteNl; *)
+   Root2 := Gettree	(f);
+   ReadClose		(f);
+
+   f := WriteOpen	("aa");
+   ErrorCheck		("WriteOpen (aa)", f);
+(* WriteS		("WriteOpen (aa)"); WriteNl; *)
+   Writetree		(f, Root2);
+   WriteClose		(f);
+
+   f := WriteOpen	("bb");
+   ErrorCheck		("WriteOpen (bb)", f);
+(* WriteS		("WriteOpen (bb)"); WriteNl; *)
+   Puttree		(f, Root2);
+   WriteClose		(f);
+
+   Root3 := Copytree	(Root2);
+   f := WriteOpen	("aaa");
+   ErrorCheck		("WriteOpen (aaa)", f);
+(* WriteS		("WriteOpen (aaa)"); WriteNl; *)
+   Writetree		(f, Root3);
+   WriteClose		(f);
+
+   i := rSystem		("set -x; cmp a aa; cmp b bb; cmp a aaa");
+   ErrorCheck		("rSystem", i);
+
+   TraversetreeTD	(Root2, PrintMark);
+   TraversetreeBU	(Root2, PrintMark);
+   WriteNl		;
+
+   IF Checktree		(Root3) THEN END;
+   Drawtree		(Root3);
+
+   Releasetree		(Root3);
+   WriteNl		;
+   ReleasetreeModule	;
+   Closetree		;
+   CloseIO;
+END Main2.

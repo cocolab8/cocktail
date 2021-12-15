@@ -1,0 +1,22 @@
+ast -+ae g.ast; 
+g++ -g -I/home/grosch/libcpp/include -I/usr/local/include -c Main.cxx
+g++ -g -I/home/grosch/libcpp/include -I/usr/local/include -c Tree.cxx
+g++ -g -o Main Main.o Tree.o -L/usr/local/lib/X11R5/lib -ltk -ltcl -lX11 -lm /home/grosch/libcpp/libreuse.a
+time Main
++ cmp a aa 
++ cmp b bb 
++ cmp a aaa 
+fopen (a, w)
+fopen (a, r)
+fopen (b, w)
+fopen (b, r)
+fopen (aa, w)
+fopen (bb, w)
+fopen (aaa, w)
+should print:
+1 2 5 3 4 5 4 3 2 1 
+1 2 5 3 4 5 4 3 2 1 
+should print:
+1 5 4 3 2 
+1 5 4 3 2 
+       42.4 real         0.5 user         0.4 sys  

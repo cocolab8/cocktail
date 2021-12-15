@@ -1,0 +1,34 @@
+-- scanner interface of rex generated scanners
+
+$@ class interface @ exported features
+
+   Attribute
+   ErrorAttribute
+   BeginScanner
+   BeginFile
+   GetToken
+   CloseFile
+   CloseScanner
+
+feature specification
+
+Attribute: Attribute
+
+ErrorAttribute (Token: INTEGER): Attribute
+
+BeginScanner
+			-- initialization of scanner
+
+BeginFile (FileName: STRING): BOOLEAN
+			-- open input file
+
+GetToken: INTEGER
+			-- consume characters and return next token
+
+CloseFile
+			-- close input file
+
+CloseScanner
+			-- finalization of scanner
+
+end interface

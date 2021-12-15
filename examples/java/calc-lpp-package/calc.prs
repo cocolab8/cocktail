@@ -1,0 +1,79 @@
+SCANNER scanners.CalcScan
+PARSER  parsers.CalcParser
+
+EXPORT {
+   private int [] regs = new int [26];
+   private java.io.PrintStream stdout = System.out;
+}
+
+LOCAL {
+   int base = 10;
+}
+
+BEGIN {
+#ifdef YYDEBUG
+   yyDebug = true;
+#endif
+}
+
+PREC
+        LEFT    '+'     '-'
+        LEFT    '*'     '/'     '%'
+        LEFT    UNARY
+
+PROPERTY INPUT
+
+
+RULE
+
+list    = <
+		= .
+		= list stat '.'.
+		= list '.'.
+>.
+
+stat    = <
+		= expr { =>{stdout.print (expr:value);
+			 stdout.println (); stdout.flush ();}; }.
+		= LETTER '=' expr { =>{regs [LETTER:value] = expr:value;}; }.
+>.
+
+expr    = <
+	= '(' expr ')'		{ value := expr:value; constant := expr:constant; }.
+	= l:expr '+' r:expr	{ value := l:value + r:value; constant := l:constant && r:constant; }.
+        = l:expr '-' r:expr	{ value := l:value - r:value; }.
+        = l:expr '*' r:expr	{ value := l:value * r:value; }.
+        = l:expr '/' r:expr	{ value := l:value / r:value; }.
+        = l:expr '%' r:expr	{ value := l:value % r:value; }.
+        = '-' PREC UNARY expr	{ value := - expr:value; constant := expr:constant; }.
+        = LETTER		{ value := regs [LETTER:value]; constant := false; }.
+        = number		{ value := number:value; constant := true; }.
+>.
+
+number  = <
+	= DIGIT			{ value := {
+				    if (DIGIT:value == 0) base = 8;
+				    else base = 10; value = DIGIT:value;}; }.
+
+        = number DIGIT		{ value := base * number:value + DIGIT:value; }.
+>.
+
+MODULE Att
+PROPERTY SYN
+DECLARE
+  expr number	= [ value: int ].
+  expr		= [ constant: boolean ].
+END Att
+
+MODULE Terminals
+
+PROPERTY INPUT
+
+RULE
+
+DIGIT	: $5 [ value: int ] { value := 99; }.
+
+LETTER	: [ value: int ] { value := 25; }.
+
+END Terminals
+

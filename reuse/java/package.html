@@ -1,0 +1,39 @@
+<body>
+<P>
+Useful classes for building compilers using the Cocktail tool kit.
+</P>
+<P>Some of these classes are required by Cocktail generated code, while
+others are independent components which have been found to be useful.
+Similar code is available in other languages supported by Cocktail, and
+compatibility with those sometimes prevents the use of Java naming conventions.
+</P>
+<P>The classes are grouped as follows:
+<DL>
+  <DT><B>Dynamic Arrays</B>
+  <DD>In Java the size of arrays is specified when the array object
+      is created.  Cocktail provides classes which can be used when
+      the required size of an array is not known in advance.  One class
+      is provided for each basic type, for example {@link de.cocolab.reuse.DynArrayByte}
+      or {@link de.cocolab.reuse.DynArrayObject}.
+  <DT><B>Identifiers</B>
+  <DD>Identifiers may be mapped to instances of {@link de.cocolab.reuse.Ident} using
+      an {@link de.cocolab.reuse.IdentTable}.  <code>Ident</code> objects are unique for
+      a given input string, and are also numbered to give a convenient index into an array
+      of identifier attributes.
+  <DT><B>Error reporting</B>
+  <DD>The {@link de.cocolab.reuse.Errors} class is needed by parsers generated with the
+      parser generator <TT>lark</TT>.
+      It can also be used to report error messages found during scanning or semantic
+      analysis.
+  <DT><B>Position</B>
+  <DD>The class {@link de.cocolab.reuse.Position} is a simple representation of the
+      position of tokens in a source file consisting of fields for line and column.
+      This class can be subclassed or tailored to the user's needs, if necessary, for
+      example to include the file name.
+  <DT><B>IO</B>
+  <DD>The classes {@link de.cocolab.reuse.CocktailReader} and
+      {@link de.cocolab.reuse.CocktailWriter} provide input-output formatting facilities
+      for Cocktail specific objects.
+</DL>
+</body>
+

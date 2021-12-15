@@ -1,0 +1,727 @@
+
+TRAFO
+   trafos.Main
+TREE
+   Tree Defs
+
+IMPORT {
+   import trees.Tree;
+   import trees.Tree.*;
+   import trees.Defs;
+   import trees.Defs.*;
+}
+
+GLOBAL {
+#define YYTHROWS throws java.io.IOException
+}
+
+
+
+EXPORT {
+    static int indent = 0;
+    public static void main(String[] argv) throws java.io.IOException {
+
+//Test Simple patterns
+
+	Match1 (3);
+	Match1 (4);
+	Match1 (5);
+	Match2 (3);
+	Match2 (4);
+	Match2 (5);
+	Trivial (
+	   new Ts1(), 
+	   new Ds1()
+	);
+	Trivial (
+	   new Ts2(), 
+	   new Ds1()
+	);
+	Trivial (
+	   new Ts1(), 
+	   new Ds2()
+	);
+	Trivial (
+	   new Ts2(), 
+	   new Ds2()
+	);
+
+
+//Test Casts
+
+	Casts (
+	   new A()
+	);
+	Casts (
+	   new T2(
+	      new Aa(
+	         new D2()
+	      )
+	   )
+	);
+	Casts (
+	   new T1(
+	      new Aa(
+	         new D2()
+	      )
+	   )
+	);
+	Casts (
+	   new T1(
+	      new A()
+	   )
+	);
+	Casts (
+	   new T1(
+	      new Ab(
+	         new D3a(
+	            new D2()
+	         )
+	      )
+	   )
+	);
+
+
+//Test Patterns
+
+	Pattern1 (null);
+	Pattern1 (
+	   new P2(null)
+	);
+	Pattern1 (
+	   new P1(null)
+	);
+
+
+//Test Patterns
+
+	Pattern2 (
+	   new P3(
+	      new P1(null), 
+	      new P1(null)
+	   )
+	);
+	Pattern2 (
+	   new P3(
+	      new P2(null), 
+	      new P2(null)
+	   )
+	);
+	Pattern2 (
+	   new P3(
+	      new P2(null), 
+	      new P1(null)
+	   )
+	);
+	Pattern2 (
+	   new P5(
+	      new P4(3), 
+	      new P4(4)
+	   )
+	);
+	Pattern2 (
+	   new P5(
+	      new P4(6), 
+	      new P4(6)
+	   )
+	);
+	Pattern2 (
+	   new P5(
+	      new P4(8), 
+	      new P4(8)
+	   )
+	);
+
+
+//Test Functions and node creation
+
+	FNprint (
+	   new FNb2(
+	      new FNa(1), 
+	      new FNb1(null)
+	   )
+	);yyf.writeNl ();
+
+
+//Test Functions and node creation
+
+	FNprint (
+	   FN1 (1)
+	);yyf.writeNl ();
+	FNprint (
+	   FN1 (2)
+	);yyf.writeNl ();
+	FNprint (
+	   FN1 (3)
+	);yyf.writeNl ();
+	FNprint (
+	   FN1 (4)
+	);yyf.writeNl ();
+	FNprint (
+	   FN1 (5)
+	);yyf.writeNl ();
+
+
+//Test Functions and node creation
+
+	FNprint (
+	   FN2 (
+	      1, 
+	      new FNb1(null)
+	   )
+	);yyf.writeNl ();
+	FNprint (
+	   FN2 (
+	      1, 
+	      new FNb2(
+	         new FNa(3), 
+	         new FNb1(
+	            new FN()
+	         )
+	      )
+	   )
+	);yyf.writeNl ();
+	FNprint (
+	   FN2 (
+	      1, 
+	      new FNb2(
+	         new FNa(4), 
+	         new FNb1(
+	            new FNb1(null)
+	         )
+	      )
+	   )
+	);yyf.writeNl ();
+	FNprint (
+	   FN2 (
+	      1, 
+	      new FNb2(
+	         new FNa(5), 
+	         new FNb1(
+	            new FNa(56)
+	         )
+	      )
+	   )
+	);yyf.writeNl ();
+	FNprint (
+	   FN2 (
+	      1, 
+	      new FNb2(
+	         new FNa(999), 
+	         new FNb1(
+	            new FNb1(null)
+	         )
+	      )
+	   )
+	);yyf.writeNl ();
+	FNprint (
+	   FN2 (
+	      1, 
+	      new FNb2(
+	         new FNa(999), 
+	         new FNb1(
+	            new FNa(99)
+	         )
+	      )
+	   )
+	);yyf.writeNl ();
+	FNprint (
+	   FN2 (
+	      2, 
+	      new FNc(null)
+	   )
+	);yyf.writeNl ();
+	FNprint (
+	   FN2 (
+	      2, 
+	      new FNc1(null, 97)
+	   )
+	);yyf.writeNl ();
+	FNprint (
+	   FN2 (
+	      2, 
+	      new FNb1(null)
+	   )
+	);yyf.writeNl ();
+
+
+//Test Statements
+
+	Sprint (
+	   new Snumber(
+	      new Sempty(), 
+	      99
+	   )
+	);yyf.writeNl ();
+	Sprint (
+	   new Snumber(
+	      new Snest(
+	         new Snumber(
+	            new Sempty(), 
+	            2
+	         ), 
+	         new Snumber(
+	            new Sempty(), 
+	            9
+	         )
+	      ), 
+	      1
+	   )
+	);yyf.writeNl ();
+	Sprint (
+	   makeN (0)
+	);yyf.writeNl ();
+	Sprint (
+	   makeN (5)
+	);yyf.writeNl ();
+	Sprint (
+	   makeN (10)
+	);yyf.writeNl ();
+
+
+//Test Variable defns
+
+	vdef1 (1, 2);
+	vdef1 (4, 4);
+	vdef2 (
+	   new V1(1, 2)
+	);
+	vdef2 (
+	   new V1(9, 9)
+	);
+	vdef2 (
+	   new V1(10, 10)
+	);
+	vdef2 (
+	   new V3("10", "10")
+	);
+	vdef2 (
+	   new V3("9", "6")
+	);
+	vdef2 (
+	   new V2(null)
+	);
+	vdef2 (
+	   new V2a(null)
+	);
+	vdef2 (
+	   new V2(
+	      new V1(1, 2)
+	   )
+	);
+	vdef2 (
+	   new V4(Tree.a3)
+	);
+	vdef2 (
+	   new V4(Tree.anot3)
+	);
+	vdef3 (
+	   new V4(Tree.a3), 
+	   new V4(Tree.anot3)
+	);
+	vdef3 (
+	   new V4(Tree.a3), 
+	   new V4(Tree.a3)
+	);
+
+
+//Test Predicates
+
+	Xprint (
+	   new Xe(
+	      "document", 
+	      new NoXa(), 
+	      new AnXe(
+	         new AnXe(
+	            new AnXe(
+	               new NoXe(), 
+	               new Xe(
+	                  "with-attr", 
+	                  new Xa(
+	                     new Xa(
+	                        new NoXa(), 
+	                        "at2", 
+	                        "v2"
+	                     ), 
+	                     "at1", 
+	                     "v1"
+	                  ), 
+	                  new AnXe(
+	                     new NoXe(), 
+	                     new Xe(
+	                        "inner", 
+	                        new NoXa(), 
+	                        new NoXe()
+	                     )
+	                  )
+	               )
+	            ), 
+	            new Xe(
+	               "empty-with-attr", 
+	               new Xa(
+	                  new Xa(
+	                     new NoXa(), 
+	                     "at2", 
+	                     "v2"
+	                  ), 
+	                  "at1", 
+	                  "v1"
+	               ), 
+	               new NoXe()
+	            )
+	         ), 
+	         new Xe(
+	            "empty-element", 
+	            new NoXa(), 
+	            new NoXe()
+	         )
+	      )
+	   ), 
+	   0
+	);
+	Xprint (
+	   
+   Xpath (
+	      new Xe(
+	         "document", 
+	         new NoXa(), 
+	         new AnXe(
+	            new AnXe(
+	               new AnXe(
+	                  new AnXe(
+	                     new AnXe(
+	                        new NoXe(), 
+	                        new Xe(
+	                           "x", 
+	                           new Xa(
+	                             new NoXa(), 
+	                             "a", 
+	                             "v1"
+	                           ), 
+	                           new NoXe()
+	                        )
+	                     ), 
+	                     new Xe(
+	                        "y", 
+	                        new Xa(
+	                           new NoXa(), 
+	                           "a", 
+	                           "v1"
+	                        ), 
+	                        new NoXe()
+	                     )
+	                  ), 
+	                  new Xe(
+	                     "y", 
+	                     new Xa(
+	                        new NoXa(), 
+	                        "a", 
+	                        "v1"
+	                     ), 
+	                     new NoXe()
+	                  )
+	               ), 
+	               new Xe(
+	                  "x", 
+	                  new Xa(
+	                     new Xa(
+	                        new NoXa(), 
+	                        "b", 
+	                        "v2"
+	                     ), 
+	                     "a", 
+	                     "v1"
+	                  ), 
+	                  new NoXe()
+	               )
+	            ), 
+	            new Xe(
+	               "x", 
+	               new NoXa(), 
+	               new NoXe()
+	            )
+	         )
+	      ), 
+	      null, 
+	      new Xroot(
+	         new Xchild(
+	            new Xname(
+	               new Xatt(
+	                  new Xend(), 
+	                  "a"
+	               ), 
+	               "x"
+	            )
+	         )
+	      )
+	   )
+, 
+	   0
+	);
+
+
+//Test Recursion
+
+	pr1 (1, 4);
+	pr1 (1, 3);
+	pr1 (1, 2);
+	pr1 (1, 1);
+
+
+//Test Recursion
+
+	pr2 (3, 4);
+	pr2 (2, 3);
+	pr2 (3, 2);
+	pr2 (2, 1);
+
+
+//Test Types
+
+	Tc1 (
+	   new T1A(), 
+	   new T2A()
+	);
+	Tc1 (
+	   new T1A(), 
+	   new T1A()
+	);
+	Tc1 (
+	   new T1A(), 
+	   new T3A()
+	);
+	Tc1 (
+	   new T1B(), 
+	   new T3B()
+	);
+	Tc1 (
+	   new T1B(), 
+	   new T3C()
+	);
+
+
+        yyf.close ();
+    }
+}
+
+
+
+
+
+PROCEDURE Match1 (int)
+	3 :- "int 3"; NL.
+	4 :- "int 4"; NL.
+	... :- "int other"; NL.
+
+PROCEDURE  Match2 ({int})
+	3 :- "{int} 3"; NL.
+	4 :- "{int} 4"; NL.
+	... :- "{int} other"; NL.
+
+PROCEDURE Trivial (Tree, Defs)
+	Ts1 (...), Ds1 (...) :- "Simple 1-1"; NL.
+	Ts2 (...), Ds1 (...) :- "Simple 2-1"; NL.
+	... :- "Simple default"; NL.
+
+
+PROCEDURE Casts (Tree)
+	T1 (Aa (D2 (...))) :- "C 1"; NL.
+			// Needs a cast A -> Aa
+
+	T2 (Aa (D2 (...))) :- "C 2"; NL.
+			// Needs no cast Aa = Aa
+
+	T1 (Ab (D3a (D2 (...)))) :- "C 3"; NL.
+			// Needs a cast A -> Aa
+
+	...		:- "C 99"; NL.
+
+
+PROCEDURE Pattern1 (t: Tree)
+   NIL		:- "P1 NIL"; NL.
+   P2(...)	:- "P1 P2"; NL; REJECT.
+   P1(...)	:- "P1 P1"; NL;.
+
+PROCEDURE Pattern2 (t: Tree)
+   P3(x:P2 (NIL), x)	:- "P2 match"; NL.
+   P3(x, x)	:- "P2 match2"; NL.
+   P5(P4 (x), P4 (x))		:- "P2 match 3"; IF x != 8 THEN NL; RETURN; END; " 8s"; NL.
+   _	:- "P2 no match"; NL.
+
+PROCEDURE FNprint (Tree)
+   NIL		:- "NIL";.
+   FNa(i)	:- "FNa("; yyf.write (i); ")";.
+   FNb1 (a)	:- "FNb1("; FNprint(GUARD a); ")";.
+   FNb2 (l,r)	:- "FNb2("; FNprint(l); ","; FNprint(r); ")";.
+   FNc1 (a,d)	:- "FNc1("; FNprint(a); ","; yyf.write (d); ")";.
+   FNc (a)	:- "FNc("; FNprint(a); ")";.
+   FN (...)	:- "FN";.
+   ...		:- "??"; .
+
+FUNCTION FN1 (int) Tree
+   1		RETURN FNa (-1) :- .
+   2		RETURN FNb1 (NIL) :- .
+   3		RETURN FNb2 (FNa (6), ...) :- .
+   4		RETURN FN1 (2) :- .
+   5		RETURN FNb1 (_) :- .
+
+// Expression syntax
+FUNCTION FN2 (i: int, t: Tree) Tree
+   i:=1		RETURN result :-
+			result: FNb1;
+			"Guard 1:-?"; NL;
+			result := GUARD t; 
+			"Guard 1:-OK"; NL;
+.
+   i:=1, t:=FNb2 (FNa (x), r:=z:FNb1 (...))
+		RETURN result :-
+			result: FNb1;
+			IF x == 3 THEN
+				RETURN FNb2 (FNa (x), z::a);
+			ELSIF x == 4 THEN
+				result := (FNb1) z::a;
+			ELSIF x == 5 THEN
+				RETURN FNb2 (GUARD z::a, NIL);
+			ELSE
+				"Guard 2:-?"; NL;
+				result := GUARD z::a;
+				"Guard 2:-OK"; NL;
+			END;
+.
+   i:=2		RETURN result :-
+			result: FNc;
+			tcopy: Tree := GUARD {t};
+			"Guard 3:-?"; NL;
+			result := GUARD tcopy; 
+			"Guard 3:-OK"; NL;
+.
+   ...		RETURN NIL :- .
+
+PROCEDURE Sprint (Tree)
+Snumber (Next, n)	:- "n("; yyf.write (n); ")"; Sprint (Next); .
+Snest (Next, Slist)	:- "<"; NL; indent++; {{for (int i = 0; i < indent; i++) yyf.write(' ');}}; Sprint (Slist);
+		   NL; indent--; {{for (int i = 0; i < indent; i++) yyf.write(' ');}}; ">"; Sprint (Next);.
+Sitem (Next)	:- "()"; Sprint (Next);.
+Sempty (...)	:- .
+Slist (...)	:- "S"; .
+
+FUNCTION makeN (n: int) Slist
+LOCAL {Slist  list2;}
+  ... RETURN Sempty () :- CONDITION n == 0; .
+  ... RETURN list :-
+       list: Slist := Sempty ();
+       i: int;
+       FOR i := 0; i < n; i++; DO
+          list2 = list;
+          IF i > 5 THEN list ?= Snumber (n:=4); END;
+          list := Snumber (list, i);
+       END;
+  .
+  ... RETURN Snest (Sempty (), list2) :- .
+
+PROCEDURE vdef1 (a: int, b: int)
+   x, x :- "equal"; NL.
+   ...  :- "unequal"; NL. 
+PROCEDURE vdef2 (t:Tree)
+   V2(...) :- t ?= V2(NIL); "nil"; NL.
+   V2(v) :- vdef2 (v);.
+   ... :- t ?= V1(10, 10); "tens"; NL.
+   ... :- t ?= V3("10", "10"); "strings "; yyf.write ("10"); NL.
+   ... :- t ?= V1(x, x); "equal"; NL.
+   V4(a) :- CONDITION a[3] == 3; "3"; NL.
+   ...  :- "unequal"; NL.
+PROCEDURE vdef3 (t1:Tree, t2:Tree)
+   V4(a), V4(a)	:- "v4 equal"; NL.
+   ...		:- "v4 unequal"; NL.
+
+PROCEDURE Xprint (Tree, pos: int)
+  Xe(n, a, c),_	:-	{{for (int i = 0; i < indent; i++) yyf.write(' ');}}; "<"; yyf.write (n);
+			Xprint (a, 1);
+			IF !NoChildren (c) THEN
+				">"; NL; indent++; Xprint (c, 1); indent--;
+				{{for (int i = 0; i < indent; i++) yyf.write(' ');}}; "</"; yyf.write (n); ">";
+			ELSE
+				"/>";
+			END;
+			NL;
+		.
+  AnXe(next, e),_	:- Xprint (e, pos); Xprint (next, pos+1);
+			.
+  Xa(next, n, v),_	:-	" "; yyf.write (n); "="; yyf.write (v);
+				Xprint (next, pos+1);
+			.
+  NoXa(...),_; NoXe(...),_	:-.
+PREDICATE NoChildren (Xes)
+  NoXe (...)	:-.
+PREDICATE HasAttr (t: Xas, a_name: String)
+  t:=Xa (name:=a_name)		:-.
+  t:=Xa (Next:=Next:Xas(...))	:- HasAttr (Next, a_name);.
+FUNCTION Xpath (doc: Xe, context: Tree, expr: Defs) Tree
+  expr:=Xroot(next)
+			RETURN Xpath (doc, doc, next)	:-.
+  expr:=Xchild(next),
+  context:=Xe(children:=nodes)
+			RETURN Xpath (doc, nodes, next)	:-.
+  expr:=Xname(next, name),
+  context:=AnXe (nextdoc, e:Xe(name,...))
+			RETURN AnXe (
+				GUARD Xpath (doc, nextdoc, expr),
+				GUARD Xpath (doc, e, next)
+			) :- .
+  expr:=Xatt(next, name),
+  context:=e:Xe(ename, attrs, c)
+			RETURN e :- HasAttr (attrs, name);.
+  expr:=Xatt(next, name)
+			RETURN NoXe() :-.
+  context:=NoXe()
+			RETURN context :-.
+  expr:=Xname(next, _),
+  context:=AnXe (nextdoc, ...)
+			RETURN Xpath (doc, nextdoc, expr) :- .
+  ...			RETURN NIL :- "Fail:-"; Xprint (context, 0);.
+
+PROCEDURE pr1 (a: int, b: int)
+  1,_	:-
+		"1,";
+		yyf.write (b); NL;
+		IF b==1 THEN FAIL; END;
+		IF b==2 THEN REJECT; END;
+		IF b==3 THEN RETURN; END;
+		"1 default"; NL.
+  1,_	:-
+		"1 rejected"; NL.
+  _,_	:-
+		"Other"; NL.
+
+PROCEDURE pr2 (a: int, b: int)
+  1,_	:-
+		"1,";
+		yyf.write (b); NL;
+		IF b==1 THEN FAIL; END;
+		IF b==2 THEN REJECT; END;
+		IF b==3 THEN RETURN; END;
+		"1 default"; NL.
+  1,_	:-
+		"1 rejected"; NL.
+  2,_	:-
+		"tail recurse"; NL;
+		pr2 (a-1, b);.
+  3,_	:-
+		pr2 (a-2, b);
+		"post recurse"; NL.
+  _,_	:-
+		"Other"; NL.
+
+PROCEDURE Tc1 (t1: [T1A, T2A], t2: [T2A, T3A])
+   t,t	:- "same type"; NL.
+   T1A(...), T3A(...)	:-
+				tb: [T1B, T2B, T3B];
+				tc: [T1C, T2C, T3C];
+				"t rule 1"; NL;
+				tb := GUARD t1;
+				"t rule 1b"; NL;
+				tc := GUARD t2;
+				"t rule 1c"; NL.
+   ...	:- "t no match"; NL.
+
+

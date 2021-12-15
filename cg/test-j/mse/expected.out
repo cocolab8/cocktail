@@ -1,0 +1,201 @@
+Tree u
+ E1
+  r                = 1
+  l                = 2
+  Thing            =  IntThing
+    x                = 3
+  o                = 4
+  c1               = 5
+  Next             =  E2
+    r                = 10
+    l                = 11
+    Thing            =  NoTree
+    o                = 14
+    c2               = 15
+    t                =  IntThing
+      x                = 90
+    t2               =  Thing
+
+    Next             =  None
+      r                = 21
+      l                = 22
+      n                = 23
+      Thing            =  IntThing
+        x                = 9
+Tree r
+ E1
+  r                = 1
+  l                = 2
+  Thing            =  IntThing
+    x                = 3
+  o                = 4
+  c1               = 5
+  Next             =  E2
+    r                = 10
+    l                = 11
+    Thing            =  NoTree
+    o                = 14
+    c2               = 15
+    t                =  IntThing
+      x                = 90
+    t2               =  Thing
+
+    Next             =  None
+      r                = 21
+      l                = 22
+      n                = 23
+      Thing            =  IntThing
+        x                = 9
+Tree u cloned
+ E1
+  r                = 81
+  l                = 82
+  Thing            =  IdThing
+    id               = t2
+  o                = 84
+  c1               = 85
+  Next             =  E2
+    r                = 810
+    l                = 811
+    Thing            =  NoTree
+    o                = 814
+    c2               = 815
+    t                =  IdThing
+      id               = t3
+    t2               =  PosThing
+  pos              =   81,  2
+
+    Next             =  List
+      r                = 31
+      l                = 32
+      Thing            =  IntThing
+        x                = 901
+Tree r 2
+ E1
+  r                = 81
+  l                = 82
+  Thing            =  IdThing
+    id               = t2
+  o                = 84
+  c1               = 85
+  Next             =  E2
+    r                = 810
+    l                = 811
+    Thing            =  NoTree
+    o                = 814
+    c2               = 815
+    t                =  IdThing
+      id               = t3
+    t2               =  PosThing
+  pos              =   81,  2
+
+    Next             =  List
+      r                = 31
+      l                = 32
+      Thing            =  IntThing
+        x                = 901
+Traverse TD
+E1 81
+IdThing 1=t2
+E2 810
+IdThing 2=t3
+List 31
+IntThing 901
+Traverse BU
+IdThing 1=t2
+IdThing 2=t3
+IntThing 901
+List 31
+E2 810
+E1 81
+Reverse of:
+ E2
+  r                = 4
+  l                = 99
+  Thing            = 
+01:IntThing
+    x                = 1000
+  o                = 910
+  c2               = 911
+  t                = ^1
+  t2               =  IntThing
+  x                = 1000
+
+  Next             =  Item2
+    r                = 3
+    l                = 98
+    Thing            = ^1
+    Next             = 
+02:None
+      r                = -1
+      l                = 912
+      n                = 913
+      Thing            = ^1
+    NotNext          = ^2
+    AllNext          =  Item1
+      r                = 2
+      l                = 97
+      Thing            = ^1
+      Next             = ^2
+      L                = 
+03:None
+        r                = 0
+        l                = 92
+        n                = 93
+        Thing            = ^1
+      RealNext         =  Element
+        r                = 1
+        l                = 95
+        Thing            = ^1
+        o                = 96
+        Next             = ^3
+is Reversed
+ Element
+  r                = 1
+  l                = 95
+  Thing            = 
+01:IntThing
+    x                = 1000
+  o                = 96
+  Next             =  Item1
+    r                = 2
+    l                = 97
+    Thing            = ^1
+    Next             = 
+02:None
+      r                = -1
+      l                = 912
+      n                = 913
+      Thing            = ^1
+    L                = 
+03:None
+      r                = 0
+      l                = 92
+      n                = 93
+      Thing            = ^1
+    RealNext         =  Item2
+      r                = 3
+      l                = 98
+      Thing            = ^1
+      Next             = ^2
+      NotNext          = ^2
+      AllNext          =  E2
+        r                = 4
+        l                = 99
+        Thing            = ^1
+        o                = 910
+        c2               = 911
+        t                = ^1
+        t2               =  IntThing
+  x                = 1000
+
+        Next             = ^3
+Element 1
+Item1 2
+Item2 3
+E2 4
+None 0
+Reverse with null
+Item2 3
+Item1 2
+Element 1

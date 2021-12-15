@@ -1,0 +1,35 @@
+CT_LIB	= "$(CT_DIR)"\lib
+INCDIR	= $(CT_LIB)\include
+CFLAGS	= /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /I$(INCDIR)
+CC	= cl /nologo
+
+all:	ParserDrv ScannerDrv
+
+ParserDrv: ParserDrv.obj Scanner.obj Parser.obj
+	link /nologo /incremental:no /out:ParserDrv.exe ParserDrv.obj Scanner.obj Parser.obj $(CT_LIB)\libreuse.lib
+
+ParserDrv.obj:	Parser.h Scanner.h
+Parser.obj:	Parser.h Scanner.h
+
+ParserDrv.c Parser.c Parser.h: modula.ell
+	ell -cdijpf modula.ell
+
+ScannerDrv: ScannerDrv.obj Scanner.obj
+	link /nologo /incremental:no /out:ScannerDrv.exe ScannerDrv.obj Scanner.obj $(CT_LIB)\libreuse.lib
+
+ScannerDrv.obj:	Scanner.h
+Scanner.obj:	Scanner.h
+
+ScannerDrv.c Scanner.c Scanner.h: modula.rex
+	rex -csd modula.rex
+
+lint:	ParserDrv.c Parser.c Scanner.c
+	lint $(CFLAGS) -b -u *.c
+
+clean:
+	del /F *Drv *.[hco] core*
+
+.SUFFIXES: .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

@@ -1,0 +1,2442 @@
+
+
+
+
+
+
+
+
+
+
+___________________________________________________________________
+
+
+                                   Reusable Software
+                                   A Collection of MODULA-Modules
+
+                                   J. Grosch
+
+
+___________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+___________________________________________________________________
+
+                                   DR. JOSEF GROSCH
+
+                                   COCOLAB - DATENVERARBEITUNG
+
+                                   GERMANY
+
+___________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                   Cocktail
+
+
+                      Toolbox for Compiler Construction
+
+
+         ___________________________________________________________
+
+
+              Reusable Software - A Collection of MODULA-Modules
+
+
+                                 Josef Grosch
+
+
+                                Dec. 28, 2000
+
+
+         ___________________________________________________________
+
+
+                                Document No. 4
+
+
+                     Copyright (C) 2000 Dr. Josef Grosch
+
+
+                               Dr. Josef Grosch
+                         CoCoLab - Datenverarbeitung
+                              Breslauer Str. 64c
+                               76139 Karlsruhe
+                                   Germany
+                           Phone: +49-721-91537544
+                            Fax: +49-721-91537543
+                          Email: grosch@cocolab.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   1
+
+
+Abstract
+
+A brief description of a useful collection of reusable modules written in MOD-
+ULA-2 is given. The modules are oriented towards compiler construction.
+
+1.  Overview
+
+The following modules are available:
+
++----------------------------------------------------------------------------+
+|Module     Task                                                             |
++----------------------------------------------------------------------------+
+|rMemory    dynamic storage (heap) with free lists                           |
+|Heap       dynamic storage (heap) without free lists                        |
+|DynArray   dynamic and flexible arrays                                      |
+|Strings    string handling for single byte character strings                | |
+|WStrings   string handling for double byte character strings                | |
+|StringM    string memory                                                    |
+|Idents     identifier table - unambiguous encoding of strings               |
+|Lists      lists of arbitrary objects                                       |
+|Texts      texts are lists of strings (lines)                               |
+|Sets       sets of scalar values (without run time checks)                  |
+|SetsC      sets of scalar values (with run time checks)                     |
+|HugeSets   sets of scalar values (up to 2**32)                              | |
+|Relation   binary relations between scalar values (without run time checks) | |
+|RelatsC    binary relations between scalar values (with run time checks)    |
+|IO         buffered input and output                                        |
+|StdIO      buffered IO for standard files                                   |
+|Layout     more routines for input and output                               |
+|Position   handling of source positions                                     |
+|Errors     error handler for parsers and compilers                          |
+|Source     provides input for scanners                                      |
+|Sort       quicksort for arrays with elements of arbitrary type             |
+|Pack       compress (scanner and parser) tables into strings                |
+|General    miscellaneous functions                                          |
+|rSystem    machine dependent code                                           |
+|Checks     checks for system calls                                          |
+|Times      access to cpu-time                                               |
++----------------------------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   2
+
+
+2.  rMemory: dynamic storage (heap) with free lists
+
+
+DEFINITION MODULE rMemory;
+
+VAR       MemoryUsed    : LONGCARD;
+                        (* Holds the total amount of memory managed by  *)
+                        (* this module.                                 *)
+
+PROCEDURE Alloc         (ByteCount: LONGINT) : ADDRESS;
+                        (* Returns a pointer to dynamically allocated   *)
+                        (* memory space of size 'ByteCount' bytes.      *)
+                        (* Returns NIL if space is exhausted.           *)
+
+PROCEDURE Free          (ByteCount: LONGINT; a: ADDRESS);
+                        (* The dynamically allocated space starting at  *)
+                        (* address 'a' of size 'ByteCount' bytes is     *)
+                        (* released.                                    *)
+
+PROCEDURE WriteMemory;
+
+END rMemory.
+
+
+3.  Heap: dynamic storage (heap) without free lists
+
+
+
+DEFINITION MODULE Heap;
+
+VAR       HeapUsed      : LONGCARD;
+                        (* Holds the total amount of memory managed by  *)
+                        (* this module.                                 *)
+
+PROCEDURE Alloc         (ByteCount: LONGINT) : ADDRESS;
+                        (* Returns a pointer to dynamically allocated   *)
+                        (* space of size 'ByteCount' bytes.             *)
+
+PROCEDURE Free          ;
+                        (* The complete space allocated for the heap    *)
+                        (* is released.                                 *)
+
+END Heap.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   3
+
+
+4.  DynArray: dynamic and flexible arrays
+
+     This module provides dynamic and flexible arrays. The size of  a  dynamic
+array  is  determined  at run time. It must be passed to a procedure to create
+the array. The size of such an array is also flexible, that means it can  grow
+to arbitrary size by repeatedly calling a procedure to extend it.
+
+
+
+DEFINITION MODULE DynArray;
+
+PROCEDURE MakeArray     (VAR ArrayPtr   : ADDRESS       ;
+                         VAR ElmtCount  : LONGINT       ;
+                             ElmtSize   : LONGINT)      ;
+                        (* 'ArrayPtr' is set to the start address of a  *)
+                        (* memory space to hold an array of 'ElmtCount' *)
+                        (* elements each of size 'ElmtSize' bytes.      *)
+
+PROCEDURE ResizeArray   (VAR ArrayPtr   : ADDRESS       ;
+                         VAR OldElmtCnt : LONGINT       ;
+                             NewElmtCnt : LONGINT       ;
+                             ElmtSize   : LONGINT)      ;
+                        (* The memory space for the array is changed    *)
+                        (* from 'OldElmtCnt' elements to 'NewElmtCnt'   *)
+                        (* elements. 'NewElmtCnt' can be bigger or      *)
+                        (* smaller then 'OldElmtCnt'.                   *)
+
+PROCEDURE ExtendArray   (VAR ArrayPtr   : ADDRESS       ;
+                         VAR ElmtCount  : LONGINT       ;
+                             ElmtSize   : LONGINT)      ;
+                        (* The memory space for the array is increased  *)
+                        (* by doubling the number of elements.          *)
+
+PROCEDURE ReleaseArray  (VAR ArrayPtr   : ADDRESS       ;
+                         VAR ElmtCount  : LONGINT       ;
+                             ElmtSize   : LONGINT)      ;
+                        (* The memory space for the array is released.  *)
+
+END DynArray.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   4
+
+
+Example:
+There  is  a  problem with the index arithmetic generated by the compiler.  If
+TSIZE (ArrayType) < 65536 then index arithmetic will be done with 2 byte  val-
+ues  otherwise with 4 byte values.  Arithmetic with 2 bytes allows only access
+to arrays whose size never exceeds 65536 bytes.  If larger arrays are  desired
+then  ArrayType  has  to be declared to yield a size greater or equal to 65536
+bytes like below.
+
+
+
+CONST InitialSize       = 100;
+TYPE  ElmtType          = ... ;
+TYPE  ArrayType         = ARRAY [0 .. 100000] OF ElmtType;
+VAR   ActualSize        : LONGINT;
+VAR   ArrayPtr          : POINTER TO ArrayType;
+
+BEGIN
+   ActualSize := InitialSize;
+   MakeArray (ArrayPtr, ActualSize, TSIZE (ElmtType));
+
+   (* Case 1: continuously growing array *)
+
+   Index := 0;
+   LOOP
+      INC (Index);
+      IF Index = ActualSize THEN
+         ExtendArray (ArrayPtr, ActualSize, TSIZE (ElmtType));
+      END;
+
+      ArrayPtr ^ [Index] := ... ;   (* access an array element *)
+       ... := ArrayPtr ^ [Index];   (* "      "  "     "       *)
+   END;
+
+   (* Case 2: non-continuously growing array *)
+
+   LOOP
+      Index := ... ;
+      WHILE Index >= ActualSize DO
+         ExtendArray (ArrayPtr, ActualSize, TSIZE (ElmtType));
+      END;
+
+      ArrayPtr ^ [Index] := ... ;   (* access an array element *)
+       ... := ArrayPtr ^ [Index];   (* "      "  "     "       *)
+   END;
+
+   ReleaseArray (ArrayPtr, ActualSize, TSIZE (ElmtType));
+END;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   5
+
+
+5.  Strings: string handling for single byte character strings                 |
+
+     This module provides operations on  strings  of  single  byte  characters |
+whose length is at most 255 characters.
+
+
+DEFINITION MODULE Strings;
+
+CONST   cMaxStrLength   = 255;
+
+TYPE    tString         ;
+
+TYPE    tStringIndex    = [0 .. cMaxStrLength];                                |
+
+PROCEDURE Assign        (VAR s1, s2: tString);
+                        (* Assigns the string 's2' to the string 's1'.  *)
+
+PROCEDURE AssignEmpty   (VAR s: tString);
+                        (* Returns an empty string 's'.                 *)
+
+PROCEDURE Concatenate   (VAR s1, s2: tString);
+                        (* Returns in parameter 's1' the concatenation  *)
+                        (* of the strings 's1' and 's2'.                *)
+
+PROCEDURE Append        (VAR s: tString; c: CHAR);
+                        (* The character 'c' is concatenated at the end *)
+                        (* of the string 's'.                           *)
+
+PROCEDURE Length        (VAR s: tString)                        : CARDINAL;
+                        (* Returns the length of the string 's'.        *)
+
+PROCEDURE IsEqual       (VAR s1, s2: tString)                   : BOOLEAN;
+                        (* Returns TRUE if the strings 's1' and 's2'    *)
+                        (* are equal.                                   *)
+
+PROCEDURE IsInOrder     (VAR s1, s2: tString)                   : BOOLEAN;
+                        (* Returns TRUE if the string 's1' is lexico-   *)
+                        (* graphically less or equal to the string 's2'.*)
+
+PROCEDURE Exchange      (VAR s1, s2: tString);
+                        (* Exchanges the strings 's1' and 's2'.         *)
+
+PROCEDURE SubString     (VAR s1: tString; from, to: tStringIndex; VAR s2: tString);
+                        (* Returns in 's2' the substring from 's1' com- *)
+                        (* prising the characters between 'from' and 'to'. *)
+                        (* PRE  1 <= from <= Length (s1)                *)
+                        (* PRE  1 <=  to  <= Length (s1)                *)
+
+PROCEDURE Char          (VAR s: tString; i: tStringIndex)       : CHAR;
+                        (* Returns the 'i'-th character of the string 's'. *)
+                        (* The characters are counted from 1 to Length (s). *)
+                        (* PRE  1 <= index <= Length (s)                *)
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   6
+
+
+PROCEDURE ArrayToString (a: ARRAY OF CHAR; VAR s: tString);
+                        (* An array 'a' of characters representing a    *)
+                        (* MODULA string is converted to a string 's'   *)
+                        (* of type tString.                             *)
+
+PROCEDURE StringToArray (VAR s: tString; VAR a: ARRAY OF CHAR);
+                        (* A string 's' of type tString is converted to *)
+                        (* an array 'a' of characters representing a    *)
+                        (* MODULA string.                               *)
+
+PROCEDURE StringToInt   (VAR s: tString)                        : INTEGER;
+                        (* Returns the integer value represented by 's'. *)
+
+PROCEDURE StringToNumber(VAR s: tString; Base: CARDINAL)        : CARDINAL;
+                        (* Returns the integer value represented by 's' *)
+                        (* to the base 'Base'.                          *)
+
+PROCEDURE StringToReal  (VAR s: tString)                        : REAL;
+                        (* Returns the real value represented by 's'.   *)
+
+PROCEDURE IntToString   (n: INTEGER; VAR s: tString);
+                        (* Returns in 's' the string representation of 'n'. *)
+
+PROCEDURE ReadS         (f: tFile; VAR s: tString; FieldWidth: tStringIndex);
+                        (* Read 'FieldWidth' characters as string 's'   *)
+                        (* from file 'f'.                               *)
+
+PROCEDURE ReadL         (f: tFile; VAR s: tString);
+                        (* Read rest of line as string 's' from file    *)
+                        (* 'f'. Skip to next line.                      *)
+
+PROCEDURE WriteS        (f: tFile; VAR s: tString);
+                        (* Write string 's' to file 'f'.                *)
+
+PROCEDURE WriteL        (f: tFile; VAR s: tString);
+                        (* Write string 's' as complete line.           *)
+
+END Strings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   7
+
+
+6.  WStrings: string handling for double byte character strings                |
+
+     This  module  provides  operations  on  strings of double byte characters |
+whose length is at most 255 characters.                                        |
+
+
+DEFINITION MODULE WStrings;                                                    |
+
+CONST   cMaxStrLength   = 255;                                                 |
+
+TYPE    WCHAR           = SHORTCARD;                                           |
+TYPE    tWString        ;                                                      |
+TYPE    tStringIndex    = [0 .. cMaxStrLength];                                |
+
+PROCEDURE Assign        (VAR s1, s2: tWString);                                |
+                        (* Assigns the string 's2' to the string 's1'.  *)     |
+
+PROCEDURE AssignEmpty   (VAR s: tWString);                                     |
+                        (* Returns an empty string 's'.                 *)     |
+
+PROCEDURE Concatenate   (VAR s1, s2: tWString);                                |
+                        (* Returns in parameter 's1' the concatenation  *)     |
+                        (* of the strings 's1' and 's2'.                *)     |
+
+PROCEDURE Append        (VAR s: tWString; c: CHAR);                            |
+                        (* The character 'c' is concatenated at the end *)     |
+                        (* of the string 's'.                           *)     |
+
+PROCEDURE Length        (VAR s: tWString)                       : CARDINAL;    |
+                        (* Returns the length of the string 's'.        *)     |
+
+PROCEDURE IsEqual       (VAR s1, s2: tWString)                  : BOOLEAN;     |
+                        (* Returns TRUE if the strings 's1' and 's2'    *)     |
+                        (* are equal.                                   *)     |
+
+PROCEDURE IsInOrder     (VAR s1, s2: tWString)                  : BOOLEAN;     |
+                        (* Returns TRUE if the string 's1' is lexico-   *)     |
+                        (* graphically less or equal to the string 's2'.*)     |
+
+PROCEDURE Exchange      (VAR s1, s2: tWString);                                |
+                        (* Exchanges the strings 's1' and 's2'.         *)     |
+
+PROCEDURE SubString (VAR s1: tWString; from, to: tStringIndex; VAR s2: tWString);|
+                        (* Returns in 's2' the substring from 's1' com- *)     |
+                        (* prising the characters between 'from' and 'to'. *)  |
+                        (* PRE  1 <= from <= Length (s1)                *)     |
+                        (* PRE  1 <=  to  <= Length (s1)                *)     |
+
+PROCEDURE Char          (VAR s: tWString; i: tStringIndex)      : CHAR;        |
+                        (* Returns the 'i'-th character of the string 's'. *)  |
+                        (* The characters are counted from 1 to Length (s). *) |
+                        (* PRE  1 <= index <= Length (s)                *)     |
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   8
+
+
+PROCEDURE ArrayToString (a: ARRAY OF CHAR; VAR s: tWString);                   |
+                        (* An array 'a' of characters representing a    *)     |
+                        (* MODULA string is converted to a string 's'   *)     |
+                        (* of type tWString.                            *)     |
+
+PROCEDURE StringToArray (VAR s: tWString; VAR a: ARRAY OF CHAR);               |
+                        (* A string 's' of type tWString is converted to *)    |
+                        (* an array 'a' of characters representing a    *)     |
+                        (* MODULA string.                               *)     |
+
+PROCEDURE StringToInt   (VAR s: tWString)                       : INTEGER;     |
+                        (* Returns the integer value represented by 's'. *)    |
+
+PROCEDURE StringToNumber(VAR s: tWString; Base: CARDINAL)       : CARDINAL;    |
+                        (* Returns the integer value represented by 's' *)     |
+                        (* to the base 'Base'.                          *)     |
+
+PROCEDURE StringToReal  (VAR s: tWString)                       : REAL;        |
+                        (* Returns the real value represented by 's'.   *)     |
+
+PROCEDURE IntToString   (n: INTEGER; VAR s: tWString);                         |
+                        (* Returns in 's' the string representation of 'n'. *) |
+
+PROCEDURE ReadS         (f: tFile; VAR s: tWString; FieldWidth: tStringIndex); |
+                        (* Read 'FieldWidth' characters as string 's'   *)     |
+                        (* from file 'f'.                               *)     |
+
+PROCEDURE ReadL         (f: tFile; VAR s: tWString);                           |
+                        (* Read rest of line as string 's' from file    *)     |
+                        (* 'f'. Skip to next line.                      *)     |
+
+PROCEDURE WriteS        (f: tFile; VAR s: tWString);                           |
+                        (* Write string 's' to file 'f'.                *)     |
+
+PROCEDURE WriteL        (f: tFile; VAR s: tWString);                           |
+                        (* Write string 's' as complete line.           *)     |
+
+END WStrings.                                                                  |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   9
+
+
+7.  StringM: string memory                                                     |
+
+     This module stores strings of variable length.  It supports  single  byte |
+character  strings  of  type tString and double byte character strings of type |
+tWString.
+
+
+DEFINITION MODULE StringM;                                                     |
+
+(* Support for single byte strings:                                     *)     |
+
+CONST NoString          = 0;                                                   |
+                        (* A default string (empty string).             *)     |
+
+TYPE tStringRef         ;
+
+PROCEDURE PutString     (VAR s: tString)                        : tStringRef;
+                        (* Stores string 's' in the string memory and   *)
+                        (* returns a reference to the stored string.    *)
+
+PROCEDURE GetString     (r: tStringRef;                    VAR s: tString);
+                        (* Returns the string 's' from the string       *)
+                        (* memory which is referenced by 'r'.           *)
+
+PROCEDURE Length        (r: tStringRef)                         : CARDINAL;
+                        (* Returns the length of the string 's'         *)
+                        (* which is referenced by 'r'.                  *)
+
+PROCEDURE IsEqual       (r: tStringRef; VAR s: tString)         : BOOLEAN;
+                        (* Compares the string referenced by 'r' and    *)
+                        (* the string 's'.                              *)
+                        (* Returns TRUE if both are equal.              *)
+
+PROCEDURE WriteString   (f: tFile; r: tStringRef);
+                        (* The string referenced by 'r' is printed on   *)
+                        (* the file 'f'.                                *)
+
+(* Support for double byte strings:                                     *)     |
+
+TYPE tWStringRef        ;                                                      |
+
+PROCEDURE PutWString    (VAR s: tWString)                       : tWStringRef; |
+                        (* Stores string 's' in the string memory and   *)     |
+                        (* returns a reference to the stored string.    *)     |
+
+PROCEDURE GetWString    (r: tWStringRef; VAR s: tWString);                     |
+                        (* Returns the string 's' from the string       *)     |
+                        (* memory which is referenced by 'r'.           *)     |
+
+PROCEDURE WIsEqual      (r: tWStringRef; VAR s: tWString)       : BOOLEAN;     |
+                        (* Compares the string referenced by 'r' and    *)     |
+                        (* the string 's'.                              *)     |
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  10
+
+
+                        (* Returns TRUE if both are equal.              *)     |
+
+PROCEDURE WriteWString  (f: tFile; r: tWStringRef);                            |
+                        (* The string referenced by 'r' is printed on   *)     |
+                        (* file 'f'.                                    *)     |
+
+PROCEDURE WriteStringMemory;
+                        (* The contents of the string memory is printed *)
+                        (* on the file 'StdOutput'.                     *)
+
+PROCEDURE BeginStringMemory;                                                   |
+                        (* The string memory is initialized.            *)
+
+PROCEDURE CloseStringMemory;                                                   |
+                        (* The string memory is finalized.              *)     |
+
+END StringM.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  11
+
+
+8.  Idents: identifier table - unambiguous encoding of strings                 |
+
+     This module maps strings unambiguously to integers.  It  supports  single |
+byte  character  strings  of type tString and double byte character strings of |
+type tWString.
+
+
+DEFINITION MODULE Idents;                                                      |
+
+(* Support for single byte character strings: CHAR                      *)     |
+
+TYPE      tIdent        ;
+
+CONST     NoIdent       = 1;                                                   |
+                        (* A default identifier (empty string).         *)     |
+
+PROCEDURE MakeIdent     (VAR s: tString)                : tIdent;
+                        (* The string 's' is mapped to a unique number  *)     |
+                        (* (an integer) which is returned.              *)     |
+
+PROCEDURE GetString     (i: tIdent; VAR s: tString);
+                        (* Returns the string 's' whose number is 'i'.  *)     |
+
+PROCEDURE GetStringRef  (i: tIdent)                     : tStringRef;
+                        (* Returns a reference to a string whose        *)
+                        (* number is 'i'.                               *)     |
+
+PROCEDURE MaxIdent      ()                              : tIdent;
+                        (* Returns the current maximal value of the     *)
+                        (* type 'tIdent'.                               *)
+
+PROCEDURE WriteIdent    (f: tFile; i: tIdent);
+                        (* The string encoded by the number 'i' is      *)     |
+                        (* printed on the file 'f'.                     *)
+
+(* Support for double byte strings: WCHAR                               *)     |
+
+TYPE      tWIdent       ;                                                      |
+
+CONST     NoWIdent      = 1;                                                   |
+                        (* A default identifer (empty string).          *)     |
+
+PROCEDURE MakeWIdent    (VAR s: tWString)               : tWIdent;             |
+                        (* The string 's' is mapped to a unique number  *)     |
+                        (* (an integer) which is returned.              *)     |
+
+PROCEDURE GetWString    (i: tWIdent; VAR s: tWString);                         |
+                        (* Returns the string 's' whose number is 'i'.  *)     |
+
+PROCEDURE GetWStringRef (i: tWIdent)                    : tWStringRef;         |
+                        (* Returns a reference to the string whose      *)     |
+                        (* number is 'i'.                               *)     |
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  12
+
+
+PROCEDURE WriteWIdent   (f: tFile; i: tWIdent);                                |
+                        (* The string encoded by the number 'i' is      *)     |
+                        (* printed on file 'f'.                         *)     |
+
+PROCEDURE WriteIdents   ;
+                        (* The contents of the identifier table is      *)
+                        (* printed on the file 'StdOutput'.             *)
+
+PROCEDURE BeginIdents    ;                                                     |
+                        (* The identifier table is initialized.         *)
+
+PROCEDURE CloseIdents    ;                                                     |
+                        (* The identifier table is finalized.           *)     |
+
+END Idents.
+
+
+9.  Lists: lists of arbitrary objects                                          |
+
+     This module actually handles lists of untyped pointers.  Thus it is  pos-
+sible to have lists of pointers referring to objects of arbitrary types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  13
+
+
+DEFINITION MODULE Lists;                                                       |
+
+TYPE tList              ;
+
+PROCEDURE MakeList      (VAR List: tList);
+                        (* Create an empty list.                        *)
+
+PROCEDURE Insert        (VAR List: tList; Elmt: ADDRESS);
+                        (* Add element at the beginning of the list.    *)
+
+PROCEDURE Append        (VAR List: tList; Elmt: ADDRESS);
+                        (* Add element at the end of the list.          *)
+
+PROCEDURE Head          (    List: tList): ADDRESS;
+                        (* Return first element of the list.            *)
+
+PROCEDURE Tail          (VAR List: tList);
+                        (* Return list except first element.            *)
+
+PROCEDURE Last          (    List: tList): ADDRESS;
+                        (* Return last element of the list.             *)
+
+PROCEDURE Front         (VAR List: tList);
+                        (* Return list except last element.             *)
+                        (* Not implemented.                             *)
+
+PROCEDURE IsEmpty       (    List: tList): BOOLEAN;
+                        (* Returns TRUE if the list is empty.           *)
+
+PROCEDURE Length        (    List: tList): CARDINAL;
+                        (* Returns the number of elements in the list.  *)
+
+PROCEDURE WriteList     (f: tFile; List: tList; Proc: tProcOfFileAddress);
+                        (* Call Proc (f, e) for all elements of a list. *)
+                        (* e points to the current list element.        *)
+                        (* Can be used e. g. to print a list.           *)
+
+END Lists.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  14
+
+
+10.  Texts: texts are lists of strings (lines)
+
+
+
+DEFINITION MODULE Texts;
+
+TYPE tText              ;
+
+PROCEDURE MakeText      (VAR Text: tText);
+                        (* Create an empty text.                        *)
+
+PROCEDURE Append        (VAR Text: tText; VAR String: tString);
+                        (* Add a line at the beginning of text 'Text'.  *)
+
+PROCEDURE Insert        (VAR Text: tText; VAR String: tString);
+                        (* Add a line at the end of the text 'Text'.    *)
+
+PROCEDURE IsEmpty       (VAR Text: tText): BOOLEAN;
+                        (* Test whether a text 'Text' is empty.         *)
+
+PROCEDURE WriteText     (f: tFile; Text: tText);
+                        (* Print the text 'Text' on the file 'f'.       *)
+
+END Texts.
+
+
+11.  Sets: sets for scalar values
+
+     The  following  module  provides operations on sets of scalar values. The
+elements of the sets can be of the types INTEGER, CARDINAL,  CHAR,  or  of  an
+enumeration  type.  Elements  of  type CHAR or of enumeration types have to be |
+coerced to the type CARDINAL with the function ORD before being used as  argu- |
+ment  of the functions below. The size of the sets, that is the range the ele-
+ments must lie in, is not restricted. The elements can range from 0  to  'Max-
+Size', where space for arbitrary large sets.
+
+     The sets are implemented as bit vectors (ARRAY OF BITSET) plus some addi-
+tional information to improve performance. So don't worry about speed too much
+because  procedures  like  Select,  Extract, or Card are quite efficient. They
+don't execute a loop over all potentially existing elements always. This  hap- |
+pens in the worst case, only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  15
+
+
+DEFINITION MODULE Sets;
+
+TYPE tSet;
+TYPE ProcOfCard         = PROCEDURE (CARDINAL);
+TYPE ProcOfCardToBool   = PROCEDURE (CARDINAL): BOOLEAN;
+
+PROCEDURE MakeSet       (VAR Set: tSet; MaxSize: CARDINAL);
+PROCEDURE ReleaseSet    (VAR Set: tSet);
+PROCEDURE Union         (VAR Set1: tSet; Set2: tSet);
+PROCEDURE Difference    (VAR Set1: tSet; Set2: tSet);
+PROCEDURE Intersection  (VAR Set1: tSet; Set2: tSet);
+PROCEDURE SymDiff       (VAR Set1: tSet; Set2: tSet);
+PROCEDURE Complement    (VAR Set: tSet);
+PROCEDURE Include       (VAR Set: tSet; Elmt: CARDINAL);
+PROCEDURE Exclude       (VAR Set: tSet; Elmt: CARDINAL);
+PROCEDURE Card          (VAR Set: tSet): CARDINAL;
+PROCEDURE Size          (VAR Set: tSet): CARDINAL;
+PROCEDURE Minimum       (VAR Set: tSet): CARDINAL;
+PROCEDURE Maximum       (VAR Set: tSet): CARDINAL;
+PROCEDURE Select        (VAR Set: tSet): CARDINAL;
+PROCEDURE Extract       (VAR Set: tSet): CARDINAL;
+PROCEDURE IsSubset      (Set1, Set2: tSet): BOOLEAN;
+PROCEDURE IsStrictSubset(Set1, Set2: tSet): BOOLEAN;
+PROCEDURE IsEqual       (VAR Set1, Set2: tSet): BOOLEAN;
+PROCEDURE IsNotEqual    (Set1, Set2: tSet): BOOLEAN;
+PROCEDURE IsElement     (Elmt: CARDINAL; VAR Set: tSet): BOOLEAN;
+PROCEDURE IsEmpty       (Set: tSet): BOOLEAN;
+PROCEDURE Forall        (Set: tSet; Proc: ProcOfCardToBool): BOOLEAN;
+PROCEDURE Exists        (Set: tSet; Proc: ProcOfCardToBool): BOOLEAN;
+PROCEDURE Exists1       (Set: tSet; Proc: ProcOfCardToBool): BOOLEAN;
+PROCEDURE Assign        (VAR Set1: tSet; Set2: tSet);
+PROCEDURE AssignElmt    (VAR Set: tSet; Elmt: CARDINAL);
+PROCEDURE AssignEmpty   (VAR Set: tSet);
+PROCEDURE ForallDo      (Set: tSet; Proc: ProcOfCard);
+PROCEDURE ReadSet       (f: tFile; VAR Set: tSet);
+PROCEDURE WriteSet      (f: tFile;     Set: tSet);
+
+END Sets.
+
+
+     Two  parameters of type 'tSet' passed to one of the above procedures must
+have the same size, that is they must have been created by  passing  the  same
+value  'MaxSize'  to the procedure 'MakeSet'. A parameter representing an ele-
+ment (of type CARDINAL or equivalent) passed to one of  the  above  procedures
+must  have  a  value  between 0 and 'MaxSize' of the involved set which is the
+other parameter passed. If the two conditions above, which can be verified  at
+programming  time,  don't  hold then strange things will happen, because there
+are no checks at run time, of course.
+
+The following table explains the semantics of the set operations:
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  16
+
+
+
+Procedure        Semantics
+--------------------------------------------------------------------------------------------
+MakeSet          allocates space for a set to hold elements ranging from 0 to 'MaxSize'.
+ReleaseSet       releases the space taken by a set.
+Union            Set1 := Set1  Set2
+Difference       Set1 := Set1 - Set2
+Intersection     Set1 := Set1  Set2
+SymDiff          Set1 := Set1  Set2     (* corresponds to exclusive or *)
+Complement       Set := { 0 .. MaxSize } - Set
+Include          Set := Set  { Elmt }
+Exclude          Set := Set - { Elmt }
+Card             returns number of elements in Set
+Size             returns 'MaxSize' given at creation time
+Minimum          returns smallest element x from Set
+Maximum          returns largest element x from Set
+Select           returns arbitrary element x from Set
+Extract          returns arbitrary element x from Set and removes it from Set
+IsSubset         Set1  Set2
+IsStrictSubset   Set1  Set2
+IsEqual          Set1 = Set2
+IsNotEqual       Set1 != Set2
+IsElement        Elmt  Set
+IsEmpty          Set =
+Forall            e  Set : Proc (e)   (* predicate Proc must hold for all elements *)
+Exists            e  Set : Proc (e)   (* predicate Proc must hold for at least 1 element *)
+Exists1          | { e  Set : Proc (e) } | = 1
+Assign           Set1 := Set2
+AssignElmt       Set1 := { Elmt }
+AssignEmpty      Set1 :=
+ForallDo         FOR e := 0 TO MaxSize DO IF e  Set THEN Proc (e); END; END;
+ReadSet          read external representation of a set from file 'tFile'.
+WriteSet         write external representation of a set to file 'tFile'.
+                 Example output: { 0 5 6 123}
+
+
+
+12.  SetsC: sets for scalar values
+
+     This module provides the same procedures as the module Sets with the dif-
+ference that all possible run time checks are performed.                       |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  17
+
+
+13.  HugeSets: sets of scalar values (up to 2**32)                             |
+
+     This  module  provides the same procedures as the module Sets.  It uses a |
+different implementation for storing sets such that values up to 2**32 can  be |
+used while the memory consumption is still reasonable.  Elements up to MaxBit- |
+set are stored as bit vectors, while elements above MaxBitset  are  stored  as |
+ordered list of ranges.  Not all procedures are implemented yet.               |
+
+
+
+DEFINITION MODULE HugeSets;                                                    |
+
+CONST MaxBitset         = 255;                                                 |
+
+TYPE tHugeSet           ;                                                      |
+TYPE ProcOfCard         = PROCEDURE (CARDINAL);                                |
+TYPE ProcOfCardToBool   = PROCEDURE (CARDINAL): BOOLEAN;                       |
+
+PROCEDURE MakeSet       (VAR Set: tHugeSet);                                   |
+PROCEDURE ReleaseSet    (VAR Set: tHugeSet);                                   |
+PROCEDURE Union         (VAR Set1: tHugeSet; Set2: tHugeSet);                  |
+PROCEDURE Difference    (VAR Set1: tHugeSet; Set2: tHugeSet);                  |
+PROCEDURE Intersection  (VAR Set1: tHugeSet; Set2: tHugeSet);                  |
+(* PROCEDURE SymDiff    (VAR Set1: tHugeSet; Set2: tHugeSet); *)               |
+PROCEDURE Complement    (VAR Set: tHugeSet);                                   |
+PROCEDURE Include       (VAR Set: tHugeSet; Elmt: LONGCARD);                   |
+PROCEDURE IncludeRange  (VAR Set: tHugeSet; Lwb, Upb: LONGCARD);               |
+PROCEDURE Exclude       (VAR Set: tHugeSet; Elmt: LONGCARD);                   |
+PROCEDURE ExcludeRange  (VAR Set: tHugeSet; Lwb, Upb: LONGCARD);               |
+PROCEDURE Card          (VAR Set: tHugeSet): LONGCARD;                         |
+PROCEDURE Minimum       (VAR Set: tHugeSet): LONGCARD;                         |
+PROCEDURE Maximum       (VAR Set: tHugeSet): LONGCARD;                         |
+PROCEDURE Select        (VAR Set: tHugeSet): LONGCARD;                         |
+PROCEDURE Extract       (VAR Set: tHugeSet; VAR Lwb, Upb: LONGCARD);           |
+PROCEDURE IsSubset      (Set1, Set2: tHugeSet): BOOLEAN;                       |
+(* PROCEDURE IsStrictSubset (Set1, Set2: tHugeSet): BOOLEAN; *)                |
+PROCEDURE IsEqual       (VAR Set1, Set2: tHugeSet): BOOLEAN;                   |
+PROCEDURE IsNotEqual    (Set1, Set2: tHugeSet): BOOLEAN;                       |
+PROCEDURE IsElement     (Elmt: LONGCARD; VAR Set: tHugeSet): BOOLEAN;          |
+PROCEDURE IsEmpty       (Set: tHugeSet): BOOLEAN;                              |
+(*                                                                             |
+PROCEDURE Forall        (Set: tHugeSet; Proc: ProcOfCardToBool): BOOLEAN;      |
+PROCEDURE Exists        (Set: tHugeSet; Proc: ProcOfCardToBool): BOOLEAN;      |
+PROCEDURE Exists1       (Set: tHugeSet; Proc: ProcOfCardToBool): BOOLEAN;      |
+*)                                                                             |
+PROCEDURE Assign        (VAR Set1: tHugeSet; Set2: tHugeSet);                  |
+PROCEDURE AssignElmt    (VAR Set: tHugeSet; Elmt: LONGCARD);                   |
+PROCEDURE AssignEmpty   (VAR Set: tHugeSet);                                   |
+(* PROCEDURE ForallDo   (Set: tHugeSet; Proc: ProcOfCard); *)                  |
+(* PROCEDURE ReadSet    (f: tFile; VAR Set: tHugeSet); *)                      |
+PROCEDURE WriteSet      (f: tFile;     Set: tHugeSet);                         |
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  18
+
+
+END HugeSets.                                                                  |
+
+
+14.  Relation: binary relations between scalar values                          |
+
+     This  module  provides operations on binary relations between scalar val-
+ues.  The elements of the relations can be pairs of the types INTEGER,  CARDI-
+NAL, CHAR, or of an enumeration type. Arguments of type CHAR or of enumeration
+types have to be coerced to the type CARDINAL with the function ORD before use
+as  a  parameter  of  the  functions  below.  The size of the relations is not
+restricted. The size is a parameter to the procedure MakeRelation which dynam-
+ically allocates space for arbitrary large relations.
+
+     The  relations  are  implemented as bit matrices or to be more precise as
+arrays of sets. Relations are viewed as sets of pairs. Therefore the set oper-
+ations  as  defined  above  are  also applicable for relations. The additional
+operations have the meaning known from theory.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  19
+
+
+DEFINITION MODULE Relation;
+TYPE tRelation;
+TYPE ProcOfIntInt       = PROCEDURE (INTEGER, INTEGER);
+TYPE ProcOfIntIntToBool = PROCEDURE (INTEGER, INTEGER): BOOLEAN;
+PROCEDURE MakeRelation  (VAR Rel: tRelation; Size1, Size2: INTEGER);
+PROCEDURE ReleaseRelation(VAR Rel: tRelation);
+PROCEDURE Include       (VAR Rel: tRelation; e1, e2: INTEGER);
+PROCEDURE Exclude       (VAR Rel: tRelation; e1, e2: INTEGER);
+PROCEDURE IsElement     (e1, e2: INTEGER; Rel: tRelation): BOOLEAN;
+PROCEDURE IsRelated     (e1, e2: INTEGER; Rel: tRelation): BOOLEAN;
+PROCEDURE IsReflexive1  (e1: INTEGER; Rel: tRelation): BOOLEAN;
+PROCEDURE IsSymmetric1  (e1, e2: INTEGER; Rel: tRelation): BOOLEAN;
+PROCEDURE IsTransitive1 (e1, e2, e3: INTEGER; Rel: tRelation): BOOLEAN;
+PROCEDURE IsReflexive   (Rel: tRelation): BOOLEAN;
+PROCEDURE IsSymmetric   (Rel: tRelation): BOOLEAN;
+PROCEDURE IsTransitive  (Rel: tRelation): BOOLEAN;
+PROCEDURE IsEquivalence (Rel: tRelation): BOOLEAN;
+PROCEDURE HasReflexive  (Rel: tRelation): BOOLEAN;
+PROCEDURE IsCyclic      (Rel: tRelation): BOOLEAN;
+PROCEDURE Closure       (VAR Rel: tRelation);
+PROCEDURE AssignEmpty   (VAR Rel: tRelation);
+PROCEDURE AssignElmt    (VAR Rel: tRelation; e1, e2: INTEGER);
+PROCEDURE Assign        (VAR Rel1: tRelation; Rel2: tRelation);
+PROCEDURE Union         (VAR Rel1: tRelation; Rel2: tRelation);
+PROCEDURE Difference    (VAR Rel1: tRelation; Rel2: tRelation);
+PROCEDURE Intersection  (VAR Rel1: tRelation; Rel2: tRelation);
+PROCEDURE SymDiff       (VAR Rel1: tRelation; Rel2: tRelation);
+PROCEDURE Complement    (VAR Rel: tRelation);
+PROCEDURE IsSubset      (Rel1, Rel2: tRelation): BOOLEAN;
+PROCEDURE IsStrictSubset(Rel1, Rel2: tRelation): BOOLEAN;
+PROCEDURE IsEqual       (VAR Rel1, Rel2: tRelation): BOOLEAN;
+PROCEDURE IsNotEqual    (Rel1, Rel2: tRelation): BOOLEAN;
+PROCEDURE IsEmpty       (Rel: tRelation): BOOLEAN;
+PROCEDURE Card          (VAR Rel: tRelation): INTEGER;
+PROCEDURE Select        (VAR Rel: tRelation; VAR e1, e2: INTEGER);
+PROCEDURE Extract       (VAR Rel: tRelation; VAR e1, e2: INTEGER);
+PROCEDURE Forall        (Rel: tRelation; Proc: ProcOfIntIntToBool): BOOLEAN;
+PROCEDURE Exists        (Rel: tRelation; Proc: ProcOfIntIntToBool): BOOLEAN;
+PROCEDURE Exists1       (Rel: tRelation; Proc: ProcOfIntIntToBool): BOOLEAN;
+PROCEDURE ForallDo      (Rel: tRelation; Proc: ProcOfIntInt);
+PROCEDURE ReadRelation  (f: tFile; VAR Rel: tRelation);
+PROCEDURE WriteRelation (f: tFile;     Rel: tRelation);
+PROCEDURE Project1      (Rel: tRelation; e1: INTEGER; VAR Set: tSet);
+PROCEDURE Project2      (Rel: tRelation; e1: INTEGER; VAR Set: tSet);
+END Relation.
+
+
+15.  RelatsC: binary relations between scalar values
+
+     This module provides the same procedures as the module Relation with  the
+difference that all possible run time checks are performed.                    |
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  20
+
+
+16.  IO: buffered input and output
+
+     This  module  provides procedures for buffered input and output to files.
+Io to and from terminals is possible too, because terminals  are  regarded  as
+special cases of files. There are procedures for binary io as well as for text
+io, that is internal values are converted to their external representation and
+vice versa.
+
+
+DEFINITION MODULE IO;                                                          |
+
+CONST   StdInput        ;   (* A pre-opened file for (terminal-)input.  *)
+CONST   StdOutput       ;   (* A pre-opened file for (terminal-)output. *)
+CONST   StdError        ;   (* A pre-opened file for (terminal-)output  *)
+                            (*    of error messages.                    *)
+TYPE    tFile           ;
+
+PROCEDURE ReadOpen      (VAR FileName: ARRAY OF CHAR): tFile;                  |
+                                                (* open  input file     *)
+PROCEDURE ReadClose     (f: tFile);             (* close input file     *)
+PROCEDURE Read          (f: tFile; Buffer: ADDRESS; Size: CARDINAL): INTEGER;
+                                                (* binary               *)
+PROCEDURE ReadC         (f: tFile): CHAR    ;   (* character            *)
+PROCEDURE ReadI         (f: tFile): INTEGER ;   (* integer  number      *)
+PROCEDURE ReadR         (f: tFile): REAL    ;   (* real     number      *)
+PROCEDURE ReadB         (f: tFile): BOOLEAN ;   (* boolean              *)
+PROCEDURE ReadN         (f: tFile; Base: INTEGER): INTEGER;
+                                                (* number of base 'Base'*)
+PROCEDURE ReadS         (f: tFile; VAR s: ARRAY OF CHAR);
+                                                (* string               *)
+PROCEDURE ReadNl        (f: tFile);             (* new line             *)
+PROCEDURE UnRead        (f: tFile);             (* backspace 1 char.    *)
+
+PROCEDURE EndOfLine     (f: tFile): BOOLEAN ;   (* end of line ?        *)
+PROCEDURE EndOfFile     (f: tFile): BOOLEAN ;   (* end of file ?        *)
+
+PROCEDURE WriteOpen     (VAR FileName: ARRAY OF CHAR): tFile;                  |
+                                                (* open  output file    *)
+PROCEDURE WriteClose    (f: tFile);             (* close output file    *)
+PROCEDURE WriteFlush    (f: tFile);             (* flush output buffer  *)
+PROCEDURE Write         (f: tFile; Buffer: ADDRESS; Size: CARDINAL): INTEGER;
+                                                (* binary               *)
+PROCEDURE WriteC        (f: tFile; c: CHAR);    (* character            *)
+PROCEDURE WriteI        (f: tFile; n: INTEGER ; FieldWidth: CARDINAL);
+                                                (* integer  number      *)
+PROCEDURE WriteR        (f: tFile; n: REAL; Before, After, Exp: CARDINAL);
+                                                (* real     number      *)
+PROCEDURE WriteB        (f: tFile; b: BOOLEAN); (* boolean              *)
+PROCEDURE WriteN        (f: tFile; n: LONGCARD; FieldWidth, Base: CARDINAL);
+                                                (* number of base 'Base'*)
+PROCEDURE WriteS        (f: tFile; VAR s: ARRAY OF CHAR);                      |
+                                                (* string               *)
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  21
+
+
+PROCEDURE WriteNl       (f: tFile);             (* new line             *)
+
+PROCEDURE CloseIO;                              (* close all files      *)
+
+END IO.                                                                        |
+
+Notes:                                                                         |
+
+ReadOpen and WriteOpen
+     Open  the  file whose name is given by the parameter 'FileName' for input
+     resp. output.  A file descriptor will be returned.
+
+Read and Write
+     Implement binary I/O for byte blocks.                                     |
+
+ReadI, ReadR, ReadB, ReadN
+     This procedures skip blanks before reading a value.
+
+ReadR and WriteR
+     'ReadR' reads real numbers according to the following syntax:
+          [+|-] [digit* . digit*] [E [+|-] digit+]
+     'WriteR' writes real numbers similar to the Ada output routine PUT:
+          Before . After E Exp
+     where Before, After, and Exp give the lengths of the fields. If Exp is 0
+     no exponent part is written.
+
+ReadB and WriteB
+     The external representation for boolean values are T for TRUE  an  F  for
+     FALSE. On input every character other than T is interpreted as FALSE.
+
+ReadN and WriteN
+     Procedures for i/o of octal (Base = 8) or hexadecimal (Base = 16) numbers
+     for example. Base must have a value between 2 and 16.
+
+ReadNl
+     Read all characters up to and including the next end of line character.
+
+EndOfLine
+     Checks whether end of line has been reached. If this is the case the next
+     character to be read would be an end of line character.
+
+EndOfFile
+     Checks  whether end of file has been reached. If this is the case none of
+     the input routines can yield any defined result.
+
+WriteFlush
+     The actual contents of the buffer  for  the  specified  file  is  written
+     unconditionally to the file.
+
+WriteNl
+     Writes an end of line character.
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  22
+
+
+CloseIO
+     This procedure has to be called at the end of every program that uses the
+     module IO. All buffers  associated  with  files  opened  for  output  are
+     flushed.
+
+17.  StdIO: buffered IO for standard files
+
+     This  module  provides the same procedures as the module IO with the dif-
+ference that the parameter 'f' to specify the  file  is  missing.   The  input
+(output) procedures use the file 'StdInput' ('StdOutput').
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  23
+
+
+18.  Layout: more routines for input and output
+
+
+
+DEFINITION MODULE Layout;                                                      |
+
+PROCEDURE WriteChar     (f: tFile; Ch: CHAR);
+                        (* Printable characters are surrounded by       *)
+                        (* quotes. Non-printable characters are written *)
+                        (* as their internal code followed by a 'C'.    *)
+
+PROCEDURE WriteSpace    (f: tFile);
+                        (* Write a blank character to file 'f'.         *)
+
+PROCEDURE WriteSpaces   (f: tFile; Count: INTEGER);
+                        (* Write 'Count' blank characters to file 'f'.  *)
+
+PROCEDURE ReadSpace     (f: tFile);
+                        (* Skip one character of file 'f'.              *)
+
+PROCEDURE ReadSpaces    (f: tFile; Count: INTEGER);
+                        (* Skip 'Count' characters of file 'f'.         *)
+
+PROCEDURE SkipSpaces    (f: tFile);
+                        (* Skip as many blank characters as possible.   *)
+
+END Layout.
+
+
+19.  Position: handling of source positions
+
+     A  simple  representation of the position of tokens in a source file con-
+sisting of a line and a column field. This module should be  copied  and  tai-
+lored to the user's needs, if necessary. Modifications may be necessary if the
+type SHORTCARD is to small to count the lines or an extra field is  needed  to
+describe the source file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  24
+
+
+DEFINITION MODULE Position;
+
+TYPE      tPosition     = RECORD Line, Column: SHORTCARD; END;
+
+VAR       NoPosition    : tPosition;
+                        (* A default position (0, 0).                   *)
+
+PROCEDURE Compare       (Position1, Position2: tPosition): INTEGER;
+                        (* Returns -1 if Position1 < Position2.         *)
+                        (* Returns  0 if Position1 = Position2.         *)
+                        (* Returns  1 if Position1 > Position2.         *)
+
+PROCEDURE WritePosition (File: tFile; Position: tPosition);
+                        (* The 'Position' is printed on the 'File'.     *)
+
+PROCEDURE ReadPosition  (File: tFile; VAR Position: tPosition);
+                        (* The 'Position' is read from the 'File'.      *)
+
+END Position.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  25
+
+
+20.  Errors: error handler for parsers and compilers
+
+     This  module  is  needed  by parsers generated with the parser generators
+lark or ell.  It can also be used to report error messages found during  scan-
+ning  or semantic analysis.  Note: If the module Position is copied (and maybe
+modified) then the module Errors has to be copied, too,  because  the  modules
+depend on each other.
+
+
+DEFINITION MODULE Errors;
+
+CONST
+   NoText               = 0     ;
+   SyntaxError          = 1     ;       (* error codes          *)
+   ExpectedTokens       = 2     ;
+   RestartPoint         = 3     ;
+   TokenInserted        = 4     ;
+   WrongParseTable      = 5     ;
+   OpenParseTable       = 6     ;
+   ReadParseTable       = 7     ;
+   TooManyErrors        = 8     ;
+   TokenFound           = 9     ;
+   FoundExpected        = 10    ;
+
+   Fatal                = 1     ;       (* error classes        *)
+   Restriction          = 2     ;
+   Error                = 3     ;
+   Warning              = 4     ;
+   Repair               = 5     ;
+   Note                 = 6     ;
+   Information          = 7     ;
+
+   None                 = 0     ;
+   Integer              = 1     ;       (* info classes         *)
+   Short                = 2     ;
+   Long                 = 3     ;
+   Cardinal             = 4     ;                                              |
+   Real                 = 5     ;                                              |
+   Boolean              = 6     ;                                              |
+   Character            = 7     ;                                              |
+   WCharacter           = 8     ;                                              |
+   String               = 9     ;                                              |
+   WString              = 10    ;                                              |
+   Array                = 11    ;                                              |
+   Set                  = 12    ;                                              |
+   Ident                = 13    ;                                              |
+   WIdent               = 14    ;                                              |
+   Position             = 15    ;                                              |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  26
+
+
+VAR       Exit          : PROC;
+                        (* Refers to a procedure that specifies         *)
+                        (* what to do if 'ErrorClass' = Fatal.          *)
+                        (* Default: terminate program execution.        *)
+
+PROCEDURE StoreMessages (Store: BOOLEAN);
+                        (* Messages are stored if 'Store' = TRUE        *)
+                        (* for printing with the routine 'WriteMessages'*)
+                        (* otherwise they are printed immediately.      *)
+                        (* If 'Store'=TRUE the message store is cleared.*)
+
+PROCEDURE ErrorMessage  (ErrorCode, ErrorClass: CARDINAL; Position: tPosition);
+                        (* Report a message represented by an integer   *)
+                        (* 'ErrorCode' and classified by 'ErrorClass'.  *)
+
+PROCEDURE ErrorMessageI (ErrorCode, ErrorClass: CARDINAL; Position: tPosition;
+                         InfoClass: CARDINAL; Info: ADDRESS);
+                        (* Like the previous routine with additional    *)
+                        (* information of type 'InfoClass' at the       *)
+                        (* address 'Info'.                              *)
+
+PROCEDURE Message       (ErrorText: ARRAY OF CHAR; ErrorClass: CARDINAL;
+                         Position: tPosition);
+                        (* Report a message represented by a string     *)
+                        (* 'ErrorText' and classified by 'ErrorClass'.  *)
+
+PROCEDURE MessageI      (ErrorText: ARRAY OF CHAR; ErrorClass: CARDINAL;
+                         Position: tPosition; InfoClass: CARDINAL; Info: ADDRESS);
+                        (* Like the previous routine with additional    *)
+                        (* information of type 'InfoClass' at the       *)
+                        (* address 'Info'.                              *)
+
+PROCEDURE WriteMessages (File: tFile);
+                        (* The stored messages are sorted by their      *)
+                        (* source position and printed on 'File'.       *)
+
+END Errors.
+
+
+This  module  can be regarded as a prototype for reporting compiler error mes-
+sages.  It can be copied an modified or even replaced in  order  to  meet  the
+requirements  of the user's application. The body of the module can be derived
+from the file Errors.cpp which contains three C  preprocessor  variables  that
+control the style of the error messages:
+
+
+    BRIEF       summarize syntax errors in one error message instead of several messages
+    FIRST       report only the first error message on a line instead of all messages
+    TRUNCATE    truncate additional information for messages (such as the set of
+                expected symbols) to around 25 characters
+
+Example: The following Pascal program contains two syntax errors:
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  27
+
+
+    program test (output);
+    begin
+       if (a = b] write (a;
+    end.
+
+If  all three preprocessor variables are undefined then the following messages
+are reported:
+
+
+3, 13: Error       syntax error
+3, 13: Information token found    : ]
+3, 13: Information expected tokens: ) = + - <> <= >= < > IN OR * / DIV MOD AND
+3, 15: Information restart point
+3, 15: Repair      token inserted : )
+3, 15: Repair      token inserted : THEN
+3, 23: Error       syntax error
+3, 23: Information token found    : ;
+3, 23: Information expected tokens: , ) = + - : <> <= >= < > IN OR * / DIV MOD AND
+3, 23: Repair      token inserted : )
+
+If BRIEF is defined then this is compressed into two lines:
+
+
+3, 13: Error       found/expected : ]/) = + - <> <= >= < > IN OR * / DIV MOD AND
+3, 23: Error       found/expected : ;/, ) = + - : <> <= >= < > IN OR * / DIV MOD AND
+
+If BRIEF and FIRST are defined then this results in just one line:
+
+
+3, 13: Error       found/expected : ]/) = + - <> <= >= < > IN OR * / DIV MOD AND
+
+If BRIEF, FIRST, and TRUNCATE are defined then  this  one  line  becomes  even
+shorter:
+
+
+3, 13: Error       found/expected : ]/) = + - <> <= >= < > IN OR * / ...
+
+In  all  of  the  abbreviated  styles  the information about restart points or
+inserted tokens is suppressed and the messages reporting the found  token  and
+the set of expected tokens are combined into one message.
+
+21.  Source: provides input for scanners
+
+     This  module  is  needed by scanners generated with the scanner generator
+rex.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  28
+
+
+DEFINITION MODULE Source;
+PROCEDURE BeginSource (FileName: ARRAY OF CHAR): tFile;
+   (*
+      BeginSource is called from the scanner to open files.
+      If not called then input is read form standard input.
+   *)
+PROCEDURE GetLine (File: tFile; Buffer: ADDRESS; Size: CARDINAL): INTEGER;
+   (*
+      GetLine is called to fill a buffer starting at address 'Buffer'
+      with a block of maximal 'Size' characters. Lines are terminated
+      by newline characters (ASCII = 0xa). GetLine returns the number
+      of characters transferred. Reasonable block sizes are between 128
+      and 2048 or the length of a line. Smaller block sizes -
+      especially block size 1 - will drastically slow down the scanner.
+   *)
+PROCEDURE CloseSource (File: tFile);
+   (*
+      CloseSource is called from the scanner at end of file or
+      at end of input, respectively. It can be used to close files.
+   *)
+END Source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  29
+
+
+22.  Sort: quicksort for arrays with elements of arbitrary type
+
+
+
+DEFINITION MODULE Sort;
+
+TYPE tProcIntIntBool    = PROCEDURE (INTEGER, INTEGER): BOOLEAN;
+TYPE tProcIntInt        = PROCEDURE (INTEGER, INTEGER);
+
+PROCEDURE Sort (Lwb, Upb: INTEGER; IsLess: tProcIntIntBool; Swap: tProcIntInt);
+
+        (* Sort data from the indices 'Lwb' to 'Upb' using quicksort.   *)
+        (* The procedures 'IsLess' and 'Swap' are used to compare and   *)
+        (* exchange two data elements.                                  *)
+
+END Sort.
+
+
+23.  General: miscellaneous functions
+
+
+
+DEFINITION MODULE General;
+
+PROCEDURE Min           (a, b: INTEGER)                 : INTEGER;
+                        (* Returns the minimum of 'a' and 'b'.          *)
+
+PROCEDURE Max           (a, b: INTEGER)                 : INTEGER;
+                        (* Returns the maximum of 'a' and 'b'.          *)
+
+PROCEDURE MinCard       (a, b: LONGCARD)                : LONGCARD;            |
+                        (* Returns the minimum of 'a' and 'b'.          *)     |
+
+PROCEDURE MaxCard       (a, b: LONGCARD)                : LONGCARD;            |
+                        (* Returns the maximum of 'a' and 'b'.          *)     |
+
+PROCEDURE Log2          (x: LONGINT)                    : CARDINAL;
+                        (* Returns the logarithm to the base 2 of 'x'.  *)
+
+PROCEDURE Exp2          (x: CARDINAL)                   : LONGINT;
+                        (* Returns 2 to the power of 'x'.               *)
+
+PROCEDURE AntiLog       (x: LONGINT)                    : CARDINAL;
+                        (* Returns the number of the lowest bit set in 'x'. *)
+
+PROCEDURE Log10         (x: LONGINT)                    : CARDINAL;            |
+                        (* Returns the logarithm to the base 10 of 'x'. *)     |
+
+PROCEDURE Exp10         (x: INTEGER)                    : REAL;
+                        (* Returns 10 to the power of 'x'.              *)
+
+END General.
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  30
+
+
+24.  rSystem: machine dependent code
+
+     This module provides a few machine dependent operations.
+
+
+FOREIGN MODULE rSystem;
+
+CONST   cMaxFile    = 32;
+CONST   StdInput        ;   (* A pre-opened file for (terminal-)input.  *)
+CONST   StdOutput       ;   (* A pre-opened file for (terminal-)output. *)
+CONST   StdError        ;   (* A pre-opened file for (terminal-)output  *)
+                            (*    of error messages.                    *)
+
+TYPE    tFile           ;
+
+                        (* binary IO            *)
+
+PROCEDURE OpenInput     (VAR FileName: ARRAY OF CHAR): tFile;
+                        (* Opens the file whose name is given by the    *)
+                        (* parameter 'FileName' for input.              *)
+                        (* Returns a file descriptor.                   *)
+
+PROCEDURE OpenOutput    (VAR FileName: ARRAY OF CHAR): tFile;
+                        (* Opens the file whose name is given by the    *)
+                        (* parameter 'FileName' for output.             *)
+                        (* Returns a file descriptor.                   *)
+
+PROCEDURE rRead         (File: tFile; Buffer: ADDRESS; Size: CARDINAL): INTEGER;
+                        (* Reads 'Size' bytes from file 'tFile' and     *)
+                        (* stores them in a buffer starting at address  *)
+                        (* 'Buffer'.                                    *)
+                        (* Returns the number of bytes actually read.   *)
+
+PROCEDURE rWrite        (File: tFile; Buffer: ADDRESS; Size: CARDINAL): INTEGER;
+                        (* Writes 'Size' bytes from a buffer starting   *)
+                        (* at address 'Buffer' to file 'tFile'.         *)
+                        (* Returns the number of bytes actually written.*)
+
+PROCEDURE rClose        (File: tFile);
+                        (* Closes file 'tFile'.                         *)
+
+PROCEDURE IsCharacterSpecial (File: tFile): BOOLEAN;
+                        (* Returns TRUE when file 'tFile' is connected  *)
+                        (* to a character device like a terminal.       *)
+
+PROCEDURE DirectorySeparator (): CHAR;                                         |
+                        (* Returns the character used as separator in   *)     |
+                        (* pathnames naming files:                      *)     |
+                        (* Unix: '/', Windows: '\'                      *)     |
+
+                        (* calls other than IO  *)
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  31
+
+
+PROCEDURE rAlloc        (ByteCount: LONGINT): ADDRESS;
+                        (* Returns a pointer to dynamically allocated   *)
+                        (* memory space of size 'ByteCount' bytes.      *)
+                        (* Returns NIL if space is exhausted.           *)
+
+
+PROCEDURE rTime         (): LONGINT;                                           |
+                        (* Returns consumed cpu-time in milliseconds.   *)
+
+PROCEDURE GetArgCount   (): CARDINAL;
+                        (* Returns number of arguments.                 *)
+
+PROCEDURE GetArgument   (ArgNum: CARDINAL; VAR Argument: ARRAY OF CHAR);
+                        (* Stores a string-valued argument whose index  *)
+                        (* is 'ArgNum' in the memory area 'Argument'.   *)
+
+PROCEDURE GetEnvVar     (VAR Variable: ARRAY OF CHAR): tArrayChar;
+                        (* Returns a pointer to the environment         *)
+                        (* variable named 'Variable'.                   *)
+
+PROCEDURE PutArgs       (Argc: CARDINAL; Argv: ADDRESS);
+                        (* Dummy procedure that passes the values       *)
+                        (* 'argc' and 'argv' from Modula-2 to C.        *)
+
+PROCEDURE rErrNo        (): INTEGER;
+                        (* Returns the current system error code.       *)
+
+PROCEDURE rSystem       (VAR String: ARRAY OF CHAR): INTEGER;
+                        (* Executes an operating system command given   *)
+                        (* as the string 'String'. Returns an exit or   *)
+                        (* return code.                                 *)
+
+PROCEDURE rExit         (Status: INTEGER);
+                        (* Terminates program execution and passes the  *)
+                        (* value 'Status' to the operating system.      *)
+
+END rSystem.
+
+
+25.  Checks: checks for system calls
+
+
+
+DEFINITION MODULE Checks;
+
+PROCEDURE ErrorCheck    (s: ARRAY OF CHAR; n: INTEGER);
+                        (* The parameter 'n' should be a value returned *)
+                        (* from a system call. If it is negative the    *)
+                        (* string 's', the value of 'n', and the value  *)
+                        (* returned by 'ErrNum' are printed on the file *)
+                        (* 'StdError'.                                  *)
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  32
+
+
+END Checks.
+
+
+Example:
+
+
+
+   VAR n: INTEGER;
+
+   n := OpenInput ("DataFile");
+   ErrorCheck ("error at open of DataFile", n);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  33
+
+
+26.  Times: access to cpu-time
+
+
+
+DEFINITION MODULE Times;
+
+PROCEDURE CpuTime       (): LONGINT;
+                        (* Returns the sum of user time and system time *)
+                        (* since the start of the program in milli-secs.*)
+
+PROCEDURE StepTime      (): LONGINT;
+                        (* Returns the sum of user time and system time *)
+                        (* since the last call to 'StepTime' in milli-  *)
+                        (* seconds. The first call yields the same      *)
+                        (* result as a call to 'CpuTime'.               *)
+
+PROCEDURE WriteStepTime (Text: ARRAY OF CHAR);
+                        (* Writes a line consisting of the string       *)
+                        (* 'Text' and the value obtained from a call to *)
+                        (* 'StepTime' to the file 'StdOutput'.          *)
+
+END Times.
+
+
+27.  An Example: Text represented as a List of Strings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                  34
+
+
+MODULE Example;
+
+FROM SYSTEM       IMPORT ADDRESS;
+FROM IO           IMPORT StdInput, StdOutput, EndOfFile;
+FROM Strings      IMPORT tString, ReadL, WriteL;
+FROM StringM      IMPORT tStringRef, PutString, GetString;
+FROM Lists        IMPORT tList, MakeList, Append, IsEmpty, Head, Tail;
+
+VAR String      : tString;
+VAR Ref         : tStringRef;
+VAR Text        : tList;
+
+BEGIN
+   MakeList (Text);                     (* start with empty list        *)
+   WHILE NOT EndOfFile (StdInput) DO    (* process complete input file  *)
+      ReadL (StdInput, String);         (* read one line                *)
+      Ref := PutString (String);        (* store it in string memory    *)
+      Append (Text, ADDRESS (Ref));     (* append it to current text    *)
+   END;
+
+   WHILE NOT IsEmpty (Text) DO          (* process complete text        *)
+      Ref := tStringRef (Head (Text));  (* get current first line       *)
+      GetString (Ref, String);          (* fetch string from memory     *)
+      WriteL (StdOutput, String);       (* print string in one line     *)
+      Tail (Text);                      (* continue with remaining text *)
+   END;
+END Example.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                     Reuse                                   1
+
+
+Contents
+
+        Abstract ........................................................    1
+1.      Overview ........................................................    1
+2.      rMemory: dynamic storage (heap) with free lists .................    2
+3.      Heap: dynamic storage (heap) without free lists .................    2
+4.      DynArray: dynamic and flexible arrays ...........................    3
+5.      Strings: string handling for single byte character strings ......    5
+6.      WStrings: string handling for double byte character strings .....    7
+7.      StringM: string memory ..........................................    9
+8.      Idents: identifier table - unambiguous encoding of strings ......   11
+9.      Lists: lists of arbitrary objects ...............................   12
+10.     Texts: texts are lists of strings (lines) .......................   14
+11.     Sets: sets for scalar values ....................................   14
+12.     SetsC: sets for scalar values ...................................   16
+13.     HugeSets: sets of scalar values (up to 2**32) ...................   17
+14.     Relation: binary relations between scalar values ................   18
+15.     RelatsC: binary relations between scalar values .................   19
+16.     IO: buffered input and output ...................................   20
+17.     StdIO: buffered IO for standard files ...........................   22
+18.     Layout: more routines for input and output ......................   23
+19.     Position: handling of source positions ..........................   23
+20.     Errors: error handler for parsers and compilers .................   25
+21.     Source: provides input for scanners .............................   27
+22.     Sort: quicksort for arrays with elements of arbitrary type ......   29
+23.     General: miscellaneous functions ................................   29
+24.     rSystem: machine dependent code .................................   30
+25.     Checks: checks for system calls .................................   31
+26.     Times: access to cpu-time .......................................   33
+27.     An Example: Text represented as a List of Strings ...............   33
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

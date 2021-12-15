@@ -1,0 +1,55 @@
+*************************************************************************
+*									*
+*  Cg = Ast + Ag + Lpp							*
+*									*
+*  Generator for Abstract Syntax Trees	Ast				*
+*  Generator for Attribute Evaluators	Ag				*
+*  Generator for Scanner Specifications Lpp				*
+*  ----------------------------------------				*
+*  Common Grammar Tool			Cg				*
+*									*
+*  Copyright 2021 Dr. Josef Grosch, CoCoLab
+*  
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  
+*  You may obtain a copy of the License at
+*  
+*    http://www.apache.org/licenses/LICENSE-2.0
+*  
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+*  implied.
+*  
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*									*
+*  Dr. Josef Grosch							*
+*  CoCoLab - Datenverarbeitung						*
+*  Germany								*
+*									*
+*  Email   : grosch@cocolab.com						*
+*  Internet: www.cocolab.com						*
+*									*
+*************************************************************************
+
+Direct requests, comments, questions, and error reports to the address above.
+
+
+The directories and their contents are as follows:
+
+directory	contents
+--------------------------------------------------
+README		this file
+m2c		source files in C
+Makefile	makefile for tests
+hag-c		example of a higher order attribute grammar in C
+hag-cpp		example of a higher order attribute grammar in C++
+hag-m		example of a higher order attribute grammar in Modula-2
+lpp-j		test for Lpp in Java
+test-c		test for Ast in C
+test-cpp	test for Ast in C+[+]
+test-cxx	test for Ast in C++
+test-j		test for Ast in Java
+test-m		test for Ast in Modula-2

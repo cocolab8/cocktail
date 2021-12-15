@@ -1,0 +1,10 @@
+Bnf - Transformer from EBNF to BNF
+==================================
+
+The common front-end (front) for bnf and lalr must have been compiled
+before bnf can be generated. As bnf makes use of the library of reusable
+Modula-2 modules (MLIB=reuse), this library must also have been compiled before.
+
+To generate bnf use:
+
+   make install LIB=... BIN=... OPT=...

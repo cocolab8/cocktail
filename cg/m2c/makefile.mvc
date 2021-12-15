@@ -1,0 +1,529 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: cg.exe
+all	: lpp.exe
+all	: pumagen.exe
+
+Dialog.obj	: Dialog.c	\
+	Dialog.h	\
+	Order.h	\
+	Errors.h	\
+	Position.h	\
+	Optimize.h	\
+	Queue.h	\
+	Tree.h
+
+Errors.obj	: Errors.c	\
+	Errors.h	\
+	Position.h
+
+EvalC.obj	: EvalC.c	\
+	EvalC.h	\
+	EvalC3.h	\
+	Position.h	\
+	Errors.h	\
+	TreeC2.h	\
+	TreeC1.h	\
+	Semantic.h	\
+	Tree.h
+
+EvalC2.obj	: EvalC2.c	\
+	EvalC2.h	\
+	EvalC.h	\
+	EvalC3.h	\
+	Position.h	\
+	Errors.h	\
+	TreeC1.h	\
+	Semantic.h	\
+	TreeC2.h	\
+	Tree.h
+
+EvalC3.obj	: EvalC3.c	\
+	EvalC3.h	\
+	Position.h	\
+	Errors.h	\
+	EvalC.h	\
+	Semantic.h	\
+	TreeC2.h	\
+	TreeC1.h	\
+	Tree.h
+
+EvalC4.obj	: EvalC4.c	\
+	EvalC4.h	\
+	EvalC3.h	\
+	Position.h	\
+	Errors.h	\
+	EvalC.h	\
+	Semantic.h	\
+	TreeC2.h	\
+	TreeC1.h	\
+	Tree.h
+
+EvalCxx.obj	: EvalCxx.c	\
+	EvalCxx.h	\
+	EvalCxx3.h	\
+	Position.h	\
+	Errors.h	\
+	TreeCxx2.h	\
+	TreeCxx1.h	\
+	Semantic.h	\
+	Tree.h
+
+EvalCxx2.obj	: EvalCxx2.c	\
+	EvalCxx2.h	\
+	EvalCxx.h	\
+	EvalCxx3.h	\
+	Position.h	\
+	Errors.h	\
+	TreeCxx1.h	\
+	Semantic.h	\
+	TreeCxx2.h	\
+	Tree.h
+
+EvalCxx3.obj	: EvalCxx3.c	\
+	EvalCxx3.h	\
+	Position.h	\
+	Errors.h	\
+	EvalCxx.h	\
+	Semantic.h	\
+	TreeCxx2.h	\
+	TreeCxx1.h	\
+	Tree.h
+
+EvalCxx4.obj	: EvalCxx4.c	\
+	EvalCxx4.h	\
+	EvalCxx3.h	\
+	Position.h	\
+	Errors.h	\
+	EvalCxx.h	\
+	Semantic.h	\
+	TreeCxx2.h	\
+	TreeCxx1.h	\
+	Tree.h
+
+EvalJav2.obj	: EvalJav2.c	\
+	EvalJav2.h	\
+	EvalJava.h	\
+	TreeJav1.h	\
+	Semantic.h	\
+	Errors.h	\
+	Position.h	\
+	TreeJav2.h	\
+	Tree.h
+
+EvalJav3.obj	: EvalJav3.c	\
+	EvalJav3.h	\
+	Position.h	\
+	Errors.h	\
+	EvalJava.h	\
+	Semantic.h	\
+	TreeJav2.h	\
+	TreeJav1.h	\
+	Tree.h
+
+EvalJav4.obj	: EvalJav4.c	\
+	EvalJav4.h	\
+	EvalJav3.h	\
+	Position.h	\
+	Errors.h	\
+	EvalJava.h	\
+	Semantic.h	\
+	TreeJav2.h	\
+	TreeJav1.h	\
+	Tree.h
+
+EvalJava.obj	: EvalJava.c	\
+	EvalJava.h	\
+	TreeJav2.h	\
+	Position.h	\
+	TreeJav1.h	\
+	Semantic.h	\
+	Errors.h	\
+	Tree.h
+
+EvalMod.obj	: EvalMod.c	\
+	EvalMod.h	\
+	EvalMod3.h	\
+	Position.h	\
+	Errors.h	\
+	TreeMod2.h	\
+	TreeMod1.h	\
+	Semantic.h	\
+	Tree.h
+
+EvalMod2.obj	: EvalMod2.c	\
+	EvalMod2.h	\
+	EvalMod.h	\
+	EvalMod3.h	\
+	Position.h	\
+	Errors.h	\
+	TreeMod1.h	\
+	Semantic.h	\
+	TreeMod2.h	\
+	Tree.h
+
+EvalMod3.obj	: EvalMod3.c	\
+	EvalMod3.h	\
+	Position.h	\
+	Errors.h	\
+	EvalMod.h	\
+	Semantic.h	\
+	TreeMod2.h	\
+	TreeMod1.h	\
+	Tree.h
+
+EvalMod4.obj	: EvalMod4.c	\
+	EvalMod4.h	\
+	EvalMod3.h	\
+	Position.h	\
+	Errors.h	\
+	EvalMod.h	\
+	Semantic.h	\
+	TreeMod2.h	\
+	TreeMod1.h	\
+	Tree.h
+
+GramAda.obj	: GramAda.c	\
+	GramAda.h	\
+	Parser.h	\
+	Errors.h	\
+	Scanner.h	\
+	Position.h	\
+	Tree.h
+
+GramC.obj	: GramC.c	\
+	GramC.h	\
+	Parser.h	\
+	Errors.h	\
+	Scanner.h	\
+	Position.h	\
+	Tree.h
+
+GramJava.obj	: GramJava.c	\
+	GramJava.h	\
+	Parser.h	\
+	Errors.h	\
+	Scanner.h	\
+	Position.h	\
+	Tree.h
+
+GramMod.obj	: GramMod.c	\
+	GramMod.h	\
+	Parser.h	\
+	Errors.h	\
+	Scanner.h	\
+	Position.h	\
+	Tree.h
+
+GramYacc.obj	: GramYacc.c	\
+	GramYacc.h	\
+	Tree.h	\
+	Errors.h	\
+	Position.h
+
+Optimize.obj	: Optimize.c	\
+	Optimize.h	\
+	Order.h	\
+	Errors.h	\
+	Position.h	\
+	Queue.h	\
+	Tree.h
+
+Order.obj	: Order.c	\
+	Order.h	\
+	Errors.h	\
+	Position.h	\
+	Optimize.h	\
+	Queue.h	\
+	Tree.h
+
+Parser.obj	: Parser.c	\
+	Parser.h	\
+	Position.h	\
+	Errors.h	\
+	Scanner.h	\
+	Tree.h
+
+Position.obj	: Position.c	\
+	Position.h
+
+Puma0.obj	: Puma0.c	\
+	Puma0.h	\
+	Tree.h	\
+	Errors.h	\
+	Position.h
+
+Queue.obj	: Queue.c	\
+	Queue.h
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h	\
+	Errors.h	\
+	Tree.h	\
+	Position.h
+
+Semantic.obj	: Semantic.c	\
+	Semantic.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h
+
+Tree.obj	: Tree.c	\
+	Tree.h	\
+	Errors.h	\
+	Position.h
+
+Tree2.obj	: Tree2.c	\
+	Tree2.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h
+
+TreeC1.obj	: TreeC1.c	\
+	TreeC1.h	\
+	TreeC2.h	\
+	Position.h	\
+	Semantic.h	\
+	Errors.h	\
+	Tree.h
+
+TreeC2.obj	: TreeC2.c	\
+	TreeC2.h	\
+	Position.h	\
+	Tree.h	\
+	Errors.h
+
+TreeCxx1.obj	: TreeCxx1.c	\
+	TreeCxx1.h	\
+	TreeCxx2.h	\
+	Position.h	\
+	Semantic.h	\
+	Errors.h	\
+	Tree.h
+
+TreeCxx2.obj	: TreeCxx2.c	\
+	TreeCxx2.h	\
+	TreeCxx1.h	\
+	Semantic.h	\
+	Errors.h	\
+	Position.h	\
+	Tree.h
+
+TreeJav1.obj	: TreeJav1.c	\
+	TreeJav1.h	\
+	TreeJav2.h	\
+	Position.h	\
+	Semantic.h	\
+	Errors.h	\
+	Tree.h
+
+TreeJav2.obj	: TreeJav2.c	\
+	TreeJav2.h	\
+	Position.h	\
+	Tree.h	\
+	Errors.h
+
+TreeMod1.obj	: TreeMod1.c	\
+	TreeMod1.h	\
+	TreeMod2.h	\
+	Position.h	\
+	Semantic.h	\
+	Errors.h	\
+	Tree.h
+
+TreeMod2.obj	: TreeMod2.c	\
+	TreeMod2.h	\
+	Position.h	\
+	Tree.h	\
+	Errors.h
+
+cg.obj	: cg.c	\
+	EvalCxx4.h	\
+	EvalCxx3.h	\
+	EvalCxx2.h	\
+	EvalCxx.h	\
+	TreeCxx2.h	\
+	TreeCxx1.h	\
+	EvalJav4.h	\
+	EvalJav3.h	\
+	EvalJav2.h	\
+	EvalJava.h	\
+	TreeJav2.h	\
+	TreeJav1.h	\
+	GramJava.h	\
+	GramAda.h	\
+	EvalC4.h	\
+	EvalC3.h	\
+	EvalC2.h	\
+	EvalC.h	\
+	TreeC2.h	\
+	TreeC1.h	\
+	GramYacc.h	\
+	GramC.h	\
+	EvalMod4.h	\
+	TreeMod2.h	\
+	EvalMod3.h	\
+	EvalMod2.h	\
+	EvalMod.h	\
+	TreeMod1.h	\
+	GramMod.h	\
+	Dialog.h	\
+	Order.h	\
+	Optimize.h	\
+	Queue.h	\
+	Semantic.h	\
+	Tree2.h	\
+	Tree.h	\
+	Parser.h	\
+	Scanner.h	\
+	Errors.h	\
+	Position.h
+
+lpp.obj	: lpp.c	\
+	GramJava.h	\
+	GramAda.h	\
+	GramYacc.h	\
+	GramC.h	\
+	GramMod.h	\
+	Dialog.h	\
+	Order.h	\
+	Optimize.h	\
+	Queue.h	\
+	Semantic.h	\
+	Tree.h	\
+	Parser.h	\
+	Scanner.h	\
+	Errors.h	\
+	Position.h
+
+pumagen.obj	: pumagen.c	\
+	Puma0.h	\
+	Dialog.h	\
+	Order.h	\
+	Optimize.h	\
+	Queue.h	\
+	Semantic.h	\
+	Position.h	\
+	Tree.h	\
+	Parser.h	\
+	Scanner.h	\
+	Errors.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+cg_OBJS =	\
+	cg.obj	\
+	EvalCxx4.obj	\
+	EvalCxx3.obj	\
+	EvalCxx2.obj	\
+	EvalCxx.obj	\
+	TreeCxx2.obj	\
+	TreeCxx1.obj	\
+	EvalJav4.obj	\
+	EvalJav3.obj	\
+	EvalJav2.obj	\
+	EvalJava.obj	\
+	TreeJav2.obj	\
+	TreeJav1.obj	\
+	GramJava.obj	\
+	GramAda.obj	\
+	EvalC4.obj	\
+	EvalC3.obj	\
+	EvalC2.obj	\
+	EvalC.obj	\
+	TreeC2.obj	\
+	TreeC1.obj	\
+	GramYacc.obj	\
+	GramC.obj	\
+	EvalMod4.obj	\
+	TreeMod2.obj	\
+	EvalMod3.obj	\
+	EvalMod2.obj	\
+	EvalMod.obj	\
+	TreeMod1.obj	\
+	GramMod.obj	\
+	Dialog.obj	\
+	Order.obj	\
+	Optimize.obj	\
+	Queue.obj	\
+	Semantic.obj	\
+	Tree2.obj	\
+	Tree.obj	\
+	Parser.obj	\
+	Scanner.obj	\
+	Errors.obj	\
+	Position.obj
+
+cg.exe	: $(cg_OBJS) $(SYSTEM)
+	$(CC) /nologo $(cg_OBJS) $(SYSTEM) /link /out:cg.exe $(LDFLAGS)
+
+lpp_OBJS =	\
+	lpp.obj	\
+	GramJava.obj	\
+	GramAda.obj	\
+	GramYacc.obj	\
+	GramC.obj	\
+	GramMod.obj	\
+	Dialog.obj	\
+	Order.obj	\
+	Optimize.obj	\
+	Queue.obj	\
+	Semantic.obj	\
+	Tree.obj	\
+	Parser.obj	\
+	Scanner.obj	\
+	Errors.obj	\
+	Position.obj
+
+lpp.exe	: $(lpp_OBJS) $(SYSTEM)
+	$(CC) /nologo $(lpp_OBJS) $(SYSTEM) /link /out:lpp.exe $(LDFLAGS)
+
+pumagen_OBJS =	\
+	pumagen.obj	\
+	Puma0.obj	\
+	Dialog.obj	\
+	Order.obj	\
+	Optimize.obj	\
+	Queue.obj	\
+	Semantic.obj	\
+	Position.obj	\
+	Tree.obj	\
+	Parser.obj	\
+	Scanner.obj	\
+	Errors.obj
+
+pumagen.exe	: $(pumagen_OBJS) $(SYSTEM)
+	$(CC) /nologo $(pumagen_OBJS) $(SYSTEM) /link /out:pumagen.exe $(LDFLAGS)
+
+install:
+	if not exist "%ct_dir%"\lib\cg\ mkdir "%ct_dir%"\lib\cg
+	copy gcpp.bat	"%ct_dir%"\bin
+	copy gcppt.bat	"%ct_dir%"\bin
+	copy gupd.bat	"%ct_dir%"\bin
+	copy grm.bat	"%ct_dir%"\bin
+	copy cg.exe	"%ct_dir%"\bin
+	copy cg.exe	"%ct_dir%"\bin\ast.exe
+	copy cg.exe	"%ct_dir%"\bin\ag.exe
+	copy typetab.c	"%ct_dir%"\lib\cg
+	copy typetab.cx	"%ct_dir%"\lib\cg
+	copy typetab.cxx "%ct_dir%"\lib\cg
+	copy typetab.m	"%ct_dir%"\lib\cg
+	copy typetab.j	"%ct_dir%"\lib\cg
+	copy Tree.tcl	"%ct_dir%"\lib\cg
+	copy lpp.exe	"%ct_dir%"\bin
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

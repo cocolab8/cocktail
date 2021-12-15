@@ -1,0 +1,39 @@
+TRAFO Compiler TREE ProTest PUBLIC main
+
+GLOBAL {# include "ProTest.h"}
+
+FUNCTION main () int
+   RETURN 0
+:- p (prog (f (f (a, b), a)) => R1);
+   p (R1 => R2);
+   p (R2 => R3);
+   p (R3 => R4);
+   p (R4 => R5);
+
+   printf ("%d\n", ProTest_HeapUsed);
+
+   CONDITION q (q (q (q (q (prog (f (f (a, b), a))))))) != NIL;
+
+   printf ("%d\n", ProTest_HeapUsed);
+   .
+
+PROCEDURE p (prog => prog)
+
+prog (I) => prog (S) :- e (I, I => S); .
+
+PROCEDURE e (E, E => E)
+
+f (E1, E2)	, I => f (E1S, E2S) :- e (E1, I => E1S); e (E2, I => E2S); .
+n:b		, _ => n :- .
+_		, I => I :- .
+
+
+FUNCTION q (prog) prog
+
+prog (I) RETURN prog (g (I, I)) :- .
+
+FUNCTION g (E, E) E
+
+f (E1, E2)	, I RETURN f (g (E1, I), g (E2, I)) :- .
+n:b		, _ RETURN n :- .
+_		, I RETURN I :- .

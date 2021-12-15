@@ -1,0 +1,100 @@
+lpp -xzj minilax.pars; 
+minilax.pars:  10,  1: Information copy rule insertions synthesized: 1
+minilax.pars:  10,  1: Information grammar is in normal form
+minilax.pars:  10,  1: Information grammar is SAG
+rpp < minilax.scan > minilax.rex; 
+rex -d minilax.rex; 
+Warning: in start state STD the default action may be triggered by:
+ \0 \1 \2 \3 \4 \5 \6 \7 \8 \11 \12 \13 \14 \15 \16 \17
+ \18 \19 \20 \21 \22 \23 \24 \25 \26 \27 \28 \29 \30 \31 '!' '"'
+ '#' '$' '%' '&' ''' '-' '/' '=' '>' '?' '@' '\' '^' '_' '`' '{'
+ '|' '}' '~'
+lark -di Parser.lalr; 
+          Information shift reduce conflict explicitly repaired at state: 62
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 86
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 87
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 88
+                      on lookahead: < + * 
+          Information grammar is LALR(1) after explicit repair
+
+ conflict repair   explicit implicit  LALR(2)  dynamic unsolved    total
+------------------------------------------------------------------------
+ shift-reduce             4        0        0        0        0        4
+------------------------------------------------------------------------
+ total                    4        0        0        0        0        4
+cg -dimRDI0 minilax.cg; 
+minilax.cg:  20,  1: Information copy rule insertions inherited: 63
+minilax.cg:  20,  1: Information copy rule insertions synthesized: 2
+minilax.cg:  20,  1: Information copy rule insertions threaded: 18
+minilax.cg:  20,  1: Information grammar is not in normal form
+minilax.cg:  20,  1: Information grammar is OAG
+echo SELECT AbstractSyntax Output | cat - minilax.cg | cg -4
+puma -dipk Types.puma; 
+ 138,  4: Warning     unreachable code
+ 143,  4: Warning     unreachable code
+ 148,  4: Warning     unreachable code
+ 153,  4: Warning     unreachable code
+ 153,  4: Warning     unreachable code
+cg -dim4 Definitions.cg; 
+puma -di ICode.puma; 
+  22, 44: Warning     user-type required
+  39, 45: Warning     user-type required
+ 116, 36: Warning     user-type required
+echo p minilax | mc -d ../../../reuse/src
+Mocka 9301
+>> .. Compiling Definition of Definitions
+.. Compiling Definition of Tree
+.. Compiling Implementation of Tree
+.. Compiling Implementation of Definitions
+.. Compiling Definition of ICodeInter
+.. Compiling Implementation of ICodeInter
+.. Compiling Definition of ICode
+.. Compiling Definition of Types
+.. Compiling Implementation of Types
+.. Compiling Implementation of ICode
+.. Compiling Definition of Semantics
+.. Compiling Implementation of Semantics
+.. Compiling Definition of Parser
+.. Compiling Definition of Scanner
+.. Compiling Implementation of Scanner
+.. Compiling Implementation of Parser
+.. Compiling Program Module minilax
+.. Linking minilax
+>> 
+time minilax < in1
+    3.14000E+0
+    4.14000E+0
+    5.14000E+0
+    2.14000E+0
+    1.14000E+0
+    1.14000E+0
+    4.14000E+0
+    5.14000E+0
+    2.14000E+0
+    3.14000E+0
+    1.14000E+0
+    2.14000E+0
+    5.14000E+0
+    4.14000E+0
+    3.14000E+0
+    1.14000E+0
+    2.14000E+0
+    3.14000E+0
+    4.14000E+0
+    5.14000E+0
+    1.14000E+0
+    2.14000E+0
+    3.14000E+0
+    4.14000E+0
+    5.14000E+0
+    1
+Memory   94736  Tree   20480  Defs   20480
+Memory   94736  Tree   20480  Defs   20480
+        0.1 real         0.0 user         0.0 sys  
+time minilax < in5
+Memory  729864  Tree  655360  Defs   20480
+Memory  811816  Tree  696320  Defs   61440
+        3.8 real         2.9 user         0.2 sys  

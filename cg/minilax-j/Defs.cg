@@ -1,0 +1,61 @@
+TREE minilax.Defs
+
+EXPORT	{
+   public static Objects Identify (Ident id, Env env) {
+      while (env != null) {
+         Objects objects = env.Objects;
+         while (objects.yyKind () != kNoObject)
+	    if (((Object) objects).Ident == id) return objects;
+	    else objects = ((Object) objects).Next;
+         env = env.Hidden;
+      }
+      return nNoObject;
+   }
+
+   public static boolean IsDeclared (Ident id, Objects objects) {
+      while (objects.yyKind () != kNoObject)
+         if (((Object) objects).Ident == id) return true;
+         else objects = ((Object) objects).Next;
+      return false;
+   }
+
+   public static void mProc2 (Proc3 object, short Level, int Label, int ParSize, int DataSize) {
+      object.Level	= Level;
+      object.Label	= Label;
+      object.ParSize	= ParSize;
+      object.DataSize	= DataSize;
+   }
+
+   public static void mVar2 (Var3 object, short Level, int Offset) {
+      object.Level	= Level;
+      object.Offset	= Offset;
+   }
+
+   public static boolean IsObjectKind (Objects object, int Kind) {
+      return object.yyKind () == Kind || object.yyKind () == kNoObject;
+   }
+
+   public static Tree.Formals GetFormals (Objects object) {
+      if (object.yyKind () == kProc3) return ((Proc3) object).Formals;
+      else return new Tree.NoFormal ();
+   }
+
+   public static Tree.Type GetType (Objects object) {
+      if (object.yyKind () == kVar3) return ((Var3) object).Type;
+      else return new Tree.NoType ();
+   }
+
+   private static Objects nNoObject = new NoObject ();
+
+}
+
+RULE
+
+Env		= Objects Hidden: Env .
+Objects		= <
+   NoObject	= .
+   Object	= Next: Objects [Ident: Ident] <
+      Proc3	= [Formals: Tree.Formals] -> [Level: short] [Label] [ParSize] [DataSize] .
+      Var3	= [Type: Tree.Type] -> [Level: short] [Offset] .
+   > .
+> .

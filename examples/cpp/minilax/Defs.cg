@@ -1,0 +1,113 @@
+TREE Defs
+
+EXPORT	{
+# define NoEnv	  NoDefs
+
+# define tObjects tDefs		/* type to represent sets of objects	*/
+# define tEnv     tDefs		/* type to represent environments	*/
+# define Defs_PREFIX d.
+
+# include "Tree.h"
+
+extern tObjects Identify (register tIdent Ident, register tEnv Env);
+			/* return the object associated with 'Ident' in	*/
+			/* the environment 'Env'			*/
+
+extern rbool IsDeclared	(register tIdent Ident, register tObjects Objects);
+			/* check whether an object having the name	*/
+			/* 'Ident' is element of the set of declarations*/
+			/* 'Decls' 					*/
+
+extern void mProc2	(register tObjects Object, int Level, int Label, int ParSize, int DataSize);
+			/* extend the description 'Object' of a		*/
+			/* procedure by the 4 given attributes		*/
+
+extern void mVar2	(register tObjects Object, int Level, int Offset);
+			/* extend the description 'Object' of a		*/
+			/* variable by the 2 given attributes		*/
+
+extern rbool IsObjectKind (register tObjects Object, short Kind);
+			/* returns true if the kind of the 'Object'	*/
+			/* is equal to parameter 'Kind'			*/
+
+extern tTree GetFormals	(register tObjects Object);
+			/* returns the list of formal parameters	*/
+			/* from the description 'Object' of a procedure	*/
+
+extern tTree GetType	(register tObjects Object);
+			/* returns the type of the description 'Object'	*/
+			/* of a variable				*/
+}
+
+GLOBAL	{
+# include "Idents.h"
+# include "ExtTree.h"
+
+Defs d;
+
+static tObjects nNoObject;
+
+rbool IsDeclared (register tIdent Ident, register tObjects Objects)
+   {
+      while (Objects->Kind != kNoObject)
+	 if (Objects->Object.Ident == Ident) return rtrue;
+         else Objects = Objects->Object.Next;
+      return rfalse;
+   }
+
+tObjects Identify (register tIdent Ident, register tEnv Env)
+   {
+      while (Env != NoEnv) {
+	 register tObjects Objects = Env->Env.Objects;
+	 while (Objects->Kind != kNoObject)
+	    if (Objects->Object.Ident == Ident) return Objects;
+	    else Objects = Objects->Object.Next;
+	 Env = Env->Env.Hidden;
+      }
+      return nNoObject;
+   }
+
+void mProc2 (register tObjects Object, int Level, int Label, int ParSize, int DataSize)
+   {
+      Object->Proc3.Level	= Level;
+      Object->Proc3.Label	= Label;
+      Object->Proc3.ParSize	= ParSize;
+      Object->Proc3.DataSize	= DataSize;
+   }
+
+void mVar2 (register tObjects Object, int Level, int Offset)
+   {
+      Object->Var3.Level	= Level;
+      Object->Var3.Offset	= Offset;
+   }
+
+rbool IsObjectKind (register tObjects Object, short Kind)
+   {
+      return Object->Kind == Kind || Object->Kind == kNoObject;
+   }
+
+tTree GetFormals (register tObjects Object)
+   {
+      if (Object->Kind == kProc3) return Object->Proc3.Formals;
+      else return Tree_PREFIX mNoFormal ();
+   }
+
+tTree GetType (register tObjects Object)
+   {
+      if (Object->Kind == kVar3) return Object->Var3.Type;
+      else return Tree_PREFIX mNoType ();
+   }
+}
+
+BEGIN	{ nNoObject = mNoObject (); }
+
+RULE
+
+Env		= Objects Hidden: Env .
+Objects		= <
+   NoObject	= .
+   Object	= Next: Objects [Ident: tIdent] <
+      Proc3	= [Formals: tTree] -> [Level: short] [Label] [ParSize] [DataSize] .
+      Var3	= [Type: tTree] -> [Level: short] [Offset] .
+   > .
+> .

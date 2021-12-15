@@ -1,0 +1,14 @@
+#define DEFINITION_Listing
+
+#ifndef DEFINITION_IO
+#include "IO.h"
+#endif
+
+typedef enum {ZijFQGAF_7, ZijFQGAF_8} ZijFQGAF_0;
+extern ZfM_3 ZijFQGAF_1;
+extern ZfM_3 ZijFQGAF_2;
+extern ZijFQGAF_0 ZijFQGAF_3;
+extern void ZijFQGAF_4 ARGS ((CARDINAL Z123, CARDINAL Z124, CARDINAL Z125, CARDINAL Z126, CARDINAL Z127, ADDRESS Z128));
+extern BOOLEAN ZijFQGAF_5 ARGS ((void));
+extern void ZijFQGAF_6 ARGS ((CARDINAL *Z123, CARDINAL *Z124, CARDINAL *Z125, CARDINAL *Z126, CARDINAL *Z127, ADDRESS *Z128));
+extern void BEGIN_Listing ARGS ((void));

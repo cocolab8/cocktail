@@ -1,0 +1,246 @@
+/*
+   open problems:
+
+   - FORWARD, EXTERNAL, ....
+   - conformant arrays
+   - I/O parameter ?
+*/
+
+PREC
+   LEFT	 '=' '<>' '<' '<=' '>' '>=' 'IN'
+   LEFT	 MONOP
+   LEFT	 '+' '-' 'OR'
+   LEFT	 '*' '/' 'DIV' 'MOD' 'AND'
+   LEFT	 'NOT'
+   NONE	 'THEN'
+   NONE	 'ELSE'
+
+RULE
+
+program		= 'PROGRAM' Identifier prog_params ';' block '.' .
+prog_params	= <
+		= .
+		= '(' prog_param_list ')' .
+> .
+prog_param_list	= <
+		= Identifier .
+		= prog_param_list ',' Identifier .
+> .
+block		= label_decl_part const_def_part type_def_part var_decl_part
+		  proc_decl_part 'BEGIN' statement_seq 'END' .
+label_decl_part	= <
+		= .
+		= 'LABEL' label_decl_list ';' .
+> .
+label_decl_list	= <
+		= IntConst .
+		= label_decl_list ',' IntConst .
+> .
+const_def_part	= <
+		= .
+		= 'CONST' const_def_list .
+> .
+const_def_list	= <
+		= const_def ';' .
+		= const_def_list const_def ';' .
+> .
+const_def	= Identifier '=' constant .
+type_def_part	= <
+		= .
+		= 'TYPE' type_def_list .
+> .
+type_def_list	= <
+		= type_def ';' .
+		= type_def_list type_def ';' .
+> .
+type_def	= Identifier '=' type_denoter .
+var_decl_part	= <
+		= .
+		= 'VAR' var_decl_list .
+> .
+var_decl_list	= <
+		= var_decl ';' .
+		= var_decl_list var_decl ';' .
+> .
+var_decl	= ident_list ':' type_denoter .
+ident_list	= <
+		= Identifier .
+		= ident_list ',' Identifier .
+> .
+proc_decl_part	= <
+		= .
+		= proc_decl_part proc_decl .
+> .
+type_denoter	= <
+		= Identifier .
+		= '^' Identifier .
+		= constant '..' constant .
+		= '(' enumeration ')' .
+		= 'ARRAY' '[' index_type_list ']' 'OF' type_denoter .
+		= 'FILE' 'OF' type_denoter .
+		= 'SET' 'OF' type_denoter .
+		= 'RECORD' field_list 'END' .
+		= 'PACKED' 'ARRAY' '[' index_type_list ']' 'OF' type_denoter .
+		= 'PACKED' 'FILE' 'OF' type_denoter .
+		= 'PACKED' 'SET' 'OF' type_denoter .
+		= 'PACKED' 'RECORD' field_list 'END' .
+> .
+enumeration	= <
+		= Identifier .
+		= enumeration ',' Identifier .
+> .
+index_type_list	= <
+		= type_denoter .
+		= type_denoter ',' index_type_list .
+> .
+field_list	= <
+		= .
+		= record_section .
+		= record_section ';' field_list .
+		= 'CASE' tag_field 'OF' variants opt_semi .
+> .
+record_section	= ident_list ':' type_denoter .
+tag_field	= <
+		= Identifier .
+		= Identifier ':' Identifier .
+> .
+variants	= <
+		= variant .
+		= variants ';' variant .
+> .
+variant		= variant_label_list ':' '(' field_list ')' .
+variant_label_list	= <
+		= constant .
+		= variant_label_list ',' constant .
+> .
+proc_decl	= <
+		= 'PROCEDURE' Identifier formal_parameter_list ';' Identifier ';' .
+		= 'PROCEDURE' Identifier formal_parameter_list ';' block ';' .
+		= 'FUNCTION' Identifier formal_parameter_list ':' Identifier ';' Identifier ';' .
+		= 'FUNCTION' Identifier formal_parameter_list ':' Identifier ';' block ';' .
+		= 'FUNCTION' Identifier ';' block ';' .
+> .
+formal_parameter_list	= <
+		= .
+		= '(' form_parms ')' .
+> .
+form_parms	= <
+		= form_parm_sect .
+		= form_parms ';' form_parm_sect .
+> .
+form_parm_sect	= <
+		= ident_list ':' Identifier .
+		= 'VAR' ident_list ':' Identifier .
+		= 'PROCEDURE' Identifier formal_parameter_list .
+		= 'FUNCTION' Identifier formal_parameter_list ':' Identifier .
+> .
+act_params	= <
+		= .
+		= ',' expr format act_params .
+> .
+format		= <
+		= .
+		= ':' expr .
+		= ':' expr ':' expr .
+> .
+expr		= <
+		= expr '=' expr .
+		= expr '<>' expr .
+		= expr '<=' expr .
+		= expr '>=' expr .
+		= expr '<' expr .
+		= expr '>' expr .
+		= expr 'IN' expr .
+		= '+' expr PREC MONOP .
+		= '-' expr PREC MONOP .
+		= expr '+' expr .
+		= expr '-' expr .
+		= expr 'OR' expr .
+		= expr '*' expr .
+		= expr '/' expr .
+		= expr 'DIV' expr .
+		= expr 'MOD' expr .
+		= expr 'AND' expr .
+		= 'NOT' expr .
+		= '(' expr ')' .
+		= variable .
+		= Identifier '(' expr format act_params ')' .
+		= 'NIL' .
+		= '[' element_list ']' .
+		= IntConst .
+		= RealConst .
+		= StringConst .
+> .
+variable	= <
+		= Identifier .
+		= variable '.' Identifier .
+		= variable '[' subscript_list ']' .
+		= variable '^' .
+> .
+subscript_list	= <
+		= expr .
+		= subscript_list ',' expr .
+> .
+element_list	= <
+		= .
+		= element .
+		= element_list ',' element .
+> .
+element		= <
+		= expr .
+		= expr '..' expr .
+> .
+constant	= <
+		= unsigned_const .
+		= '+' unsigned_const .
+		= '-' unsigned_const .
+		= StringConst .
+> .
+unsigned_const	= <
+		= Identifier .
+		= IntConst .
+		= RealConst .
+> .
+statement_seq	= <
+		= statement .
+		= statement_seq ';' statement .
+> .
+statement	= <
+		= .
+		= IntConst ':' statement .
+		= variable ':=' expr .
+		= Identifier '(' expr format act_params ')' .
+		= 'GOTO' IntConst .
+		= 'BEGIN' statement_seq 'END' .
+		= 'CASE' expr 'OF' case_list_elmt_s opt_semi 'END' .
+		= 'WHILE' expr 'DO' statement .
+		= 'REPEAT' statement_seq 'UNTIL' expr .
+		= 'FOR' Identifier ':=' expr 'TO' expr 'DO' statement .
+		= 'FOR' Identifier ':=' expr 'DOWNTO' expr 'DO' statement .
+		= 'WITH' variable_list 'DO' statement .
+		= 'IF' expr 'THEN' statement .
+		= 'IF' expr 'THEN' statement 'ELSE' statement .
+> .
+opt_semi	= <
+		= .
+		= ';' .
+> .
+variable_list	= <
+		= variable .
+		= variable_list ',' variable .
+> .
+case_list_elmt_s	= <
+		= case_list_elmt .
+		= case_list_elmt_s ';' case_list_elmt .
+> .
+case_list_elmt	= case_label_list ':' statement .
+case_label_list	= <
+		= constant .
+		= case_label_list ',' constant .
+> .
+
+Identifier	: [Ident  : tIdent	] { Ident	:= NoIdent	; } .
+IntConst	: [Integer: INTEGER	] { Integer	:= 0		; } .
+RealConst	: [Real	  : REAL	] { Real	:= 0.0		; } .
+StringConst	: [String : tStringRef	] { String	:= {
+			AssignEmpty (Word); String := PutString (Word);}; } .

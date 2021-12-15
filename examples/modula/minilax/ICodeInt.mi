@@ -1,0 +1,353 @@
+(****************************************************************)
+(*								*)
+(*	Uebersetzerbau-Praktikum				*)
+(*	========================				*)
+(*								*)
+(*	Author	: E.Klein					*)
+(*	Date	: 02.02.88					*)
+(*	Updated	: 08.02.88					*)
+(*								*)
+(****************************************************************)
+
+IMPLEMENTATION MODULE ICodeInt;
+
+FROM StdIO IMPORT ReadI, ReadR, WriteCard, WriteI, WriteR, WriteS, WriteNl;
+
+CONST MaxCode	= 30000;
+      MaxStore	= 10000;
+
+      SL	= 1; (* static link    *) (* activation record organization *)
+      DL	= 2; (* dynamic link   *)
+      RA	= 3; (* return address *)
+
+TYPE Ptype  = CARDINAL;    (* type of first parameter *)
+     Qtype  = RECORD
+		CASE : INTEGER OF
+		| 1: qc: CARDINAL
+		| 2: qr: REAL
+		END
+	      END;
+
+     CodeRange	= [0..MaxCode];		(* type of second parameter *)
+     StoreRange	= [0..MaxStore];
+     StoreType	= (Undef, Int, Real, Bool, Adr, Mark);
+
+VAR Code : ARRAY CodeRange OF RECORD	(* the program *)
+				 OP : OpCode;
+				 P  : Ptype;
+				 Q  : Qtype;
+			      END;
+
+    Store : ARRAY StoreRange OF RECORD	(* the data *)
+		    CASE Stype: StoreType OF
+		      Int  : Vi : INTEGER
+		    | Real : Vr : REAL
+		    | Bool : Vb : BOOLEAN
+		    | Adr  : Va : StoreRange
+		    | Mark : Vm : CodeRange
+		    END;
+		  END;
+
+    PC,		(* program address register  *)
+    LastPC	(* highest used code address *)
+	  : CodeRange;
+
+	(* address registers *)
+    AP,	  (* points to the beginning of an activation record *)
+    SP	  (* points to top of the stack *)
+	: StoreRange;
+
+    OpCodeText	: ARRAY OpCode OF ARRAY [0..2] OF CHAR;
+
+PROCEDURE Emit (oc: OpCode; Param1, Param2: CARDINAL);
+BEGIN
+  WITH Code [PC] DO
+    OP   := oc;
+    P    := Param1;
+    Q.qc := Param2
+  END;
+  LastPC := PC;
+  INC (PC);
+END Emit;
+
+PROCEDURE EmitReal (oc: OpCode; Param1: CARDINAL; Param2: REAL);
+BEGIN
+  WITH Code [PC] DO
+    OP   := oc;
+    P    := Param1;
+    Q.qr := Param2
+  END;
+  LastPC := PC;
+  INC (PC);
+END EmitReal;
+
+PROCEDURE WriteInstr (Code: OpCode; Param1: Ptype; Param2: Qtype);
+BEGIN
+  WriteS (OpCodeText [Code]);
+  CASE Code OF
+    LDC:			(* two parameters *)
+      WriteI (Param1, 5);
+      CASE Param1 OF
+	IntType,
+	BoolType: WriteI (Param2.qc, 5);
+      | RealType: WriteR (Param2.qr, 5, 5, 1);
+      END
+
+  | LDA, JSR, CHK:		(* two parameters *)
+      WriteI (Param1, 5);
+      WriteI (Param2.qc, 5);
+
+  | MST, ENT, IXA, LES, JMP,
+    FJP, ADD, MUL, REA, WRI:	(* one parameter  *)
+      WriteI (Param1, 5);
+
+  | LDI, STI, RET, FLT, INV,	(* no parameter   *)
+    SUB:
+  END;
+  WriteNl;
+END WriteInstr;
+
+PROCEDURE WriteCode;
+  VAR pc : CARDINAL;
+BEGIN
+  WriteNl;
+  WriteS ("Code: (Codelength ="); WriteCard (LastPC+1,4);
+  WriteS (")");
+  WriteNl;
+  IF LastPC # 0 THEN
+    FOR pc := 0 TO LastPC DO
+      WriteI (pc, 5);
+      WriteS (":   ");
+      WITH Code [pc] DO
+	WriteInstr (OP, P, Q)
+      END
+    END
+  END;
+  WriteNl;
+END WriteCode;
+
+PROCEDURE WriteStore;
+  VAR Sptr : StoreRange;
+BEGIN
+  WriteNl;
+  WriteS ("Store: (Index, Elementtype, Contents)"); WriteNl;
+  
+  FOR Sptr := SP TO 0 BY -1 DO
+    IF AP = Sptr THEN
+      WriteS ("   AP ->"); WriteI (Sptr, 4);
+    ELSE
+      WriteI (Sptr, 12);
+    END;
+    WITH Store [Sptr] DO
+      CASE Stype OF
+      | Int  :	WriteS ("        Int ");
+		WriteI (Vi, 8);
+      |	Real :	WriteS ("        Real");
+		WriteR (Vr, 8, 8, 1);
+      |	Bool :	WriteS ("        Bool");
+		IF Vb THEN
+		  WriteS ("    TRUE")
+		ELSE
+		  WriteS ("   FALSE")
+		END
+      |	Adr  :	WriteS ("        Adr ");
+		WriteI (Va, 8);
+      |	Mark :	WriteS ("        Mark");
+		WriteI (Vm, 8);
+      ELSE WriteS ("    Stype not defined");
+      END;
+      WriteNl;
+    END;
+  END;
+  WriteNl
+END WriteStore;
+
+PROCEDURE Interpret;
+
+VAR OP	: OpCode; (* instruction register *)
+    P	: Ptype;
+    Q	: Qtype;
+    sr1, sr2 : StoreRange;
+
+  PROCEDURE CheckStore (p:CARDINAL);
+  BEGIN
+    IF p > MaxStore THEN WriteS ("Store overflow"); END;
+  END CheckStore;
+    
+  PROCEDURE Base (Ld : CARDINAL): StoreRange;
+      (* walks Ld times back the static link chain *)
+    VAR Sr : StoreRange;
+  BEGIN
+    Sr := AP;
+    WHILE Ld>0 DO
+      Sr := Store [Sr].Vm;
+      DEC (Ld);
+    END;
+    RETURN Sr;
+  END Base;
+
+BEGIN
+  PC := 0;
+  REPEAT
+    OP := Code [PC].OP;			(* fetch instruction *)
+    P  := Code [PC].P;
+    Q  := Code [PC].Q;
+
+    INC(PC);
+
+    CASE OP OF				(* execute instruction *)
+
+       (* load instructions *)
+    | LDA  : INC (SP);
+	     Store [SP].Va := Base(P) + Q.qc;
+	     Store [SP].Stype := Adr;
+
+    | LDC  : INC (SP);
+	     CASE P OF
+	       IntType	: Store [SP].Vi := Q.qc;
+			  Store [SP].Stype := Int;
+	     | RealType	: Store [SP].Vr := Q.qr;
+			  Store [SP].Stype := Real;
+	     | BoolType	: Store [SP].Vb := Q.qc = TrueCode;
+			  Store [SP].Stype := Bool;
+	     END
+
+    | LDI  : Store [SP] := Store [Store [SP].Va];
+
+       (* store instructions *)
+    | STI  : Store [Store [SP-1].Va] := Store [SP];
+	     SP := SP-2;
+
+       (* jump instructions *)
+    | JMP  : PC := P
+
+    | FJP  : IF NOT Store [SP].Vb THEN
+	       PC := P;
+	     END;
+	     DEC (SP);
+
+       (* arithmetic instructions *)
+    | ADD  : DEC (SP);
+	     CASE P OF
+	       IntType	: Store[SP].Vi := Store[SP].Vi + Store[SP+1].Vi;
+	     | RealType	: Store[SP].Vr := Store[SP].Vr + Store[SP+1].Vr;
+	     END
+
+    | SUB  : DEC (SP);
+	     Store[SP].Vi := Store[SP].Vi - Store[SP+1].Vi;
+
+    | MUL  : DEC (SP);
+	     CASE P OF
+	       IntType	: Store[SP].Vi := Store[SP].Vi * Store[SP+1].Vi;
+	     | RealType	: Store[SP].Vr := Store[SP].Vr * Store[SP+1].Vr;
+	     END
+
+       (* logic  instructions *)
+    | INV  : Store[SP].Vb := NOT Store[SP].Vb;
+
+    | LES  : DEC (SP);
+	     CASE P OF
+	       IntType	: Store[SP].Vb := Store[SP].Vi < Store[SP+1].Vi;
+	     | RealType	: Store[SP].Vb := Store[SP].Vr < Store[SP+1].Vr;
+	     | BoolType	: Store[SP].Vb := Store[SP].Vb < Store[SP+1].Vb;
+	     END;
+	     Store [SP].Stype := Bool
+
+       (* address calculating instructions *)
+    | IXA  : DEC (SP);	(* P=number of storage units *)
+	     Store [SP].Va := P*Store [SP+1].Va + Store [SP].Va;
+
+       (* convert instructions *)
+    | FLT  : Store[SP].Vr := FLOAT(CARDINAL(Store[SP].Vi));
+	     Store[SP].Stype := Real;
+
+       (* input-output instructions *)
+    | WRI  : CASE P OF
+	       IntType  : WriteI (Store[SP].Vi,5);     WriteNl;
+	     | RealType : WriteR (Store[SP].Vr,5,5,1); WriteNl;
+	     | BoolType : IF Store [SP].Vb THEN
+			    WriteS ("    1"); WriteNl;
+			  ELSE
+			    WriteS ("    0"); WriteNl;
+			  END
+	     END;
+	     DEC (SP)
+
+    | REA  : INC (SP);
+	     CASE P OF
+	       IntType	: Store[SP].Vi := ReadI();
+			  Store[SP].Stype := Int
+	     | RealType	: Store[SP].Vr := ReadR();
+			  Store[SP].Stype := Real
+	     | BoolType	: Store[SP].Vb := ReadI() = 1;
+			  Store[SP].Stype := Bool;
+	     END
+
+       (* subroutine handling instructions *)
+    | MST  :	(* P=(level difference of calling and called procedure)+1 *)
+    	     Store [SP+SL].Stype := Adr;
+    	     Store [SP+SL].Va	 := Base (P);
+    	     Store [SP+DL].Stype := Adr;
+    	     Store [SP+DL].Va	 := AP;
+    	     Store [SP+RA].Stype := Mark;
+		(* return address is patched in JSR (after  *)
+	     SP := SP+3;	      (* parameter passing) *)
+
+    | JSR  : AP := SP-(P+2); (* P=number of locations for parameters *)
+	     Store [AP+2].Vm := PC;
+	     PC := Q.qc;     (* Q=entry point *)
+
+    | ENT  : sr2 := SP+P;  (* P=length of local data segment *)
+	     FOR sr1 := SP+1 TO sr2 DO
+	       Store [sr1].Stype := Undef;
+	     END;
+	     CheckStore(sr2);
+	     SP := sr2;
+
+    | RET  : SP := AP-1;
+    	     PC := Store [SP+RA].Vm;
+    	     AP := Store [SP+DL].Va;
+
+       (* check instructions *)
+    | CHK  : IF (Store [SP].Vi < INTEGER(P)) OR
+		(Store [SP].Vi > INTEGER(Q.qc)) THEN
+		WriteS ("range check error");
+		WriteNl;
+	     END
+
+    ELSE WriteS ("wrong OpCode :"); WriteS (OpCodeText [OP]); WriteNl;
+    END;
+  UNTIL PC = 0;
+END Interpret;
+
+BEGIN
+  OpCodeText [LDA] := "LDA";
+  OpCodeText [LDC] := "LDC";
+  OpCodeText [LDI] := "LDI";
+  OpCodeText [STI] := "STI";
+  OpCodeText [JMP] := "JMP";
+  OpCodeText [FJP] := "FJP";
+  OpCodeText [ADD] := "ADD";
+  OpCodeText [SUB] := "SUB";
+  OpCodeText [MUL] := "MUL";
+  OpCodeText [INV] := "INV";
+  OpCodeText [LES] := "LES";
+  OpCodeText [IXA] := "IXA";
+  OpCodeText [FLT] := "FLT";
+  OpCodeText [WRI] := "WRI";
+  OpCodeText [REA] := "REA";
+  OpCodeText [MST] := "MST";
+  OpCodeText [JSR] := "JSR";
+  OpCodeText [ENT] := "ENT";
+  OpCodeText [RET] := "RET";
+  OpCodeText [CHK] := "CHK";
+
+  Store [0].Stype  := Undef;
+  Store [SL].Stype := Adr;  Store [SL].Va := 0;
+  Store [DL].Stype := Adr;  Store [DL].Va := 0;
+  Store [RA].Stype := Mark; Store [RA].Vm := 0;
+
+  PC := 0;
+  SP := 3;
+  AP := 1;
+END ICodeInt.

@@ -1,0 +1,43 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: l2cg.exe
+
+Parser.obj	: Parser.c	\
+	Parser.h	\
+	Scanner.h
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h
+
+l2cg.obj	: l2cg.c	\
+	Parser.h	\
+	Scanner.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+l2cg_OBJS =	\
+	l2cg.obj	\
+	Parser.obj	\
+	Scanner.obj
+
+l2cg.exe	: $(l2cg_OBJS) $(SYSTEM)
+	$(CC) /nologo $(l2cg_OBJS) $(SYSTEM) /link /out:l2cg.exe $(LDFLAGS)
+
+install:
+	copy l2cg.exe "%ct_dir%"\bin
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

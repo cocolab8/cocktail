@@ -1,0 +1,11 @@
+TREE ProTest
+
+RULE
+
+prog	= E .
+
+E	= <
+   f	= E1: E E2: E .
+   a	= .
+   b	= .
+> .

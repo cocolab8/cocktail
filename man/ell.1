@@ -1,0 +1,74 @@
+.TH ELL 1 "" "CoCoLab Germany"
+.SH NAME
+ell \- recursive descent parser generator
+.SH SYNOPSIS
+ell [ -options ] [ <file> ]
+.SH DESCRIPTION
+The parser generator \fIEll\fP processes LL(1) grammars which may contain EBNF
+constructs and semantic actions. It generates recursive descent parsers.
+A mechanism for L-attribution (inherited and synthesized attributes
+evaluable during one preorder traversal) is provided. Syntax
+errors are handled fully automatic including error reporting from a prototype
+error module, error recovery, and error repair.
+.PP
+The grammar is either read from the file given as argument or from
+standard input. The output is written to the files
+<Parser>.md and <Parser>.mi (Modula-2) or <Parser>.h and <Parser>.c (C).
+Errors detected during the analysis of the grammar are reported on standard error.
+.PP
+The generated parser needs a few additional modules:
+.br
+First, a scanner (<Scanner>.md/<Scanner>.c, <Scanner>.mi/<Scanner>.h) providing
+the function GetToken () and the global variable Attribute.
+.br
+Second, a main program that calls the generated parsing routine.
+Option -p will provide a simple parser driver (<Parser>Drv.mi/<Parser>Drv.c).
+.br
+Third, an error handling module called Errors providing the procedures
+ErrorMessage and ErrorMessageI.
+.SH OPTIONS
+.IP c
+generate C source code
+.IP d
+generate header file or definition module
+.IP -f[\fIprefix\fP]
+generate constant declarations for tokens in header file using prefix
+(default: t_)
+.IP g
+generate # line directives
+.IP h
+print help information
+.IP i
+generate implementation part or module
+.IP j
+treat undeclared symbols as terminal symbols
+.IP -l\fIdir\fP
+specify the directory dir where ell finds its data files
+.IP m
+generate Modula-2 code (default)
+.IP p
+generate main program to be used as test driver
+.SH FILES
+.nf
+.ta 1.5i
+if output is in C:
+.sp 0.5
+<Parser>.h	specification of the generated parser
+<Parser>.c	body of the generated parser
+<Parser>Drv.c	body of the parser driver
+.sp 0.5
+if output is in Modula-2:
+.sp 0.5
+<Parser>.md	definition module of the generated parser
+<Parser>.mi	implementation module of the generated parser
+<Parser>Drv.mi	implementation module of the parser driver
+.fi
+.SH SEE\ ALSO
+J. Grosch: "The Parser Generator Ell",
+CoCoLab Germany, Document No. 8
+.sp 0.5
+J. Grosch: "Efficient and Comfortable Error Recovery in Recursive Descent Parsers",
+Structured Programming, 11, 129-140 (1990)
+.sp 0.5
+J. Grosch: "Efficient and Comfortable Error Recovery in Recursive Descent Parsers",
+CoCoLab Germany, Document No. 19

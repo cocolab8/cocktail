@@ -1,0 +1,35 @@
+EXPORT	{
+# include "Position.h"
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+# include "Errors.h"
+
+INSERT ErrorAttribute
+}
+
+DEFAULT	{ MessageI ("illegal character", xxError, Attribute.Position, xxCharacter, TokenPtr); }
+
+DEFINE
+   DIGIT	= {0-9} .
+   LOWER	= {a-z} .
+   UPPER	= {A-Z} .
+   LETTER	= (UPPER | LOWER) .
+   UINT		= DIGIT + .
+   SINT		= {+\-} DIGIT + .
+   ENL		= ({+\-})?(UINT "." UINT)|(UINT ".")|("." UINT) .
+   ANL		= ENL {Ee} SINT .
+
+RULE
+
+\-\- ANY *	:- {}
+ENL, ANL	: { return NUMERIC	; }
+SINT 		: { return SINTEGER	; }
+UINT 		: { return UINTEGER	; }
+' -{\'} * '	: { return STRING	; }
+
+INSERT RULES #STD#
+
+UPPER ("_"| LETTER | DIGIT ) * : { return IDENTIFIER; }

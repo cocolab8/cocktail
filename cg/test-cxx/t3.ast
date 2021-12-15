@@ -1,0 +1,46 @@
+MODULE t3
+
+TREE tree3
+
+IMPORT {
+# include "Position.h"
+# include "Idents.h"
+# include "StringM.h"
+
+typedef int mytype;
+}
+
+EXPORT {
+}
+
+GLOBAL {
+// # define equaltStringRef(a, b) true
+# define equaltStringRef(a, b) (strcmp (String_PREFIX StGetCStr (a), String_PREFIX StGetCStr (b)) == 0)
+# define equalttree3(a, b)	true
+}
+
+LOCAL {
+}
+
+BEGIN {
+}
+
+CLOSE {
+}
+
+PROPERTY INPUT
+
+RULE
+
+lists 		= <
+  nolist	= .
+  node		= next: lists REV
+                  [pos: tPosition] <
+    intnode	= [value: int] .
+    typenode	= [ident: tIdent] [sr: tStringRef] [x: mytype] [t: tree3] .
+    forknode	= fork: lists .
+    childnode	= typenode .
+  > .
+> .
+
+END t3

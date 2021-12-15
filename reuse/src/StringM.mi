@@ -1,0 +1,238 @@
+(* $Id: StringM.mi,v 1.7 2000/09/04 13:06:11 grosch rel $ *)
+
+(*
+ * $Log: StringM.mi,v $
+ * Revision 1.7  2000/09/04 13:06:11  grosch
+ * added support for wide character strings
+ *
+ * Revision 1.6  1997/05/27 11:57:56  grosch
+ * truncation of filenames to 8.3 format
+ *
+ * Revision 1.5  1993/08/18 15:06:51  grosch
+ * rename System and Memory to rSystem and rMemory
+ *
+ * Revision 1.4  1991/11/21  14:33:17  grosch
+ * new version of RCS on SPARC
+ *
+ * Revision 1.3  91/06/07  12:19:59  grosch
+ * decreased bounds of flexible arrays
+ *
+ * Revision 1.2  91/06/07  11:38:35  grosch
+ * increased bounds of flexible arrays
+ * removed length restriction from WriteString
+ *
+ * Revision 1.1  89/01/21  23:03:01  grosch
+ * added file parameter to procedure WriteString
+ *
+ * Revision 1.0  88/10/04  11:47:18  grosch
+ * Initial revision
+ *
+ *)
+
+(* Ich, Doktor Josef Grosch, Informatiker, Sept. 1987 *)
+
+IMPLEMENTATION MODULE StringM;
+
+FROM SYSTEM	IMPORT TSIZE, ADR, ADDRESS;
+FROM DynArray	IMPORT MakeArray, ExtendArray, ReleaseArray;
+FROM Strings	IMPORT tStringIndex, tString;
+FROM IO		IMPORT tFile, StdOutput, WriteC, WriteI, WriteNl, WriteS;
+
+IMPORT WStrings;
+
+CONST InitialMemorySize	= 1024 * 20;
+
+VAR
+   MemoryPtr		: POINTER TO ARRAY [0 .. 10000000] OF CHAR;
+   MemorySize		: LONGINT;
+   MemorySpaceLeft	: LONGINT;
+   MemoryFreePtr	: LONGINT;
+   NoStringArray	: ARRAY [0..1] OF CHAR;
+
+PROCEDURE PutString (VAR s: tString): tStringRef;
+   VAR
+      NeededSpace	: LONGINT;
+      OldMemorySize	: LONGINT;
+      StartPtr		: LONGINT;
+      i			: tStringIndex;
+   BEGIN
+      NeededSpace := s.Length + 2;
+      IF NeededSpace > MemorySpaceLeft THEN
+         IF ADDRESS (MemoryPtr) = ADR (NoStringArray) THEN
+	    MemorySize := InitialMemorySize;
+	    MakeArray (MemoryPtr, MemorySize, TSIZE (CHAR));
+	    MemoryPtr^[0] := CHR (0);
+	    MemoryPtr^[1] := CHR (0);
+	    MemoryFreePtr := 2;
+	 ELSE
+	    REPEAT
+	       OldMemorySize := MemorySize;
+	       ExtendArray (MemoryPtr, MemorySize, TSIZE(CHAR));
+	       INC (MemorySpaceLeft, MemorySize - OldMemorySize);
+	    UNTIL MemorySpaceLeft >= NeededSpace;
+	 END;
+      END;
+      StartPtr := MemoryFreePtr;
+      MemoryPtr^[MemoryFreePtr] := CHR (s.Length DIV 256);
+      INC (MemoryFreePtr);
+      MemoryPtr^[MemoryFreePtr] := CHR (s.Length MOD 256);
+      INC (MemoryFreePtr);
+      FOR i := 1 TO s.Length DO
+	 MemoryPtr^[MemoryFreePtr] := s.Chars [i];
+	 INC (MemoryFreePtr);
+      END;
+      DEC (MemorySpaceLeft, NeededSpace);
+      RETURN StartPtr;
+   END PutString;
+
+PROCEDURE GetString (r: tStringRef; VAR s: tString);
+   VAR i	: tStringIndex;
+   BEGIN
+      s.Length := Length (r);
+      INC (r, 2);
+      FOR i := 1 TO s.Length DO
+	 s.Chars [i] := MemoryPtr^[r];
+	 INC (r);
+      END;
+   END GetString;
+
+PROCEDURE Length (r: tStringRef): CARDINAL;
+   BEGIN
+      RETURN ORD (MemoryPtr^[r]) * 256 + ORD (MemoryPtr^[r+1]);
+   END Length;
+
+PROCEDURE IsEqual (r: tStringRef; VAR s: tString): BOOLEAN;
+   VAR i	: tStringIndex;
+   BEGIN
+      INC (r, 2);
+      FOR i := 1 TO s.Length DO
+	 IF MemoryPtr^[r] # s.Chars [i] THEN RETURN FALSE; END;
+	 INC (r);
+      END;
+      RETURN TRUE;
+   END IsEqual;
+
+PROCEDURE WriteString (f: tFile; r: tStringRef);
+   VAR i	: tStringRef;
+   BEGIN
+      FOR i := r + 2 TO r + 1 + tStringRef (Length (r)) DO
+	 WriteC (f, MemoryPtr^[i]);
+      END;
+   END WriteString;
+
+PROCEDURE PutWString (VAR s: WStrings.tString): tWStringRef;
+   VAR
+      NeededSpace	: LONGINT;
+      OldMemorySize	: LONGINT;
+      StartPtr		: LONGINT;
+      i			: tStringIndex;
+   BEGIN
+      NeededSpace := s.Length * TSIZE (WStrings.WCHAR) + 2;
+      IF NeededSpace > MemorySpaceLeft THEN
+         IF ADDRESS (MemoryPtr) = ADR (NoStringArray) THEN
+	    MemorySize := InitialMemorySize;
+	    MakeArray (MemoryPtr, MemorySize, TSIZE (CHAR));
+	    MemoryPtr^[0] := CHR (0);
+	    MemoryPtr^[1] := CHR (0);
+	    MemoryFreePtr := 2;
+	 ELSE
+	    REPEAT
+	       OldMemorySize := MemorySize;
+	       ExtendArray (MemoryPtr, MemorySize, TSIZE(CHAR));
+	       INC (MemorySpaceLeft, MemorySize - OldMemorySize);
+	    UNTIL MemorySpaceLeft >= NeededSpace;
+	 END;
+      END;
+      StartPtr := MemoryFreePtr;
+      MemoryPtr^[MemoryFreePtr] := CHR (s.Length DIV 256);
+      INC (MemoryFreePtr);
+      MemoryPtr^[MemoryFreePtr] := CHR (s.Length MOD 256);
+      INC (MemoryFreePtr);
+      FOR i := 1 TO s.Length DO
+	 MemoryPtr^[MemoryFreePtr] := CHR (s.Chars [i] DIV 256);
+	 INC (MemoryFreePtr);
+	 MemoryPtr^[MemoryFreePtr] := CHR (s.Chars [i] MOD 256);
+	 INC (MemoryFreePtr);
+      END;
+      DEC (MemorySpaceLeft, NeededSpace);
+      RETURN StartPtr;
+   END PutWString;
+
+PROCEDURE GetWString (r: tWStringRef; VAR s: WStrings.tString);
+   VAR i	: tStringIndex;
+   BEGIN
+      s.Length := Length (r);
+      INC (r, 2);
+      FOR i := 1 TO s.Length DO
+	 s.Chars [i] := ORD (MemoryPtr^[r]) * 256 + ORD (MemoryPtr^[r+1]);
+	 INC (r, 2);
+      END;
+   END GetWString;
+
+PROCEDURE WIsEqual (r: tWStringRef; VAR s: WStrings.tString): BOOLEAN;
+   VAR i	: tStringIndex;
+   VAR c	: WStrings.WCHAR;
+   BEGIN
+      INC (r, 2);
+      FOR i := 1 TO s.Length DO
+	 c := ORD (MemoryPtr^[r]) * 256 + ORD (MemoryPtr^[r+1]);
+	 IF c # s.Chars [i] THEN RETURN FALSE; END;
+	 INC (r, 2);
+      END;
+      RETURN TRUE;
+   END WIsEqual;
+
+PROCEDURE WriteWString (f: tFile; r: tWStringRef);
+   VAR i	: tStringRef;
+   VAR c	: WStrings.WCHAR;
+   BEGIN
+      FOR i := r + 2 TO r + 1 + tStringRef (Length (r)) BY 2 DO
+	 c := ORD (MemoryPtr^[r]) * 256 + ORD (MemoryPtr^[r+1]);
+	 WriteC (f, CHR (c));			(* ??? *)
+      END;
+   END WriteWString;
+
+PROCEDURE WriteStringMemory;
+   VAR
+      StringPtr	: LONGINT;
+      sLength	: LONGINT;
+   BEGIN
+      StringPtr := 0;
+      WHILE StringPtr < MemoryFreePtr DO
+	 WriteI (StdOutput, StringPtr, 5);
+	 WriteC (StdOutput, ' ');
+	 WriteString (StdOutput, StringPtr);
+	 WriteNl (StdOutput);
+	 sLength := Length (StringPtr) + 2;	(* damned MODULA *)
+	 INC (StringPtr, sLength);
+      END;
+      WriteNl (StdOutput);
+      WriteI (StdOutput, StringPtr, 5);
+      WriteS (StdOutput, " Bytes");
+      WriteNl (StdOutput);
+   END WriteStringMemory;
+
+PROCEDURE InitStringMemory;
+   BEGIN
+      BeginStringMemory;
+   END InitStringMemory;
+
+PROCEDURE BeginStringMemory;
+   BEGIN
+      MemoryPtr		:= ADR (NoStringArray);
+      MemorySpaceLeft	:= 0;
+   END BeginStringMemory;
+
+PROCEDURE CloseStringMemory;
+   BEGIN
+      IF ADDRESS (MemoryPtr) # ADR (NoStringArray) THEN
+	 ReleaseArray (MemoryPtr, MemorySize, TSIZE (CHAR));
+      END;
+      BeginStringMemory;
+   END CloseStringMemory;
+
+BEGIN
+   NoStringArray [0]	:= CHR (0);
+   NoStringArray [1]	:= CHR (0);
+   BeginStringMemory;
+END StringM.

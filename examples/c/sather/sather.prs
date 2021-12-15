@@ -1,0 +1,164 @@
+PREC
+   LEFT	 or
+   LEFT	 and
+   LEFT	 '=' '/='
+   NONE	 '<=' '<' '>' '>='
+   LEFT	 '+' '-'
+   LEFT	 '*' '/'
+   RIGHT not
+   LEFT	 '.'
+   RIGHT UNARY
+
+RULE
+
+class_list	= <
+		= .
+		= class_ .
+		= class_list ';' .
+		= class_list ';' class_ .
+> .
+class_		= class IDENTIFIER opt_type_vars is feature_list end .
+opt_type_vars	= <
+		= .
+		= '{' ident_list '}' .
+> .
+ident_list	= <
+		= IDENTIFIER .
+		= ident_list ',' IDENTIFIER .
+> .
+feature_list	= <
+		= feature .
+		= feature_list ';' .
+		= feature_list ';' feature .
+		= .
+> .
+feature		= <
+		= type_spec .
+		= var_dec .
+		= routine_dec .
+		= shared_attr_dec .
+		= const_attr_dec .
+		= private var_dec .
+		= private routine_dec .
+		= private shared_attr_dec .
+		= private const_attr_dec .
+> .
+type_spec	= <
+		= IDENTIFIER .
+		= '$' type_spec .
+		= IDENTIFIER '{' type_spec_list '}' .
+> .
+type_spec_list	= <
+		= type_spec .
+		= type_spec_list ',' type_spec .
+> .
+var_dec		= <
+		= single_var_dec .
+		= mult_ident_list ':' type_spec .
+> .
+single_var_dec	= IDENTIFIER ':' type_spec .
+mult_ident_list	= ident_list ',' IDENTIFIER .
+shared_attr_dec	= <
+		= shared var_dec .
+		= shared var_dec ':=' expr .
+> .
+var_dec_list	= <
+		= var_dec .
+		= var_dec_list ';' .
+		= var_dec_list ';' var_dec .
+> .
+routine_dec	= <
+		= IDENTIFIER is statement_list end .
+		= IDENTIFIER '(' var_dec_list ')' is statement_list end .
+		= single_var_dec is statement_list end .
+		= IDENTIFIER '(' var_dec_list ')' ':' type_spec is statement_list end .
+> .
+const_attr_dec	= constant var_dec ':=' expr .
+statement_list	= <
+		= statement .
+		= local_dec .
+		= statement_list ';' .
+		= statement_list ';' statement .
+		= statement_list ';' local_dec .
+		= .
+> .
+statement	= <
+		= IDENTIFIER .
+   assignment	= expr ':=' expr .
+   conditional	= if expr then statement_list elsif_part else_part end .
+   until_	= until expr loop statement_list end .
+   loop_		= loop statement_list end .
+   switch_	= switch expr when_part else_part end .
+   break_	= break .
+   return_	= return .
+   call		= <
+		= IDENTIFIER '(' exp_list ')' .
+		= cexpr '.' IDENTIFIER arg_vals .
+		= type_spec '::' IDENTIFIER arg_vals .
+   > .
+   assert_	= assert '(' IDENTIFIER ')' expr end .
+   debug_	= debug '(' IDENTIFIER ')' statement_list end .
+> .
+local_dec	= <
+		= var_dec .
+		= var_dec ':=' expr .
+> .
+elsif_part	= <
+		= .
+		= elsif_part elsif expr then statement_list .
+> .
+else_part	= <
+		= else statement_list .
+		= .
+> .
+when_part	= <
+		= when_part when exp_list then statement_list .
+		= .
+> .
+arg_vals	= <
+		= '(' exp_list ')' .
+		= .
+> .
+exp_list	= <
+		= expr .
+		= exp_list ',' expr .
+> .
+expr		= <
+   cexpr	= <
+		= IDENTIFIER .
+		= CHAR_CONST .
+		= INT_CONST .
+		= REAL_CONST .
+		= BOOL_CONST .
+		= STR_CONST .
+		= call .
+		= aref .
+		= '(' expr ')' .
+   > .
+		= not expr .
+		= expr '<' expr .
+		= expr '>' expr .
+		= expr '<=' expr .
+		= expr '>=' expr .
+		= expr '=' expr .
+		= expr '/=' expr .
+		= expr and expr .
+		= expr or expr .
+		= '-' expr PREC UNARY .
+		= '+' expr PREC UNARY .
+		= expr '+' expr .
+		= expr '-' expr .
+		= expr '*' expr .
+		= expr '/' expr .
+> .
+aref		= <
+		= cexpr '[' exp_list ']' .
+		= '[' exp_list ']' .
+> .
+
+IDENTIFIER	: [Ident   : tIdent	] { Ident	:= NoIdent	; } .
+CHAR_CONST	: [Char	   : int	] { Char	:= '?'		; } .
+INT_CONST	: [Integer : int	] { Integer	:= 0		; } .
+REAL_CONST	: [Real	   : double	] { Real	:= 0.0		; } .
+BOOL_CONST	: [Bool	   : char	] { Bool	:= 0		; } .
+STR_CONST	: [String  : tStringRef	] { String	:= PutString ("", 0); } .

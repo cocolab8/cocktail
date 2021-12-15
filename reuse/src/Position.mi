@@ -1,0 +1,84 @@
+(* $Id: Position.mi,v 1.6 2001/12/17 11:15:34 grosch rel $ *)
+
+(*
+ * $Log: Position.mi,v $
+ * Revision 1.6  2001/12/17 11:15:34  grosch
+ * added member File to type tPosition
+ *
+ * Revision 1.5  1997/05/27 11:57:56  grosch
+ * truncation of filenames to 8.3 format
+ *
+ * Revision 1.4  1994/08/15 22:13:23  grosch
+ * small improvements to suppress useless information
+ *
+ * Revision 1.3  1994/01/29  22:25:57  grosch
+ * corrected comment leader
+ *
+ * Revision 1.2  1993/08/18  15:06:51  grosch
+ * rename System and Memory to rSystem and rMemory
+ *
+ * Revision 1.1  1992/08/13  13:47:25  grosch
+ * increase format in WritePosition
+ *
+ * Revision 1.0  1992/08/07  14:42:00  grosch
+ * Initial revision
+ *
+ *)
+
+(* Ich, Doktor Josef Grosch, Informatiker, Juli 1992 *)
+
+IMPLEMENTATION MODULE Position;
+
+FROM IO		IMPORT tFile, WriteC, WriteI, ReadC, ReadI;
+FROM Layout	IMPORT WriteSpaces;
+FROM Idents	IMPORT NoIdent, WriteIdent;
+
+PROCEDURE Compare (Position1, Position2: tPosition): INTEGER;
+   BEGIN
+      WITH Position1 DO
+	 IF File   < Position2.File   THEN RETURN -1; END;
+	 IF File   > Position2.File   THEN RETURN  1; END;
+	 IF Line   < Position2.Line   THEN RETURN -1; END;
+	 IF Line   > Position2.Line   THEN RETURN  1; END;
+	 IF Column < Position2.Column THEN RETURN -1; END;
+	 IF Column > Position2.Column THEN RETURN  1; END;
+	 RETURN 0;
+      END;
+   END Compare;
+
+PROCEDURE WritePosition (File: tFile; Position: tPosition);
+   BEGIN
+      IF Compare (Position, NoPosition) = 0 THEN
+	 WriteSpaces (File, 8);
+      ELSE
+	 WriteC (File, '"');
+	 IF Position.File > 0 THEN
+	    WriteIdent (File, Position.File);
+	 END;
+	 WriteC (File, '"');
+	 WriteC (File, ':');
+	 WriteI (File, Position.Line  , 4);
+	 WriteC (File, ',');
+	 WriteI (File, Position.Column, 3);
+      END;
+   END WritePosition;
+
+PROCEDURE ReadPosition	(File: tFile; VAR Position: tPosition);
+   VAR c: CHAR;
+   BEGIN
+   (*
+      c := ReadC (File);
+      Position.File := ReadIdent (File);
+      c := ReadC (File);
+      c := ReadC (File);
+   *)
+      Position.Line := ReadI (File);
+      c := ReadC (File);
+      Position.Column := ReadI (File);
+   END ReadPosition;
+
+BEGIN
+   NoPosition.Line	:= 0;
+   NoPosition.Column	:= 0;
+   NoPosition.File	:= NoIdent;
+END Position.

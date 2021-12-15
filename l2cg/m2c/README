@@ -1,0 +1,9 @@
+Transformation of Grammars from lalr Syntax to cg Syntax
+========================================================
+
+L2cg makes use of a library of reusable Modula-2 modules (MLIB=reuse).
+This library must be compiled before L2cg itself.
+
+To generate L2cg use:
+
+   make install BIN=... LIB=... OPT=...

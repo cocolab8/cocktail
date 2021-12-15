@@ -1,0 +1,536 @@
+
+# *************************************************************************
+# *
+# *  Makefile for
+# *
+# *  Cocktail
+# *  ========
+# *
+# *  Compiler Compiler Toolbox Karlsruhe
+# *  -----------------------------------
+# *
+# *  Copyright 2021 Dr. Josef Grosch, CoCoLab
+# *
+# *  Licensed under the Apache License, Version 2.0 (the "License");
+# *  you may not use this file except in compliance with the License.
+# *
+# *  You may obtain a copy of the License at
+# *
+# *    http://www.apache.org/licenses/LICENSE-2.0
+# *
+# *  Unless required by applicable law or agreed to in writing, software
+# *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# *
+# *  See the License for the specific language governing permissions and
+# *  limitations under the License.
+# *
+# *  Dr. Josef Grosch
+# *  CoCoLab - Datenverarbeitung
+# *  Breslauer Str. 64c
+# *  76139 Karlsruhe
+# *  Germany
+# *
+# *  Phone   : +49-721-91537544
+# *  Fax     : +49-721-91537543
+# *  Email   : grosch@cocolab.com
+# *  Internet: www.cocolab.com
+# *
+# *************************************************************************
+
+# Choose a C compiler
+CC	= @CC@
+#CC	= gcc
+#CC	= c89 -D_HPUX_SOURCE	# for HP700
+
+# Choose a C++ compiler
+CPPC	= @CXX@
+#CPPC	= g++
+# use 'CPPC = :' if no C++ compiler is available
+
+# Choose (optimizer) flags for the C compiler
+OPT	=
+
+# Choose a directory where to install Cocktail (absolute pathname!)
+DIR	= @prefix@
+
+# Choose a directory where to install shell scripts and binaries
+BIN	= $(DIR)/bin
+
+# Choose a directory where to install binaries and data files
+LIB	= $(DIR)/lib/cocktail
+
+# Choose a directory where to install man pages
+MAN	= $(DIR)/man/man1
+
+# Choose a directory where to install the C include files of the library reuse
+INCDIR	= $(LIB)/include
+
+# Choose a directory where to install the C++ include files of the library reuse
+CPINCDIR= $(LIB)/cplusinc
+
+# BSD needs this
+MAKE	= make
+
+CPP		= @CPP@
+RANLIB		= @RANLIB@
+INSTALL		= @INSTALL@
+INSTALL		= @SRC_DIR@/inst-sh -c
+INSTALL_PROGRAM	= @INSTALL_PROGRAM@
+INSTALL_DATA	= @INSTALL_DATA@
+ANSI_OBJECTS	= @ANSI_OBJECTS@
+MC		= @MC@
+
+
+# ****************************************************************
+#	DON'T CHANGE ANYTHING BELOW THIS LINE !
+# ****************************************************************
+
+WIBU_INC= /usr/include
+
+WIBU	= WIBU_FLAGS='-I $(WIBU_INC) -D WITH_WIBU_KEY -D _UNIX -m32' \
+	  WIBU_OBJ=license.o \
+	  WIBU_LIB=-lwklin
+WIBU	=
+
+MFLAGS	= BIN=$(BIN) \
+	  LIB=$(LIB) \
+	  CC='$(CC)' \
+	  CPPC='$(CPPC)' \
+	  MC='$(MC)' \
+	  OPT='$(OPT)' \
+	  HOME=$(DIR) \
+	  CPP='$(CPP)' \
+	  RANLIB='$(RANLIB)' \
+	  INSTALL_PROGRAM='$(INSTALL_PROGRAM)' \
+	  INSTALL_DATA='$(INSTALL_DATA)' \
+	  ANSI_OBJECTS='$(ANSI_OBJECTS)' \
+	  $(WIBU)
+
+TARGETS = \
+	m_reuselib \
+	c_reuselib \
+	cpp_reuselib \
+	c_reuse \
+	c_rex \
+	c_front \
+	c_bnf \
+	c_ell \
+	c_lark \
+	c_l2r \
+	c_y2l \
+	c_r2l \
+	c_l2cg \
+	c_rpp \
+	c_cg \
+	c_lpp \
+	c_tidy \
+	c_puma \
+#	c_common \
+#	java_reuselib \
+#	c_pumagen
+
+all:	$(TARGETS)
+
+m_reuselib:
+	sh -c "if test -d reuse/src -a '$(MC)' != 'true; :'; \
+	then echo; echo Making public Modula reuse library; \
+	cd reuse/src	&& $(MAKE) $(MFLAGS); else true; fi"
+c_reuselib:
+	sh -c "if test -d reuse/c; \
+	then echo; echo Making public C reuse library; \
+	cd reuse/c	&& $(MAKE) $(MFLAGS); else true; fi"
+cpp_reuselib:
+	sh -c "if test -d reuse/cpp -a 'x$(CPPC)' != x: ; \
+	then echo; echo Making public C++ reuse library; \
+	cd reuse/cpp	&& $(MAKE) $(MFLAGS); else true; fi"
+java_reuselib:
+	sh -c "if test -d reuse/java; \
+	then echo; echo Making public Java reuse library; \
+	cd reuse/java	&& $(MAKE) $(MFLAGS); else true; fi"
+c_reuse:
+	sh -c "if test -d reuse/m2c; \
+	then echo; echo Making local reuse library; \
+	cp config.h reuse/m2c; \
+	cd reuse/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_common:
+	sh -c "if test -d common/m2c; \
+	then echo; echo Making common; \
+	cd common/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_rex:
+	sh -c "if test -d rex/m2c; \
+	then echo; echo Making rex; \
+	cd rex/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_front:
+	sh -c "if test -d front/m2c; \
+	then echo; echo Making front; \
+	cd front/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_bnf:
+	sh -c "if test -d bnf/m2c; \
+	then echo; echo Making bnf; \
+	cd bnf/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_ell:
+	sh -c "if test -d ell/m2c; \
+	then echo; echo Making ell; \
+	cd ell/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_lark:
+	sh -c "if test -d lark/m2c; \
+	then echo; echo Making lark; \
+	cd lark/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_l2r:
+	sh -c "if test -d l2r/src; \
+	then echo; echo Making l2r; \
+	cd l2r/src	&& $(MAKE) $(MFLAGS) touch l2r; else true; fi"
+c_y2l:
+	sh -c "if test -d y2l/src; \
+	then echo; echo Making y2l; \
+	cd y2l/src	&& $(MAKE) $(MFLAGS) touch y2l; else true; fi"
+c_r2l:
+	sh -c "if test -d r2l/m2c; \
+	then echo; echo Making r2l; \
+	cd r2l/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_l2cg:
+	sh -c "if test -d l2cg/m2c; \
+	then echo; echo Making l2cg; \
+	cd l2cg/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_rpp:
+	sh -c "if test -d rpp/m2c; \
+	then echo; echo Making rpp; \
+	cd rpp/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_cg:
+	sh -c "if test -d cg/m2c; \
+	then echo; echo Making cg; \
+	cd cg/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_lpp:
+	sh -c "if test -d lpp/m2c; \
+	then echo; echo Making lpp; \
+	cd lpp/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_tidy:
+	sh -c "if test -d tidy/m2c; \
+	then echo; echo Making tidy; \
+	cd tidy/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_puma:
+	sh -c "if test -d puma/m2c; \
+	then echo; echo Making puma; \
+	cd puma/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_pumagen:
+	sh -c "if test -d pumagen/m2c; \
+	then echo; echo Making pumagen; \
+	cd pumagen/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+
+$(BIN):
+	mkdir -p $(BIN)
+
+$(LIB):
+	mkdir -p $(LIB)
+
+$(MAN):
+	mkdir -p $(MAN)
+
+$(INCDIR):
+	mkdir -p $(INCDIR)
+
+$(CPINCDIR):
+	mkdir -p $(CPINCDIR)
+
+install: c_reuse $(BIN) $(LIB) $(MAN) $(INCDIR) $(CPINCDIR)
+	sh -c "if test $(LIB) = $(BIN); then echo error: BIN = LIB, please choose different values for BIN and LIB; false; else true; fi"
+#	sh -c "if test $(MAN) = `pwd`/man/man1; then echo error: man-pages would be installed in source tree, please choose different value for MAN; false; else true; fi"
+#	$(INSTALL_DATA) ctlicens.dat $(LIB)
+	sh -c "if test -d reuse/c	; then cd reuse/c	&& \
+	$(MAKE) install $(MFLAGS) INCDIR=$(INCDIR); else true; fi"
+	sh -c "if test -d reuse/cpp	; then cd reuse/cpp	&& \
+	$(MAKE) install $(MFLAGS) INCDIR=$(CPINCDIR); else true; fi"
+#	sh -c "if test -d reuse/java	; then cd reuse/java	&& \
+#	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d rex/m2c	; then cd rex/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d front/m2c	; then cd front/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d bnf/m2c	; then cd bnf/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d ell/m2c	; then cd ell/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d lark/m2c	; then cd lark/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d front/doc	; then cd front/doc	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d l2r/src	; then cd l2r/src	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d y2l/src	; then cd y2l/src	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d r2l/m2c	; then cd r2l/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d l2cg/m2c	; then cd l2cg/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d rpp/m2c	; then cd rpp/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d cg/m2c	; then cd cg/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d lpp/m2c	; then cd lpp/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d tidy/m2c	; then cd tidy/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d puma/m2c	; then cd puma/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+#	sh -c "if test -d pumagen/m2c	; then cd pumagen/m2c	&& \
+#	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c 'if test -d man		; then cd man		&& \
+	for f in *.1; do cp $$f $(MAN) && chmod a+r $(MAN)/$$f; done; \
+	else true; fi'
+
+
+SYS	= linux
+IMAGE	= $(HOME)/image/$(SYS)
+IBIN	= $(IMAGE)/bin
+ILIB	= $(IMAGE)/lib
+IMAN	= $(IMAGE)/man/man1
+IFLAGS	= BIN=$(IBIN) LIB=$(ILIB) RANLIB='$(RANLIB)' \
+   INSTALL_PROGRAM='$(INSTALL_PROGRAM)' INSTALL_DATA='$(INSTALL_DATA)' \
+   ANSI_OBJECTS='$(ANSI_OBJECTS)'
+
+$(IMAGE):
+	mkdir -p $(IMAGE)
+
+$(IBIN):
+	mkdir -p $(IBIN)
+
+$(ILIB):
+	mkdir -p $(ILIB)
+
+$(IMAN):
+	mkdir -p $(IMAN)
+
+image:	c_reuse $(IMAGE) $(IBIN) $(ILIB) $(IMAN)
+#	$(INSTALL_DATA) ctlicens.dat $(ILIB)
+	sh -c "if test -d reuse/c	; then cd reuse/c	&& \
+	$(MAKE) image $(IFLAGS) INCDIR=$(ILIB)/include; else true; fi"
+	sh -c "if test -d reuse/cpp	; then cd reuse/cpp	&& \
+	$(MAKE) image $(IFLAGS) INCDIR=$(ILIB)/cplusinc; else true; fi"
+#	sh -c "if test -d reuse/java	; then cd reuse/java	&& \
+#	$(MAKE) install $(IFLAGS); else true; fi"
+	sh -c "if test -d rex/m2c	; then cd rex/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d front/m2c	; then cd front/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d bnf/m2c	; then cd bnf/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d ell/m2c	; then cd ell/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d lark/m2c	; then cd lark/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d front/doc	; then cd front/doc	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d l2r/src	; then cd l2r/src	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d y2l/src	; then cd y2l/src	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d r2l/m2c	; then cd r2l/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d l2cg/m2c	; then cd l2cg/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d rpp/m2c	; then cd rpp/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d cg/m2c	; then cd cg/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d lpp/m2c	; then cd lpp/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d tidy/m2c	; then cd tidy/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c "if test -d puma/m2c	; then cd puma/m2c	&& \
+	$(MAKE) image $(IFLAGS); else true; fi"
+#	sh -c "if test -d pumagen/m2c	; then cd pumagen/m2c	&& \
+#	$(MAKE) image $(IFLAGS); else true; fi"
+	sh -c 'if test -d man		; then cd man		&& \
+	for f in *.1; do cp $$f $(IMAN) && chmod a+r $(IMAN)/$$f; done; \
+	else true; fi'
+
+test:	test_c # test_java test_ada test_eiffel
+	if test '$(CPPC)' != ':'; then $(MAKE) -i CPPC='$(CPPC)' LIB=$(LIB) test_cpp test_cxx; fi
+	if test '$(MC)' != 'true; :'; then $(MAKE) -i MC='$(MC)' test_modula; fi
+
+test_c:
+	-cd examples/c/ada		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/c		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/cpp		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/modula2		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/modula2.ell	&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/sather		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/sql		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/oberon2		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/minilax		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+	-cd examples/c/wag		&& $(MAKE) -i CC='$(CC)' LIB=$(LIB) INCDIR=$(INCDIR)
+
+test_cpp:
+	-cd examples/cpp/modula2	&& $(MAKE) -i CPPC='$(CPPC)' LIB=$(LIB) INCDIR=$(CPINCDIR)
+	-cd examples/cpp/minilax	&& $(MAKE) -i CPPC='$(CPPC)' LIB=$(LIB) INCDIR=$(CPINCDIR)
+
+test_cxx:
+	-cd examples/cxx/minilax	&& $(MAKE) -i CPPC='$(CPPC)' LIB=$(LIB) INCDIR=$(CPINCDIR)
+
+test_modula:
+	-cd examples/modula/ada		&& $(MAKE) -i MC='$(MC)'
+	-cd examples/modula/modula2	&& $(MAKE) -i MC='$(MC)'
+	-cd examples/modula/modula2.ell	&& $(MAKE) -i MC='$(MC)'
+	-cd examples/modula/modula3	&& $(MAKE) -i MC='$(MC)'
+	-cd examples/modula/oberon	&& $(MAKE) -i MC='$(MC)'
+	-cd examples/modula/pascal	&& $(MAKE) -i MC='$(MC)'
+	-cd examples/modula/minilax	&& $(MAKE) -i MC='$(MC)'
+	-cd examples/modula/wag		&& $(MAKE) -i MC='$(MC)'
+
+test_java:
+	-cd examples/java/calc		&& $(MAKE) -i test
+	-cd examples/java/calc-ast	&& $(MAKE) -i test
+	-cd examples/java/calc-lpp	&& $(MAKE) -i test
+	-cd examples/java/calc-lpp-package && $(MAKE) -i test
+	-cd examples/java/integer-calc	&& $(MAKE) -i test
+
+test_ada:
+	-cd examples/ada/modula2	&& $(MAKE) -i
+
+test_eiffel:
+	-cd examples/eiffel/modula2	&& $(MAKE) -i
+	-cd examples/eiffel/calc	&& $(MAKE) -i
+
+clean:	clean_src clean_ex
+
+clean_src:
+	-cd bnf/m2c			&& $(MAKE) clean
+	-cd cg/m2c			&& $(MAKE) clean
+	-cd cg/hag-c			&& $(MAKE) clean
+	-cd cg/hag-cpp			&& $(MAKE) clean
+	-cd cg/hag-cxx			&& $(MAKE) clean
+	-cd cg/hag-m			&& $(MAKE) clean
+	-cd cg/hag-j			&& $(MAKE) clean
+	-cd cg/test-c			&& $(MAKE) clean
+	-cd cg/test-cpp			&& $(MAKE) clean
+	-cd cg/test-cxx			&& $(MAKE) clean
+	-cd cg/test-m			&& $(MAKE) clean
+	-cd cg/test-j			&& $(MAKE) clean
+#	-cd common/m2c			&& $(MAKE) CLEAN
+	-cd ell/m2c			&& $(MAKE) clean
+	-cd front/m2c			&& $(MAKE) CLEAN
+	-cd l2cg/m2c			&& $(MAKE) clean
+	-cd l2r/src			&& $(MAKE) clean
+	-cd lark/m2c			&& $(MAKE) clean
+	-cd lark			&& $(MAKE) clean
+	-cd lpp/m2c			&& $(MAKE) clean
+	-cd tidy/m2c			&& $(MAKE) clean
+	-cd puma/m2c			&& $(MAKE) clean
+	-cd puma			&& $(MAKE) clean
+#	-cd pumagen/m2c			&& $(MAKE) clean
+	-cd r2l/m2c			&& $(MAKE) clean
+	-cd reuse/c			&& $(MAKE) clean
+	-cd reuse/cpp			&& $(MAKE) clean
+	-cd reuse/m2c			&& $(MAKE) CLEAN
+	-cd reuse/src			&& $(MAKE) CLEAN
+	-cd reuse/ada			&& $(MAKE) CLEAN
+	-cd reuse/eiffel		&& $(MAKE) clean
+	-cd reuse/java			&& $(MAKE) clean
+	-cd reuse/java/test		&& $(MAKE) clean
+	-cd rex/m2c			&& $(MAKE) clean
+	-cd rex/test			&& $(MAKE) clean
+	-cd rpp/m2c			&& $(MAKE) clean
+	-cd y2l/src			&& $(MAKE) clean
+
+clean_ex:
+	-cd examples/c/ada		&& $(MAKE) clean
+	-cd examples/c/c		&& $(MAKE) clean
+	-cd examples/c/cpp		&& $(MAKE) clean
+	-cd examples/c/modula2		&& $(MAKE) clean
+	-cd examples/c/modula2.ell	&& $(MAKE) clean
+	-cd examples/c/sather		&& $(MAKE) clean
+	-cd examples/c/sql		&& $(MAKE) clean
+	-cd examples/c/oberon2		&& $(MAKE) clean
+	-cd examples/c/minilax		&& $(MAKE) clean
+	-cd examples/c/wag		&& $(MAKE) clean
+	-cd examples/cpp/modula2	&& $(MAKE) clean
+	-cd examples/cpp/minilax	&& $(MAKE) clean
+	-cd examples/cxx/minilax	&& $(MAKE) clean
+	-cd examples/modula/ada		&& $(MAKE) clean
+	-cd examples/modula/modula2	&& $(MAKE) clean
+	-cd examples/modula/modula2.ell	&& $(MAKE) clean
+	-cd examples/modula/modula3	&& $(MAKE) clean
+	-cd examples/modula/oberon	&& $(MAKE) clean
+	-cd examples/modula/pascal	&& $(MAKE) clean
+	-cd examples/modula/minilax	&& $(MAKE) clean
+	-cd examples/modula/wag		&& $(MAKE) clean
+	-cd examples/ada/modula2	&& $(MAKE) clean
+	-cd examples/eiffel/modula2	&& $(MAKE) clean
+	-cd examples/eiffel/calc	&& $(MAKE) clean
+	-cd examples/java/calc		&& $(MAKE) clean
+	-cd examples/java/calc-ast	&& $(MAKE) clean
+	-cd examples/java/calc-lpp	&& $(MAKE) clean
+	-cd examples/java/calc-lpp-package && $(MAKE) clean
+	-cd examples/java/integer-calc	&& $(MAKE) clean
+
+config:	config.in
+	autoconf config.in | \
+	sed -e 's;$$ac_aux_dir/install-sh;`pwd`/inst-sh;g' \
+	    -e 's;install-sh;inst-sh;g' \
+	    -e 's;CXX="gcc";CXX=":";' > config
+	chmod +x config
+
+config.status: config
+	config
+
+Makefile config.h: Makefile.in config.hin config.status
+	config.status
+
+
+support: c_reuse c_common c_mpp c_estra c_mtc2
+
+c_mpp:
+	sh -c "if test -d mpp/m2c; \
+	then echo; echo Making mpp; \
+	cd mpp/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_estra:
+	sh -c "if test -d estra/m2c; \
+	then echo; echo Making estra; \
+	cd estra/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+c_mtc2:
+	sh -c "if test -d mtc2/m2c; \
+	then echo; echo Making mtc2; \
+	cd mtc2/m2c	&& $(MAKE) $(MFLAGS); else true; fi"
+
+install_support: c_reuse c_common $(BIN) $(LIB)
+	sh -c "if test $(LIB) = $(BIN); then echo error: BIN = LIB, please choose different values for BIN and LIB; false; else true; fi"
+	sh -c "if test -d mpp/m2c	; then cd mpp/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d estra/m2c	; then cd estra/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+	sh -c "if test -d mtc2/m2c	; then cd mtc2/m2c	&& \
+	$(MAKE) install $(MFLAGS); else true; fi"
+
+sources:
+	-cd reuse/src	; $(MAKE) sources
+#	-cd common/src	; $(MAKE) sources
+	-cd front/src	; $(MAKE) sources
+	-cd ell/src	; $(MAKE) sources
+	-cd bnf/src	; $(MAKE) sources
+	-cd rpp/src	; $(MAKE) sources
+	-cd r2l/src	; $(MAKE) sources
+	-cd l2cg/src	; $(MAKE) sources
+	-cd rex/src	; $(MAKE) sources
+	-cd lark/src	; $(MAKE) sources
+	-cd cg/src	; $(MAKE) sources
+	-cd tidy/src	; $(MAKE) sources
+	-cd puma/src	; $(MAKE) sources
+
+M2FLAGS	= -cuw
+
+m2c:
+	-cd reuse/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+#	-cd common/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd front/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd ell/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd bnf/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd rpp/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd r2l/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd l2cg/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd rex/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd lark/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd cg/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd tidy/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+	-cd puma/src	; $(MAKE) m2c M2FLAGS=$(M2FLAGS)
+

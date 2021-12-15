@@ -1,0 +1,722 @@
+
+TRAFO
+   Main
+TREE
+   Tree Defs
+
+
+PUBLIC main
+
+GLOBAL {
+    int indent = 0;
+}
+
+
+
+
+
+
+
+FUNCTION main (argc: int, argv: {char **}) int
+... RETURN 0 :- {
+
+//Test Simple patterns
+
+	Match1 (3);
+	Match1 (4);
+	Match1 (5);
+	Match2 (3);
+	Match2 (4);
+	Match2 (5);
+	Trivial (
+	   mTs1(), 
+	   mDs1()
+	);
+	Trivial (
+	   mTs2(), 
+	   mDs1()
+	);
+	Trivial (
+	   mTs1(), 
+	   mDs2()
+	);
+	Trivial (
+	   mTs2(), 
+	   mDs2()
+	);
+
+
+//Test Casts
+
+	Casts (
+	   mA()
+	);
+	Casts (
+	   mT2(
+	      mAa(
+	         mD2()
+	      )
+	   )
+	);
+	Casts (
+	   mT1(
+	      mAa(
+	         mD2()
+	      )
+	   )
+	);
+	Casts (
+	   mT1(
+	      mA()
+	   )
+	);
+	Casts (
+	   mT1(
+	      mAb(
+	         mD3a(
+	            mD2()
+	         )
+	      )
+	   )
+	);
+
+
+//Test Patterns
+
+	Pattern1 (NULL);
+	Pattern1 (
+	   mP2(NULL)
+	);
+	Pattern1 (
+	   mP1(NULL)
+	);
+
+
+//Test Patterns
+
+	Pattern2 (
+	   mP3(
+	      mP1(NULL), 
+	      mP1(NULL)
+	   )
+	);
+	Pattern2 (
+	   mP3(
+	      mP2(NULL), 
+	      mP2(NULL)
+	   )
+	);
+	Pattern2 (
+	   mP3(
+	      mP2(NULL), 
+	      mP1(NULL)
+	   )
+	);
+	Pattern2 (
+	   mP5(
+	      mP4(3), 
+	      mP4(4)
+	   )
+	);
+	Pattern2 (
+	   mP5(
+	      mP4(6), 
+	      mP4(6)
+	   )
+	);
+	Pattern2 (
+	   mP5(
+	      mP4(8), 
+	      mP4(8)
+	   )
+	);
+
+
+//Test Functions and node creation
+
+	FNprint (
+	   mFNb2(
+	      mFNa(1), 
+	      mFNb1(NULL)
+	   )
+	);printf ("\n");
+
+
+//Test Functions and node creation
+
+	FNprint (
+	   FN1 (1)
+	);printf ("\n");
+	FNprint (
+	   FN1 (2)
+	);printf ("\n");
+	FNprint (
+	   FN1 (3)
+	);printf ("\n");
+	FNprint (
+	   FN1 (4)
+	);printf ("\n");
+	FNprint (
+	   FN1 (5)
+	);printf ("\n");
+
+
+//Test Functions and node creation
+
+	FNprint (
+	   FN2 (
+	      1, 
+	      mFNb1(NULL)
+	   )
+	);printf ("\n");
+	FNprint (
+	   FN2 (
+	      1, 
+	      mFNb2(
+	         mFNa(3), 
+	         mFNb1(
+	            mFN()
+	         )
+	      )
+	   )
+	);printf ("\n");
+	FNprint (
+	   FN2 (
+	      1, 
+	      mFNb2(
+	         mFNa(4), 
+	         mFNb1(
+	            mFNb1(NULL)
+	         )
+	      )
+	   )
+	);printf ("\n");
+	FNprint (
+	   FN2 (
+	      1, 
+	      mFNb2(
+	         mFNa(5), 
+	         mFNb1(
+	            mFNa(56)
+	         )
+	      )
+	   )
+	);printf ("\n");
+	FNprint (
+	   FN2 (
+	      1, 
+	      mFNb2(
+	         mFNa(999), 
+	         mFNb1(
+	            mFNb1(NULL)
+	         )
+	      )
+	   )
+	);printf ("\n");
+	FNprint (
+	   FN2 (
+	      1, 
+	      mFNb2(
+	         mFNa(999), 
+	         mFNb1(
+	            mFNa(99)
+	         )
+	      )
+	   )
+	);printf ("\n");
+	FNprint (
+	   FN2 (
+	      2, 
+	      mFNc(NULL)
+	   )
+	);printf ("\n");
+	FNprint (
+	   FN2 (
+	      2, 
+	      mFNc1(NULL, 97)
+	   )
+	);printf ("\n");
+	FNprint (
+	   FN2 (
+	      2, 
+	      mFNb1(NULL)
+	   )
+	);printf ("\n");
+
+
+//Test Statements
+
+	Sprint (
+	   mSnumber(
+	      mSempty(), 
+	      99
+	   )
+	);printf ("\n");
+	Sprint (
+	   mSnumber(
+	      mSnest(
+	         mSnumber(
+	            mSempty(), 
+	            2
+	         ), 
+	         mSnumber(
+	            mSempty(), 
+	            9
+	         )
+	      ), 
+	      1
+	   )
+	);printf ("\n");
+	Sprint (
+	   makeN (0)
+	);printf ("\n");
+	Sprint (
+	   makeN (5)
+	);printf ("\n");
+	Sprint (
+	   makeN (10)
+	);printf ("\n");
+
+
+//Test Variable defns
+
+	vdef1 (1, 2);
+	vdef1 (4, 4);
+	vdef2 (
+	   mV1(1, 2)
+	);
+	vdef2 (
+	   mV1(9, 9)
+	);
+	vdef2 (
+	   mV1(10, 10)
+	);
+	vdef2 (
+	   mV3("10", "10")
+	);
+	vdef2 (
+	   mV3("9", "6")
+	);
+	vdef2 (
+	   mV2(NULL)
+	);
+	vdef2 (
+	   mV2a(NULL)
+	);
+	vdef2 (
+	   mV2(
+	      mV1(1, 2)
+	   )
+	);
+	vdef2 (
+	   mV4(a3)
+	);
+	vdef2 (
+	   mV4(anot3)
+	);
+	vdef3 (
+	   mV4(a3), 
+	   mV4(anot3)
+	);
+	vdef3 (
+	   mV4(a3), 
+	   mV4(a3)
+	);
+
+
+//Test Predicates
+
+	Xprint (
+	   mXe(
+	      "document", 
+	      mNoXa(), 
+	      mAnXe(
+	         mAnXe(
+	            mAnXe(
+	               mNoXe(), 
+	               mXe(
+	                  "with-attr", 
+	                  mXa(
+	                     mXa(
+	                        mNoXa(), 
+	                        "at2", 
+	                        "v2"
+	                     ), 
+	                     "at1", 
+	                     "v1"
+	                  ), 
+	                  mAnXe(
+	                     mNoXe(), 
+	                     mXe(
+	                        "inner", 
+	                        mNoXa(), 
+	                        mNoXe()
+	                     )
+	                  )
+	               )
+	            ), 
+	            mXe(
+	               "empty-with-attr", 
+	               mXa(
+	                  mXa(
+	                     mNoXa(), 
+	                     "at2", 
+	                     "v2"
+	                  ), 
+	                  "at1", 
+	                  "v1"
+	               ), 
+	               mNoXe()
+	            )
+	         ), 
+	         mXe(
+	            "empty-element", 
+	            mNoXa(), 
+	            mNoXe()
+	         )
+	      )
+	   ), 
+	   0
+	);
+	Xprint (
+	   
+   Xpath (
+	      mXe(
+	         "document", 
+	         mNoXa(), 
+	         mAnXe(
+	            mAnXe(
+	               mAnXe(
+	                  mAnXe(
+	                     mAnXe(
+	                        mNoXe(), 
+	                        mXe(
+	                           "x", 
+	                           mXa(
+	                             mNoXa(), 
+	                             "a", 
+	                             "v1"
+	                           ), 
+	                           mNoXe()
+	                        )
+	                     ), 
+	                     mXe(
+	                        "y", 
+	                        mXa(
+	                           mNoXa(), 
+	                           "a", 
+	                           "v1"
+	                        ), 
+	                        mNoXe()
+	                     )
+	                  ), 
+	                  mXe(
+	                     "y", 
+	                     mXa(
+	                        mNoXa(), 
+	                        "a", 
+	                        "v1"
+	                     ), 
+	                     mNoXe()
+	                  )
+	               ), 
+	               mXe(
+	                  "x", 
+	                  mXa(
+	                     mXa(
+	                        mNoXa(), 
+	                        "b", 
+	                        "v2"
+	                     ), 
+	                     "a", 
+	                     "v1"
+	                  ), 
+	                  mNoXe()
+	               )
+	            ), 
+	            mXe(
+	               "x", 
+	               mNoXa(), 
+	               mNoXe()
+	            )
+	         )
+	      ), 
+	      NULL, 
+	      mXroot(
+	         mXchild(
+	            mXname(
+	               mXatt(
+	                  mXend(), 
+	                  "a"
+	               ), 
+	               "x"
+	            )
+	         )
+	      )
+	   )
+, 
+	   0
+	);
+
+
+//Test Recursion
+
+	pr1 (1, 4);
+	pr1 (1, 3);
+	pr1 (1, 2);
+	pr1 (1, 1);
+
+
+//Test Recursion
+
+	pr2 (3, 4);
+	pr2 (2, 3);
+	pr2 (3, 2);
+	pr2 (2, 1);
+
+
+//Test Types
+
+	Tc1 (
+	   mT1A(), 
+	   mT2A()
+	);
+	Tc1 (
+	   mT1A(), 
+	   mT1A()
+	);
+	Tc1 (
+	   mT1A(), 
+	   mT3A()
+	);
+	Tc1 (
+	   mT1B(), 
+	   mT3B()
+	);
+	Tc1 (
+	   mT1B(), 
+	   mT3C()
+	);
+
+
+};.
+
+
+
+PROCEDURE Match1 (int)
+	3 :- "int 3"; NL.
+	4 :- "int 4"; NL.
+	... :- "int other"; NL.
+
+PROCEDURE  Match2 ({int})
+	3 :- "{int} 3"; NL.
+	4 :- "{int} 4"; NL.
+	... :- "{int} other"; NL.
+
+PROCEDURE Trivial (Tree, Defs)
+	Ts1 (...), Ds1 (...) :- "Simple 1-1"; NL.
+	Ts2 (...), Ds1 (...) :- "Simple 2-1"; NL.
+	... :- "Simple default"; NL.
+
+
+PROCEDURE Casts (Tree)
+	T1 (Aa (D2 (...))) :- "C 1"; NL.
+			// Needs a cast A -> Aa
+
+	T2 (Aa (D2 (...))) :- "C 2"; NL.
+			// Needs no cast Aa = Aa
+
+	T1 (Ab (D3a (D2 (...)))) :- "C 3"; NL.
+			// Needs a cast A -> Aa
+
+	...		:- "C 99"; NL.
+
+
+PROCEDURE Pattern1 (t: Tree)
+   NIL		:- "P1 NIL"; NL.
+   P2(...)	:- "P1 P2"; NL; REJECT.
+   P1(...)	:- "P1 P1"; NL;.
+
+PROCEDURE Pattern2 (t: Tree)
+   P3(x:P2 (NIL), x)	:- "P2 match"; NL.
+   P3(x, x)	:- "P2 match2"; NL.
+   P5(P4 (x), P4 (x))		:- "P2 match 3"; IF x != 8 THEN NL; RETURN; END; " 8s"; NL.
+   _	:- "P2 no match"; NL.
+
+PROCEDURE FNprint (Tree)
+   NIL		:- "NIL";.
+   FNa(i)	:- "FNa("; fprintf (yyf, "%d", i); ")";.
+   FNb1 (a)	:- "FNb1("; FNprint(GUARD a); ")";.
+   FNb2 (l,r)	:- "FNb2("; FNprint(l); ","; FNprint(r); ")";.
+   FNc1 (a,d)	:- "FNc1("; FNprint(a); ","; fprintf (yyf, "%d", d); ")";.
+   FNc (a)	:- "FNc("; FNprint(a); ")";.
+   FN (...)	:- "FN";.
+   ...		:- "??"; .
+
+FUNCTION FN1 (int) Tree
+   1		RETURN FNa (-1) :- .
+   2		RETURN FNb1 (NIL) :- .
+   3		RETURN FNb2 (FNa (6), ...) :- .
+   4		RETURN FN1 (2) :- .
+   5		RETURN FNb1 (_) :- .
+
+// Expression syntax
+FUNCTION FN2 (i: int, t: Tree) Tree
+   i:=1		RETURN result :-
+			result: FNb1;
+			"Guard 1:-?"; NL;
+			result := GUARD t; 
+			"Guard 1:-OK"; NL;
+.
+   i:=1, t:=FNb2 (FNa (x), r:=z:FNb1 (...))
+		RETURN result :-
+			result: FNb1;
+			IF x == 3 THEN
+				RETURN FNb2 (FNa (x), z::a);
+			ELSIF x == 4 THEN
+				result := GUARD z::a;
+			ELSIF x == 5 THEN
+				RETURN FNb2 (GUARD z::a, NIL);
+			ELSE
+				"Guard 2:-?"; NL;
+				result := GUARD z::a;
+				"Guard 2:-OK"; NL;
+			END;
+.
+   i:=2		RETURN result :-
+			result: FNc;
+			tcopy: Tree := GUARD {t};
+			"Guard 3:-?"; NL;
+			result := GUARD tcopy; 
+			"Guard 3:-OK"; NL;
+.
+   ...		RETURN NIL :- .
+
+PROCEDURE Sprint (Tree)
+Snumber (Next, n)	:- "n("; fprintf (yyf, "%d", n); ")"; Sprint (Next); .
+Snest (Next, Slist)	:- "<"; NL; indent++; {{int i; for (i = 0; i < indent; i++) fprintf (yyf, " ");}}; Sprint (Slist);
+		   NL; indent--; {{int i; for (i = 0; i < indent; i++) fprintf (yyf, " ");}}; ">"; Sprint (Next);.
+Sitem (Next)	:- "()"; Sprint (Next);.
+Sempty (...)	:- .
+Slist (...)	:- "S"; .
+
+FUNCTION makeN (n: int) Slist
+LOCAL { tTree list2;}
+  ... RETURN Sempty () :- CONDITION n == 0; .
+  ... RETURN list :-
+       list: Slist := Sempty ();
+       i: int;
+       FOR i := 0; i < n; i++; DO
+          list2 = list;
+          IF i > 5 THEN list ?= Snumber (n:=4); END;
+          list := Snumber (list, i);
+       END;
+  .
+  ... RETURN Snest (Sempty (), list2) :- .
+
+PROCEDURE vdef1 (a: int, b: int)
+   x, x :- "equal"; NL.
+   ...  :- "unequal"; NL. 
+PROCEDURE vdef2 (t:Tree)
+   V2(...) :- t ?= V2(NIL); "nil"; NL.
+   V2(v) :- vdef2 (v);.
+   ... :- t ?= V1(10, 10); "tens"; NL.
+   ... :- t ?= V3("10", "10"); "strings "; fprintf (yyf, "%s", "10"); NL.
+   ... :- t ?= V1(x, x); "equal"; NL.
+   V4(a) :- CONDITION a[3] == 3; "3"; NL.
+   ...  :- "unequal"; NL.
+PROCEDURE vdef3 (t1:Tree, t2:Tree)
+   V4(a), V4(a)	:- "v4 equal"; NL.
+   ...		:- "v4 unequal"; NL.
+
+PROCEDURE Xprint (Tree, pos: int)
+  Xe(n, a, c),_	:-	{{int i; for (i = 0; i < indent; i++) fprintf (yyf, " ");}}; "<"; fprintf (yyf, "%s", n);
+			Xprint (a, 1);
+			IF !NoChildren (c) THEN
+				">"; NL; indent++; Xprint (c, 1); indent--;
+				{{int i; for (i = 0; i < indent; i++) fprintf (yyf, " ");}}; "</"; fprintf (yyf, "%s", n); ">";
+			ELSE
+				"/>";
+			END;
+			NL;
+		.
+  AnXe(next, e),_	:- Xprint (e, pos); Xprint (next, pos+1);
+			.
+  Xa(next, n, v),_	:-	" "; fprintf (yyf, "%s", n); "="; fprintf (yyf, "%s", v);
+				Xprint (next, pos+1);
+			.
+  NoXa(...),_; NoXe(...),_	:-.
+PREDICATE NoChildren (Xes)
+  NoXe (...)	:-.
+PREDICATE HasAttr (t: Xas, a_name: String)
+  t:=Xa (name:=a_name)		:-.
+  t:=Xa (Next:=Next:Xas(...))	:- HasAttr (Next, a_name);.
+FUNCTION Xpath (doc: Xe, context: Tree, expr: Defs) Tree
+  expr:=Xroot(next)
+			RETURN Xpath (doc, doc, next)	:-.
+  expr:=Xchild(next),
+  context:=Xe(children:=nodes)
+			RETURN Xpath (doc, nodes, next)	:-.
+  expr:=Xname(next, name),
+  context:=AnXe (nextdoc, e:Xe(name,...))
+			RETURN AnXe (
+				GUARD Xpath (doc, nextdoc, expr),
+				GUARD Xpath (doc, e, next)
+			) :- .
+  expr:=Xatt(next, name),
+  context:=e:Xe(ename, attrs, c)
+			RETURN e :- HasAttr (attrs, name);.
+  expr:=Xatt(next, name)
+			RETURN NoXe() :-.
+  context:=NoXe()
+			RETURN context :-.
+  expr:=Xname(next, _),
+  context:=AnXe (nextdoc, ...)
+			RETURN Xpath (doc, nextdoc, expr) :- .
+  ...			RETURN NIL :- "Fail:-"; Xprint (context, 0);.
+
+PROCEDURE pr1 (a: int, b: int)
+  1,_	:-
+		"1,";
+		fprintf (yyf, "%d", b); NL;
+		IF b==1 THEN FAIL; END;
+		IF b==2 THEN REJECT; END;
+		IF b==3 THEN RETURN; END;
+		"1 default"; NL.
+  1,_	:-
+		"1 rejected"; NL.
+  _,_	:-
+		"Other"; NL.
+
+PROCEDURE pr2 (a: int, b: int)
+  1,_	:-
+		"1,";
+		fprintf (yyf, "%d", b); NL;
+		IF b==1 THEN FAIL; END;
+		IF b==2 THEN REJECT; END;
+		IF b==3 THEN RETURN; END;
+		"1 default"; NL.
+  1,_	:-
+		"1 rejected"; NL.
+  2,_	:-
+		"tail recurse"; NL;
+		pr2 (a-1, b);.
+  3,_	:-
+		pr2 (a-2, b);
+		"post recurse"; NL.
+  _,_	:-
+		"Other"; NL.
+
+PROCEDURE Tc1 (t1: [T1A, T2A], t2: [T2A, T3A])
+   t,t	:- "same type"; NL.
+   T1A(...), T3A(...)	:-
+				tb: [T1B, T2B, T3B];
+				tc: [T1C, T2C, T3C];
+				"t rule 1"; NL;
+				tb := GUARD t1;
+				"t rule 1b"; NL;
+				tc := GUARD t2;
+				"t rule 1c"; NL.
+   ...	:- "t no match"; NL.
+
+

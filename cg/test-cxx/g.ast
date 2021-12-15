@@ -1,0 +1,49 @@
+TREE Tree IMPORT {
+# include "StringM.h"
+# include "Idents.h"
+
+typedef int MyInt;
+
+extern bool selector;
+}
+
+GLOBAL {
+# define closeint(a)		printf ("%d ", a);
+# define DrawAttr(addr, name)	draw_attr (addr, name)
+
+/* human readable: with indentation and selector names */
+# define readSELECTOR()		yySkip ();
+# define writeSELECTOR(a)	yyIndentSelector (a);
+/*
+*/
+
+/* compact: without indentation and selector names */
+/*
+# define readSELECTOR()		
+# define writeSELECTOR(a)	
+*/
+
+/* compaction on demand */
+bool selector = rtrue;
+/*
+# define readSELECTOR()		if (selector) yySkip ();
+# define writeSELECTOR(a)	if (selector) yyIndentSelector (a);
+*/
+
+static void draw_attr (Tree::tTree tree, char * name)
+{
+}
+}
+
+RULE
+
+Abstract	:= [Hex: MyInt] .
+
+Node <- Abstract= [Mark] [Ident: tIdent] [String: tStringRef]
+		  [a: Tree] [b: Node] -> [c: Tree] [d: Node] <
+   Node0	= .
+   Node1	= Child1: Node <
+      Node11	= Node .
+   > .
+   Node2	= Child1: Node REV Child2: Node [Child3: tTree] .
+> .

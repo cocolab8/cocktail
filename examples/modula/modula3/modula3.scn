@@ -1,0 +1,223 @@
+/***********************************************************************
+ *								       *
+ * Scanner for Modula-3 Compiler Monaco				       *
+ *								       *
+ * Author...........: Heiko Kiessling, cand. inform.		       *
+ *			University of Karlsruhe, Germany	       *
+ * Date of Creation.: 29.06.90					       *
+ * Last change......: 21.02.91					       *
+ * Revision.........: 1.2					       *
+ * History..........: 15.07.90 Augmented by file and line pragma       *
+ *				 => Rev. 1.1			       *
+ *		      11.01.91 Update to handle revised syntax of CHAR *
+ *			       and TEXT literals as well as EXTENDED   *
+ *			       literals according to the language up-  *
+ *			       date of 19.12.90 (rules for the new     *
+ *			       keywords ANY and OVERRIDES are created  *
+ *			       automatically; generic unit are not im- *
+ *			       plemented)			       *
+ *				 => Rev. 1.2			       *
+ *								       *
+ ***********************************************************************/
+
+EXPORT {
+FROM Idents	IMPORT tIdent;
+FROM Strings	IMPORT tString;
+FROM Position	IMPORT tPosition;
+
+INSERT tScanAttribute
+}
+
+GLOBAL {
+FROM SYSTEM	IMPORT ADR;
+FROM Errors	IMPORT Message, MessageI, Error;
+IMPORT Errors;
+FROM Strings	IMPORT tString, Length, SubString, Char, ArrayToString,
+			StringToNumber, StringToInt, StringToReal, AssignEmpty;
+FROM Idents	IMPORT tIdent, NoIdent, MakeIdent;
+FROM Position	IMPORT tPosition;
+
+VAR comlevel, praglevel	: CARDINAL;  (* Nesting level of comments and pragmas *)
+VAR TextStart		: tPosition; (* Start position of current text constant *)
+
+INSERT ErrorAttribute
+}
+
+LOCAL {
+VAR Word  : tString;
+VAR Ch    : CHAR;
+}
+
+BEGIN {
+  comlevel     := 0;
+  praglevel    := 0;
+}
+
+DEFAULT	{ GetWord (Word);
+	  MessageI ("illegal character", Error, Attribute.Position, Errors.String, ADR (Word)); }
+
+EOF	{ IF yyStartState = Comment THEN
+	     Message ("unclosed comment", Error, Attribute.Position); END; }
+   
+DEFINE Letter	    = { A-Z a-z }.
+       Digit	    = { 0-9 }.
+       HexDigit	    = Digit | { A-F a-f }.
+       PrintingChar = { A-Z a-z 0-9 } |
+		      " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" |
+		      "*" | "+" | "," | "-" | "." | "/" | ":" | ";" |
+		      "<" | "=" | ">" | "?" | "@" | "[" | "]" | "^" |
+		      "_" | "`" | "{" | "|" | "}" | "~" | 
+		      { \160-\255 }.
+       Escape	    = "\" PrintingChar | "\" "\" | "\" "'" | "\" \" |
+		      "\" { 0-9 } [1-3].
+       ComChar	    = - { * ( \t \n }.
+
+START Comment, Pragma, FilePragma, LinePragma, Garbage, Text
+
+
+RULES 
+
+/* The following rules accept Modula-3 comments. A comment extending over
+   several lines or including tabs is recognized stepwise to get built-in
+   rules of Rex updating the current file position.
+*/
+
+#STD, Comment# "(*"   :- { 
+			   INC (comlevel); 
+			   yyStart (Comment); 
+			 }
+#Comment#      "*)"   :- { 
+			   DEC (comlevel); 
+			   IF comlevel = 0 THEN
+			     yyStart (STD)
+			   END;
+			 }
+#Comment#      "(" | "*" | ComChar + :- 
+			 {}
+
+
+/* Pragmas are accepted in nearly the same way as comments except that 
+   certain pragma keywords have to be recognized (INLINE may serve as 
+   an example for this). Also notes have to be given to the user when an
+   unknown pragma is found. Unknown pragmas are no errors since they are
+   implementation-dependent. If none of the keyword sequences associated
+   with a pragma is recognized, it would be unconvenient for the user to
+   have each character found accompanied by a note. A start state named
+   "Garbage" is used to suppress such note avalanches.
+ */
+
+#STD, Pragma, Garbage# "<*" :  {
+			   INC (praglevel); 
+			   yyStart (Pragma); 
+			 }
+
+#Pragma, Garbage# "*>" :- { 
+			   DEC (praglevel); 
+			   IF praglevel = 0 THEN
+			     yyStart (STD)
+			   ELSE
+			     yyStart (Pragma)
+			   END;
+			 }
+#Pragma#       INLINE :- {
+			 }
+
+#Pragma#       FILE :-	 {
+			   yyStart (FilePragma);
+			 }
+
+#FilePragma#   \" PrintingChar * \" :-
+			 {
+			   yyStart (Pragma);
+			 }
+
+#Pragma#       LINE :-	 {
+			   yyStart (LinePragma);
+			 }
+
+#LinePragma#   Digit + :-
+			 {
+			   GetWord (Word);
+			   yyLineCount := StringToNumber (Word, 10) - 1;
+			   yyStart (Pragma);
+			 }
+
+
+/* Texts as pragmas are handled stepwise. This is done to take advantage of
+   analysis already made on the structure of a text (e.g. find escape
+   sequences). Furthermore error reporting can be handled in a more
+   convenient manner.
+ */
+
+#STD#		\"    :	 {
+			   yyStart (Text);
+			   TextStart := Attribute.Position;
+			 }
+
+#Text#		\"    :	 {
+			   yyStart (STD);
+			   RETURN TextLiteral;
+			 }
+
+#Text#	      (PrintingChar | "'") * | Escape :	 
+			 {
+			   GetWord (Word);
+			 }
+
+#Text#	      \n    :  {
+	     		   Message ("text exceeds line", Error, TextStart);
+			   yyEol (0);
+			   yyStart (STD);
+			   AssignEmpty (Attribute.TextLiteral.Text);
+			   RETURN TextLiteral;
+			 }
+
+
+/* Now we are ready to handle the simple stuff of the lexical analysis the 
+   main part of which is automatically generated by cg.
+ */
+
+#STD#		' ( PrintingChar | Escape | \") ' :
+			 {
+			   GetWord (Word);
+			   SubString (Word, 2, Length (Word) - 1, Word);
+			   Attribute.CharLiteral.Char := NoIdent;
+			   RETURN CharLiteral;
+			 }
+
+#STD#		Digit + ( "_" HexDigit + ) ? :
+			 {
+			   GetWord (Word);
+			   Attribute.IntegerLiteral.Integer := StringToInt (Word);
+			   RETURN IntegerLiteral;
+			 }
+
+#STD#		Digit + "." Digit + (( E | e ) ( "+" | "-" ) ? Digit + ) ? :
+			 {
+			   GetWord (Word);
+			   Attribute.RealLiteral.Real := StringToReal (Word);
+			   RETURN RealLiteral;
+			 }
+
+#STD#		Digit + "." Digit + ( D | d ) ( "+" | "-" ) ? Digit + :
+			 {
+			   GetWord (Word);
+			   Attribute.LongRealLiteral.LongReal := StringToReal (Word);
+			   RETURN LongRealLiteral;
+			 }
+
+#STD#		Digit + "." Digit + ( X | x ) ( "+" | "-" ) ? Digit + :
+			 {
+			   GetWord (Word);
+			   Attribute.ExtendedLiteral.Extended := StringToReal (Word);
+			   RETURN ExtendedLiteral;
+			 }
+
+INSERT RULES #STD#
+
+#STD#		Letter ( Letter | Digit | "_" ) * :
+			 {
+			   GetWord (Word);
+			   Attribute.Ident.Ident := MakeIdent (Word);
+			   RETURN Ident;
+			 }

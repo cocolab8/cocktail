@@ -1,0 +1,25 @@
+include ../../../Makefile.config
+
+JFLAGS	= -classpath $(CLASSPATH)
+
+test:	IntCalc.compiled in1
+	java $(JFLAGS) parsers.IntCalcDrv < in1 > o; diff out1 o
+
+test2:
+	lark -aju calc.lrk; make test
+	lark -ajo calc.lrk; make test
+	lark -ajb calc.lrk; make test
+
+IntCalc.compiled: IntCalcDrv.java IntCalc.java IntScan.java
+	javac -d . -g $(JFLAGS) IntCalcDrv.java IntCalc.java IntScan.java
+	touch IntCalc.compiled
+
+IntScan.java:	calc.rex
+	rex -j calc.rex
+
+IntCalc.java IntCalcDrv.java:	calc.lrk
+	lark -ajs calc.lrk
+
+clean:
+	rm -f o IntCalcDrv* core* IntCalc.java IntScan.java *.class
+	rm -rf IntCalc.compiled scanners parsers

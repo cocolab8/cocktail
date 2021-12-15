@@ -1,0 +1,74 @@
+EXPORT {
+typedef struct { tScanAttribute Scan; } tParsAttribute;
+}
+
+GLOBAL {
+# include <ctype.h>
+# include "Idents.h"
+
+int stack [10], * stack_ptr = stack;
+
+# define push(x)	* stack_ptr ++ = x
+# define pop		* -- stack_ptr
+# define stack_is_empty	stack_ptr == stack
+}
+
+LOCAL  { char name [256]; }
+
+BEGIN  { yyDebug = rtrue; }
+
+TOKEN
+   IDENTIFIER	= 1
+   '('		= 2
+   ')'		= 3
+   '++'		= 4
+   ';'		= 5
+   '['		= 6
+   ']'		= 7
+   '{'		= 8
+   '}'		= 9
+
+START compound_statement declaration_list
+
+RULE
+
+compound_statement	: '{'
+			     [ #S    BufferOn (rfalse, rfalse);
+   #SBTR push (BufferPosition); ]
+			  declaration_list 
+			     [ ReParse (yydeclaration_list, pop, BufferPosition, rtrue, rtrue);
+			       if (stack_is_empty) { tScanAttribute a;
+				  BufferOff (); BufferClear ();
+				  ErrorMessages (rtrue); SemActions (rtrue);
+				  GetAttribute (2, & a); GetLookahead (2); } ]
+			  statement_list
+			  '}'
+			.
+declaration_list	:
+			| declaration_list declaration
+			.
+statement_list		:
+			| statement_list statement
+			.
+declaration		: ? declaration declaration_specifier declarator ';'
+			.
+declaration_specifier	: TYPEDEFname [ printf ("trial action\n"); ]
+				      { printf ("final action\n"); }
+			.
+declarator		: IDENTIFIER  [ printf ("trial action\n"); ]
+				      { printf ("final action\n"); }
+			| '(' declarator ')'
+			| declarator '[' ']'
+			| compound_statement
+			.
+statement		: expression ';'
+			.
+expression		: expression '++'
+			| TYPEDEFname '(' expression ')'	/* cast */
+			| IDENTIFIER  '(' expression ')'	/* call */
+			| IDENTIFIER
+			.
+TYPEDEFname		: IDENTIFIER$i ?
+			  { isupper (gIdents.GetCStr ($i.Scan.Ident) [0]) != 0 }
+			| IDENTIFIER ? IDENTIFIER
+			.

@@ -1,0 +1,598 @@
+EXPORT {
+# define lex_interface
+# define yacc_interface
+}
+
+GLOBAL {
+/* 
+ *
+ *		OCCAM2 yacc specification
+ *
+ *		Peter Polkinghorne - GEC Research
+ *
+ */
+/*
+ * This work is in the public domain.
+ * It was written by Peter Polkinghorne in 1986 & 1989 at
+ * GEC Hirst Research Centre, Wembley, England.
+ * No liability is accepted or warranty given by the Author,
+ * still less my employers.
+ */
+/* revision history
+	0.0	initial attempt				pjmp	9/3/89
+
+end revisions */
+
+# define tParsAttribute	YYSTYPE
+# define yySynAttribute	yyval
+# define yyTerminal	yychar
+# define yyclearin
+# define yyerrok
+# ifndef YYMAXDEPTH
+# define YYMAXDEPTH	150
+# endif
+# ifndef YYSTYPE
+# define YYSTYPE	int
+# endif
+YYSTYPE yylval;
+# define yylval_def
+# define YYERROR
+# define YYBACKUP(newtoken, newvalue)	YYERROR
+# define YYRECOVERING()	yyIsRepairing
+
+
+#include <stdio.h>
+
+void main()
+{
+
+    exit( yyparse() );
+
+}/*main*/
+
+yyerror( str )
+char 	*str;
+/* our slightly more informative error routine */
+{
+
+extern int	yylineno;
+extern char	yytext[];
+
+	fprintf( stderr, "ERROR <%s> near <%s> on line %d\n",
+			str, yytext, yylineno );
+
+}/*yyerror*/
+
+/*end occam.y*/
+}
+
+TOKEN
+	VAR	= 128
+	CHAN	= 129
+	ANY	= 130
+	SKIP	= 131
+	ID	= 132
+	EOL	= 133
+	VALUE	= 134
+	BYTE	= 135
+	DEF	= 136
+	PROC	= 137
+	NOT	= 138
+	NUMBER	= 139
+	BOOL	= 140
+	NOW	= 141
+	TABLE	= 142
+	BOOLOP	= 143
+	SHIFTOP	= 144
+	COMPOP	= 145
+	CHCON	= 146
+	STR	= 147
+	LOGOP	= 148
+	SEQ	= 149
+	ALT	= 150
+	IF	= 151
+	PAR	= 152
+	WHILE	= 153
+	FOR	= 154
+	OF	= 155
+	SIZE	= 156
+	TRUNC	= 157
+	ROUND	= 158
+	MOSTNEG	= 159
+	MOSTPOS	= 160
+	RNUMBER	= 161
+	STOP	= 162
+	CASE	= 163
+	ELSE	= 164
+	IS	= 165
+	VAL	= 166
+	FROM	= 167
+	PROTOCOL	= 168
+	INT	= 169
+	INT16	= 170
+	INT32	= 171
+	INT64	= 172
+	REAL	= 173
+	REAL32	= 174
+	REAL64	= 175
+	PLACE	= 176
+	AT	= 177
+	PLACED	= 178
+	PROCESSOR	= 179
+	FUNCTION	= 180
+	AFTER	= 181
+	RETYPES	= 182
+	VALOF	= 183
+	RESULT	= 184
+	PORT	= 185
+	PRI	= 186
+	BEG	= 187
+	END	= 188
+	TO	= 189
+	TIMER	= 190
+	':'	= 58
+	'('	= 40
+	')'	= 41
+	','	= 44
+	';'	= 59
+	'='	= 61
+	'&'	= 38
+	'['	= 91
+	']'	= 93
+	'?'	= 63
+	'!'	= 33
+	'-'	= 45
+	'~'	= 126
+	'+'	= 43
+	'*'	= 42
+	'/'	= 47
+	'\\'	= 92
+	error
+
+RULE
+
+__START__	: program .
+
+program 	: sep process 			 
+	| process 
+	. 			
+		
+
+process 	: action sep 			 
+	| SKIP sep 			 
+	| STOP sep 			 
+	| CASE selector sep 			  
+	| CASE selector sep BEG selectlist END 			     
+	| construct 			
+	| instance 			
+	| specification sep process 			  
+	| caseinput 			
+	| allocation sep process 			  
+	| error sep 
+	. 			 
+
+		
+
+action 	: assignment 			
+	| input 			
+	| output 
+	. 			
+		
+
+allocation 	: PLACE ID AT expr ':' 
+	. 		    
+		
+
+selectlist 	: select 		
+	| selectlist select 
+	. 			 
+		
+
+select 	: expr sep BEG process END 			    
+	| ELSE sep BEG process END 
+	. 			    
+		
+
+selector 	: expr 
+	. 		
+		
+
+construct 	: sequence 		
+	| parallel 			
+	| conditional 			
+	| alternation 			
+	| loop 
+	. 			
+		
+
+instance 	: ID '(' actualist ')' sep 		    
+	| ID '(' ')' sep 
+	. 			   
+		
+
+actualist 	: actual 		
+	| actualist comma actual 
+	. 			  
+		
+
+actual 	: element 			
+	| expr 
+	. 			
+		
+
+sequence 	: SEQ sep BEG proclist END 		    
+	| SEQ replic sep BEG process END 			     
+	| SEQ sep 
+	. 			 
+		
+
+parallel 	: PAR sep BEG proclist END 		    
+	| PAR replic sep BEG process END 			     
+	| PAR sep 			 
+	| PRI PAR sep BEG proclist END 			     
+	| PRI PAR replic sep BEG process END 			      
+	| PRI PAR sep 			  
+	| PLACED PAR sep BEG placelist END 			     
+	| PLACED PAR replic sep BEG placement END 			      
+	| PLACED PAR sep 
+	. 			  
+		
+
+conditional 	: IF sep BEG choicelist END 		    
+	| IF replic sep BEG choice END 			     
+	| IF sep 
+	. 			 
+		
+
+alternation 	: ALT sep BEG alternativelist END 		    
+	| ALT replic sep BEG alternative END 			     
+	| ALT sep 			 
+	| PRI ALT sep BEG alternativelist END 			     
+	| PRI ALT replic sep BEG alternative END 			      
+	| PRI ALT sep 
+	. 			  
+		
+
+loop 	: WHILE expr sep BEG process END 
+	. 			     
+		
+
+sep 	: EOL 			
+	| sep EOL 
+	. 			 
+		
+
+comma 	: ',' EOL 			 
+	| ',' 
+	. 			
+		
+
+semicolon 	: ';' EOL 		 
+	| ';' 
+	. 			
+		
+
+proclist 	: process 		
+	| proclist process 
+	. 			 
+		
+
+choicelist 	: choice 		
+	| choicelist choice 
+	. 			 
+		
+
+placelist 	: placement 		
+	| placelist placement 
+	. 			 
+		
+
+alternativelist 	: alternative 		
+	| alternativelist alternative 
+	. 			 
+		
+
+
+replic 	: ID '=' base FOR count 
+	. 			    
+		
+
+base 	: expr 
+	. 			
+		
+
+count 	: expr 
+	. 			
+		
+
+choice 	: boolean sep BEG process END 			    
+	| specification sep choice 			  
+	| conditional 
+	. 			
+		
+
+placement 	: PROCESSOR expr sep BEG process END 
+	. 		     
+		
+
+alternative 	: guard sep BEG process END 		    
+	| specification sep alternative 			  
+	| alternation 
+	. 			
+		
+
+guard 	: boolean '&' input 			  
+	| input 			
+	| boolean '&' SKIP 
+	. 			  
+		
+
+specification 	: declaration 		
+	| abbreviation 			
+	| definition 
+	. 			
+		
+
+declaration 	: type namelist ':' 
+	. 		  
+		
+
+namelist 	: ID 		
+	| namelist comma ID 
+	. 			  
+		
+
+abbreviation 	: specifier ID IS element ':' 		    
+	| VAL specifier ID IS element ':' 			     
+	| ID IS element ':' 			   
+	| VAL ID IS element ':' 
+	. 			    
+		
+
+specifier 	: primtype 		
+	| '[' ']' specifier 			 
+	| '[' expr ']' specifier 
+	. 			   
+		
+
+definition 	: PROTOCOL ID IS simpleproto ':' 		    
+	| PROTOCOL ID IS seqproto ':' 			    
+	| PROTOCOL ID sep BEG CASE sep END ':' 			       
+	| PROTOCOL ID sep BEG CASE sep BEG tagprotolist END END ':' 			          
+	| PROC ID '(' fparmlist ')' sep BEG process END ':' 			         
+	| PROC ID '(' ')' sep BEG process END ':' 			        
+	| typelist FUNCTION ID '(' fparmlist ')' sep BEG valof END ':' 			          
+	| typelist FUNCTION ID '(' ')' sep BEG valof END ':' 			         
+	| typelist FUNCTION ID '(' fparmlist ')' IS explist ':' 			        
+	| typelist FUNCTION ID '(' ')' IS explist ':' 			       
+	| specifier ID RETYPES element ':' 			    
+	| VAL specifier ID RETYPES expr ':' 
+	. 			     
+		
+
+simpleproto 	: type 		
+	| type ':' ':' '[' ']' type 
+	. 			     
+		
+
+seqproto 	: simpleproto 		
+	| seqproto semicolon simpleproto 
+	. 			  
+		
+
+tagprotolist 	: tagproto 		
+	| tagprotolist sep tagproto 
+	. 			  
+		
+
+tagproto 	: tag 		
+	| tag semicolon protocol 
+	. 			  
+		
+
+tag 	: ID 
+	. 			
+		
+
+protocol 	: ANY 		
+	| ID 			
+	| simpleproto 
+	. 			
+		
+
+assignment 	: varlist ':' '=' explist 
+	. 		   
+		
+
+input 	: chan '?' inlist 			  
+	| chan '?' CASE taggedlist 			   
+	| port '?' var 			  
+	| timer '?' var 			  
+	| timer '?' AFTER expr 
+	. 			   
+		
+
+caseinput 	: chan '?' CASE sep 		   
+	| chan '?' CASE sep BEG variantlist END 
+	. 			      
+		
+
+taggedlist 	: tag 		
+	| tag semicolon inlist 
+	. 			  
+		
+
+variantlist 	: variant 		
+	| variantlist sep variant 
+	. 			  
+		
+
+variant 	: taggedlist sep BEG process END 			    
+	| specification sep variant 
+	. 			  
+		
+
+output 	: chan '!' outlist 			  
+	| chan '!' tag 			  
+	| chan '!' tag semicolon outlist 			    
+	| port '!' element 			  
+	| port '!' expr 
+	. 			  
+		
+
+inlist 	: var 			
+	| var ':' ':' var 			   
+	| inlist semicolon var 
+	. 			  
+		
+
+outlist 	: expr 			
+	| expr ':' ':' expr 			   
+	| outlist semicolon expr 
+	. 			  
+		
+
+explist 	: expr 			
+	| explist comma expr 			  
+	| '(' valof sep ')' 			   
+	| ID '(' explist ')' 			   
+	| ID '(' ')' 
+	. 			  
+		
+
+varlist 	: var 			
+	| varlist comma var 
+	. 			  
+		
+
+typelist 	: type 		
+	| typelist comma type 
+	. 			  
+		
+
+fparmlist 	: fparm 		
+	| fparmlist comma fparm 
+	. 			  
+		
+
+fparm 	: specifier ID 			 
+	| VAL specifier ID 
+	. 			  
+		
+
+var 	: element 
+	. 			
+		
+
+timer 	: element 
+	. 			
+		
+
+chan 	: element 
+	. 			
+		
+
+port 	: element 
+	. 			
+		
+
+element 	: ID 			
+	| element '[' subscript ']' 			   
+	| '[' element FROM subscript TO subscript ']' 
+	. 			      
+		
+
+subscript 	: expr 
+	. 		
+		
+
+expr 	: monop operand 			 
+	| operand dyop operand 			  
+	| monop sep operand 			  
+	| operand dyop sep operand 			   
+	| operand 			
+	| conversion 			
+	| MOSTPOS type 			 
+	| MOSTNEG type 
+	. 			 
+		
+
+operand 	: element 			
+	| literal 			
+	| '(' expr ')' 			  
+	| '[' explist ']' 			  
+	| '(' valof sep ')' 			   
+	| ID '(' explist ')' 			   
+	| ID '(' ')' 
+	. 			  
+		
+
+conversion 	: type operand 		 
+	| type ROUND operand 			  
+	| type TRUNC operand 
+	. 			  
+		
+
+monop 	: '-' 			
+	| NOT 			
+	| SIZE 			
+	| '~' 
+	. 			
+		
+
+literal 	: NUMBER 			
+	| BOOL 			
+	| RNUMBER 			
+	| CHCON 			
+	| STR 			
+	| NUMBER '(' type ')' 			   
+	| RNUMBER '(' type ')' 			   
+	| CHCON '(' type ')' 
+	. 			   
+		
+
+dyop 	: COMPOP 			
+	| '=' 			
+	| SHIFTOP 			
+	| '+' 			
+	| '*' 			
+	| LOGOP 			
+	| BOOLOP 			
+	| '-' 			
+	| '/' 			
+	| '\\' 
+	. 			
+		
+
+valof 	: VALOF sep BEG process RESULT explist sep END 			       
+	| specification sep valof 
+	. 			  
+		
+
+type 	: primtype 			
+	| arrtype 
+	. 			
+		
+
+primtype 	: CHAN OF protocol 		  
+	| PORT OF type 			  
+	| TIMER 			
+	| BOOL 			
+	| BYTE 			
+	| INT 			
+	| INT16 			
+	| INT32 			
+	| INT64 			
+	| REAL32 			
+	| REAL64 
+	. 			
+		
+
+arrtype 	: '[' expr ']' type 
+	. 			   
+		
+
+boolean 	: expr 
+	. 			
+		
+

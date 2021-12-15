@@ -1,0 +1,22 @@
+A Simple Test of Rex
+====================
+
+Rex generates scanners for several compilers:
+
+test   | language | compiler               | code
+---------------------------------------------------
+C      | C        | cc                     | ASCII
+C++    | C++      | g++, egcs              | ASCII
+MC     | Modula 2 | MOCKA (mc)             | ASCII
+M2C    | Modula 2 | SUN Modula (m2c)       | ASCII
+Ada    | Ada      | GNU Ada gnat (gcc)     | ASCII
+Eiffel | Eiffel 3 | SIG Eiffel/S 1.3 (ecc) | ASCII
+Java   | Java     | SUN javac              | ASCII
+CS     | C        | cc                     | EBCDIC
+MS     | Modula   | MOCKA (mc)             | EBCDIC
+
+To run a test use:
+
+   make <test> MLIB=...
+
+where MLIB (=reuse) is the directory containing the Modula library.

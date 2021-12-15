@@ -1,0 +1,35 @@
+CT_LIB	= "$(CT_DIR)"\lib
+INCDIR	= $(CT_LIB)\include
+CFLAGS	= /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /I$(INCDIR)
+CC	= cl /nologo
+
+ParserDrv: ParserDrv.obj Scanner.obj Parser.obj
+	link /nologo /incremental:no /out:ParserDrv.exe ParserDrv.obj Scanner.obj Parser.obj $(CT_LIB)\libreuse.lib
+
+Scanner.rpp Parser.lrk: ada.prs
+	lpp -cxzj ada.prs
+
+ada.rex: ada.scn Scanner.rpp
+	rpp < ada.scn > ada.rex
+
+Scanner.h Scanner.c: ada.rex
+	@echo expect 4 warnings
+	rex -cd ada.rex
+
+Parser.h Parser.c ParserDrv.c: Parser.lrk
+	lark -cdipns Parser.lrk
+
+ParserDrv.obj:	Parser.h Scanner.h
+Parser.obj:	Parser.h Scanner.h
+Scanner.obj:	Scanner.h
+
+lint: Scanner.c Parser.c ParserDrv.c
+	lint $(CFLAGS) -b -u *.c
+
+clean:
+	del /F ParserDrv core *.[hco] *.dbg ada.rex Parser.lrk Scanner.rpp
+
+.SUFFIXES: .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

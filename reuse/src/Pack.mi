@@ -1,0 +1,198 @@
+IMPLEMENTATION MODULE Pack;
+
+IMPORT IO;
+IMPORT SYSTEM;
+FROM rMemory IMPORT Alloc, Free;
+
+CONST
+  Sign = '!';
+  FirstChar = '+';
+  LastChar = '~';
+  Factor = (ORD(LastChar) - ORD(FirstChar) + 1) DIV 2;
+  
+TYPE
+  PackHandle = POINTER TO PackRecord;
+  BeginLineProc = PROCEDURE(PackHandle);
+  PackRecord = RECORD
+    pos		: CARDINAL;
+    count	: CARDINAL;
+    file	: IO.tFile;
+    beginLine	: BeginLineProc;
+  END (* PackRecord *);
+
+  PROCEDURE BeginCardLine
+    (    packer	: PackHandle);
+    
+  BEGIN (* BeginCardLine *)
+    WITH packer^ DO
+      IO.WriteS(file, 'Pack.UnpackCard(hc, "');
+      pos := 0;
+      count := 0;
+    END (* WHILE *);
+  END BeginCardLine;
+
+  PROCEDURE BeginIntLine
+    (    packer	: PackHandle);
+    
+  BEGIN (* BeginIntLine *)
+    WITH packer^ DO
+      IO.WriteS(file, 'Pack.UnpackInt(hi, "');
+      pos := 0;
+      count := 0;
+    END (* WHILE *);
+  END BeginIntLine;
+
+  PROCEDURE EndLine
+    (    packer	: PackHandle);
+    
+  BEGIN (* EndLine *)
+    WITH packer^ DO
+      IO.WriteS(file, '", ');
+      IO.WriteI(file, count, 1);
+      IO.WriteS(file, ');');
+      IO.WriteNl (file);
+      pos := 0;
+      count := 0;
+    END (* WHILE *);
+  END EndLine;
+
+  PROCEDURE BeginPackCard
+    (VAR packer	: PackHandle;
+         file	: IO.tFile);
+	 
+  BEGIN (* BeginPackCard *)
+    packer := Alloc(SYSTEM.TSIZE(PackRecord));
+    packer^.pos := 0;
+    packer^.count := 0;
+    packer^.file := file;
+    packer^.beginLine := BeginCardLine;
+    packer^.beginLine(packer);
+  END BeginPackCard;
+
+  PROCEDURE BeginPackInt
+    (VAR packer	: PackHandle;
+         file	: IO.tFile);
+	 
+  BEGIN (* BeginPackInt *)
+    packer := Alloc(SYSTEM.TSIZE(PackRecord));
+    packer^.pos := 0;
+    packer^.count := 0;
+    packer^.file := file;
+    packer^.beginLine := BeginIntLine;
+    packer^.beginLine(packer);
+  END BeginPackInt;
+
+  PROCEDURE PackCard
+    (    packer	: PackHandle;
+         value	: LONGCARD);
+  VAR
+    i		: LONGCARD;
+    buf		: ARRAY [0..10] OF CHAR;
+    
+  BEGIN (* PackCard *)
+    WITH packer^ DO 
+      i := 0;
+      REPEAT
+	buf[i] := CHR(value MOD Factor + ORD(FirstChar) + Factor);
+	i := i + 1;
+	value := value DIV Factor;
+      UNTIL value = 0;
+      buf[0] := CHR(ORD(buf[0]) - Factor);
+      pos := pos + i;
+      REPEAT
+	i := i - 1;
+        IO.WriteC(file, buf[i]);          
+      UNTIL i = 0;
+      count := count + 1;
+      IF pos > 54 THEN
+      	EndLine(packer);
+	beginLine(packer);
+      END (* IF *);
+    END (* WITH *);
+  END PackCard;
+  
+  PROCEDURE PackInt
+    (    packer	: PackHandle;
+         value	: LONGINT);
+    
+  BEGIN (* PackInt *)
+    WITH packer^ DO
+      IF value < 0 THEN
+        IO.WriteC(file, Sign);
+      	pos := pos + 1;
+	PackCard(packer, -value);
+      ELSE
+      	PackCard(packer, value);
+      END (* IF *);
+    END (* WITH *);
+  END PackInt;
+  
+  PROCEDURE EndPack
+    (VAR packer	: PackHandle);
+    
+  BEGIN (* EndPack *)
+    EndLine(packer);
+    Free(SYSTEM.TSIZE(PackRecord), packer);
+    packer := NIL;
+  END EndPack;
+
+  PROCEDURE Unpack
+    (    handler	: UnpackCardHandler;
+	 string  	: ARRAY OF CHAR;
+         count		: CARDINAL);
+
+  BEGIN (* Unpack *)
+    UnpackCard(handler, string, count);
+  END Unpack;
+  
+  PROCEDURE UnpackCard
+    (    handler	: UnpackCardHandler;
+	 string  	: ARRAY OF CHAR;
+         count		: CARDINAL);
+  VAR
+    i, j ,tmp		: CARDINAL;
+    value		: LONGCARD;
+
+  BEGIN (* UnpackCard *)
+    i := 0;
+    FOR j := 1 TO count DO
+      value := 0;
+      REPEAT
+        tmp:=ORD(string[i]) - ORD(FirstChar);
+	value := value * Factor + (tmp MOD Factor);
+	INC(i);
+      UNTIL tmp < Factor;
+      handler(value);
+    END (* FOR *);
+  END UnpackCard;
+  
+  PROCEDURE UnpackInt
+    (    handler	: UnpackIntHandler;
+	 string  	: ARRAY OF CHAR;
+         count		: CARDINAL);
+  VAR
+    issigned		: BOOLEAN;
+    i, j ,tmp		: CARDINAL;
+    value		: LONGCARD;
+
+  BEGIN (* UnpackInt *)
+    i := 0;
+    FOR j := 1 TO count DO
+      value := 0;
+      issigned := string[i] = Sign;
+      IF issigned THEN INC(i); END;
+      REPEAT
+        tmp:=ORD(string[i]) - ORD(FirstChar);
+	value := value * Factor + (tmp MOD Factor);
+	INC(i);
+      UNTIL tmp < Factor;
+      IF issigned THEN
+        handler(- LONGINT (value));
+      ELSE 
+        handler(value);
+      END (* IF *);
+    END (* FOR *);
+  END UnpackInt;
+  
+BEGIN (* Pack *)
+END Pack.

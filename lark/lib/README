@@ -1,0 +1,5 @@
+Skeletons used by Lark
+======================
+
+The skeletons must be installed in the same directory (LIB) as
+the parser generator lark itself.

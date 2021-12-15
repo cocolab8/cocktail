@@ -1,0 +1,634 @@
+(* $Id: HugeSets.mi,v 1.1 2000/09/16 21:53:40 grosch rel $ *)
+
+(*
+ * $Log: HugeSets.mi,v $
+ * Revision 1.1  2000/09/16 21:53:40  grosch
+ * fixed bug in incrCount when called from Assign
+ *
+ * Revision 1.0  2000/09/04 13:10:59  grosch
+ * Initial revision
+ *
+ *)
+
+(* Ich, Doktor Josef Grosch, Informatiker, August 2000 *)
+
+(* Sets of positive integers from 0 to 2**32.
+   Elements up to MaxBitset are stored as bitset,
+   elements above MaxBitset are stored as ordered list of ranges.
+*)
+
+IMPLEMENTATION MODULE HugeSets;
+
+FROM SYSTEM	IMPORT TSIZE, ADDRESS;
+FROM General	IMPORT MinCard, MaxCard;
+FROM DynArray	IMPORT MakeArray, ExtendArray, ResizeArray, ReleaseArray;
+FROM IO		IMPORT tFile, StdError, WriteI, WriteN, WriteC, WriteS, WriteNl;
+
+IMPORT Sets;
+
+CONST
+   initRangeSize	= 8;
+   MaxElement		= MAX (LONGCARD);
+
+PROCEDURE MakeSet	(VAR Set: tSet);
+BEGIN
+   WITH Set DO
+      Sets.MakeSet (bitset, MaxBitset);
+      rangePtr	 := NIL;
+      rangeSize	 := 0;
+      rangeCount := 0;
+   END;
+END MakeSet;
+
+PROCEDURE ReleaseSet	(VAR Set: tSet);
+BEGIN
+   WITH Set DO
+      Sets.ReleaseSet (bitset);
+      IF rangeSize # 0 THEN
+	 ReleaseArray (rangePtr, rangeSize, TSIZE (tRange));
+	 rangeSize := 0;
+      END;
+   END;
+END ReleaseSet;
+
+PROCEDURE Union		(VAR Set1: tSet; Set2: tSet);
+VAR i: LONGINT;
+BEGIN
+   WITH Set2 DO
+      Sets.Union (Set1.bitset, bitset);
+      FOR i := 1 TO rangeCount DO
+	 IncludeRange (Set1, rangePtr^[i].lwb, rangePtr^[i].upb);
+      END;
+   END;
+END Union;
+
+PROCEDURE Difference	(VAR Set1: tSet; Set2: tSet);
+VAR i: LONGINT;
+BEGIN
+   WITH Set2 DO
+      Sets.Difference (Set1.bitset, bitset);
+      FOR i := 1 TO rangeCount DO
+	 ExcludeRange (Set1, rangePtr^[i].lwb, rangePtr^[i].upb);
+      END;
+   END;
+END Difference;
+
+PROCEDURE Intersection	(VAR Set1: tSet; Set2: tSet);
+VAR
+   i, j		: LONGINT;
+   m, l, u	: LONGCARD;
+   s		: tSet;
+   lRangePtr	: ADDRESS;
+   lRangeSize	: LONGINT;
+   lRangeCount	: LONGINT;
+BEGIN
+   MakeSet (s);
+   WITH Set1 DO
+      Sets.Intersection (bitset, Set2.bitset);
+      i := 1;
+      j := 1;
+      LOOP
+         IF (i > rangeCount) OR (j > Set2.rangeCount) THEN EXIT; END;
+	 m := MaxCard (rangePtr^[i].lwb, Set2.rangePtr^[j].lwb);
+	 WHILE (i <= rangeCount) AND (rangePtr^[i].upb < m) DO INC (i); END;
+	 WHILE (j <= Set2.rangeCount) AND (Set2.rangePtr^[j].upb < m) DO INC (j); END;
+         IF (i > rangeCount) OR (j > Set2.rangeCount) THEN EXIT; END;
+	 l := MaxCard (rangePtr^[i].lwb, Set2.rangePtr^[j].lwb);;
+	 u := MinCard (rangePtr^[i].upb, Set2.rangePtr^[j].upb);
+	 IF l <= u THEN		(* found overlapping ranges *)
+	    incrCount (s);
+	    WITH s DO
+	       rangePtr^[rangeCount].lwb := l;
+	       rangePtr^[rangeCount].upb := u;
+	    END;
+	    IF u = rangePtr^[i].upb THEN INC (i); END;
+	    IF u = Set2.rangePtr^[j].upb THEN INC (j); END;
+	 END;
+      END;
+      lRangePtr		:= rangePtr;
+      lRangeSize	:= rangeSize;
+      lRangeCount	:= rangeCount;
+      rangePtr		:= s.rangePtr;
+      rangeSize		:= s.rangeSize;
+      rangeCount	:= s.rangeCount;
+      s.rangePtr	:= lRangePtr;
+      s.rangeSize	:= lRangeSize;
+      s.rangeCount	:= lRangeCount;
+   END;
+   ReleaseSet (s);
+END Intersection;
+
+(* PROCEDURE SymDiff	(VAR Set1: tSet; Set2: tSet); *)
+
+PROCEDURE Complement	(VAR Set: tSet);
+VAR i: LONGINT;
+BEGIN
+   WITH Set DO
+      Sets.Complement (bitset);
+      IF rangeCount = 0 THEN
+	 incrCount (Set);
+	 rangePtr^[1].lwb := MaxBitset + 1;
+	 rangePtr^[1].upb := MaxElement;
+      ELSIF rangeCount = 1 THEN
+	 IF (rangePtr^[1].lwb = MaxBitset + 1) AND (rangePtr^[1].upb = MaxElement) THEN
+	    (* remove this range *)
+	    DEC (rangeCount);
+	 ELSIF rangePtr^[1].lwb = MaxBitset + 1 THEN
+	    (* modify this range *)
+	    rangePtr^[1].lwb := rangePtr^[1].upb + 1;
+	    rangePtr^[1].upb := MaxElement;
+	 ELSIF rangePtr^[1].upb = MaxElement THEN
+	    (* modify this range *)
+	    rangePtr^[1].upb := rangePtr^[1].lwb - 1;
+	    rangePtr^[1].lwb := MaxBitset + 1;
+	 ELSE
+	    (* split this range *)
+	    incrCount (Set);
+	    rangePtr^[2].lwb := rangePtr^[1].upb + 1;
+	    rangePtr^[2].upb := MaxElement;
+	    rangePtr^[1].upb := rangePtr^[1].lwb - 1;
+	    rangePtr^[1].lwb := MaxBitset + 1;
+	 END;
+      ELSIF rangePtr^[1].lwb = MaxBitset + 1 THEN
+	 (* ranges get value of next gap *)
+	 FOR i := 1 TO rangeCount - 1 DO
+	    rangePtr^[i].lwb := rangePtr^[i].upb + 1;
+	    rangePtr^[i].upb := rangePtr^[i + 1].lwb - 1;
+	 END;
+	 IF rangePtr^[rangeCount].upb < MaxElement THEN
+	    rangePtr^[rangeCount].lwb := rangePtr^[rangeCount].upb + 1;
+	    rangePtr^[rangeCount].upb := MaxElement;
+	 ELSE
+	    DEC (rangeCount);
+	 END;
+      ELSE
+	 (* ranges get value of previous gap *)
+	 IF rangePtr^[rangeCount].upb < MaxElement THEN
+	    incrCount (Set);
+	    rangePtr^[rangeCount].upb := MaxElement;
+	 ELSE
+	    rangePtr^[rangeCount].upb := rangePtr^[rangeCount].lwb - 1;
+	 END;
+	 FOR i := rangeCount - 1 TO 1 BY -1 DO
+	    rangePtr^[i + 1].lwb := rangePtr^[i].upb + 1;
+	    rangePtr^[i].upb := rangePtr^[i].lwb - 1;
+	 END;
+	 rangePtr^[1].lwb := MaxBitset + 1;
+      END;
+   END;
+END Complement;
+
+PROCEDURE Include	(VAR Set: tSet; Elmt: LONGCARD);
+VAR i, j: LONGINT;
+BEGIN
+   WITH Set DO
+      IF Elmt <= MaxBitset THEN
+	 Sets.Include (bitset, Elmt);
+      ELSE
+	 FOR i := 1 TO rangeCount DO
+	       (* INVARIANT: Elmt does not overlap with ranges 1 .. i-1 *)
+	    IF Elmt = rangePtr^[i].lwb - 1 THEN
+	       (* merge Elmt with range i *)
+	       DEC (rangePtr^[i].lwb);
+	       RETURN;
+	    ELSIF Elmt < rangePtr^[i].lwb THEN
+	       (* insert Elmt before range i *)
+	       incrCount (Set);
+	       FOR j := rangeCount - 1 TO i BY -1 DO
+	          rangePtr^[j + 1] := rangePtr^[j];
+	       END;
+	       rangePtr^[i].lwb := Elmt;
+	       rangePtr^[i].upb := Elmt;
+	       RETURN;
+	    ELSIF isInRange (rangePtr^[i], Elmt) THEN
+	       (* Elmt is contained in range i *)
+	       RETURN;
+	    ELSIF Elmt = rangePtr^[i].upb + 1 THEN
+	       (* merge Elmt with range i *)
+	       INC (rangePtr^[i].upb);
+	       IF (i < rangeCount) AND (Elmt = rangePtr^[i + 1].lwb - 1) THEN
+		  (* merge ranges i and i+1 *)
+		  rangePtr^[i].upb := rangePtr^[i + 1].upb;
+		  FOR j := i + 2 TO rangeCount DO
+		     rangePtr^[j - 1] := rangePtr^[j];
+		  END;
+		  DEC (rangeCount);
+	       END;
+	       RETURN;
+	    END;
+	 END;
+	       (* insert Elemt after last range *)
+	 incrCount (Set);
+	 rangePtr^[rangeCount].lwb := Elmt;
+	 rangePtr^[rangeCount].upb := Elmt;
+      END;
+   END;
+END Include;
+
+PROCEDURE IncludeRange	(VAR Set: tSet; Lwb, Upb: LONGCARD);
+VAR
+   i, j, n: LONGINT;
+   e, lowerUpb, upperLwb: LONGCARD;
+BEGIN
+   WITH Set DO
+      lowerUpb := MinCard (MaxBitset, Upb);
+      upperLwb := MaxCard (MaxBitset + 1, Lwb);
+      FOR e := Lwb TO lowerUpb DO
+	 Sets.Include (bitset, e);
+      END;
+      IF upperLwb <= Upb THEN
+	 FOR i := 1 TO rangeCount DO
+	       (* INVARIANT: range does not overlap with ranges 1 .. i-1 *)
+	    IF Upb = rangePtr^[i].lwb - 1 THEN
+	       (* merge range with range i *)
+	       rangePtr^[i].lwb := upperLwb;
+	       RETURN;
+	    ELSIF Upb < rangePtr^[i].lwb THEN
+	       (* insert range before range i *)
+	       incrCount (Set);
+	       FOR j := rangeCount - 1 TO i BY -1 DO
+	          rangePtr^[j + 1] := rangePtr^[j];
+	       END;
+	       rangePtr^[i].lwb := upperLwb;
+	       rangePtr^[i].upb := Upb;
+	       RETURN;
+	    ELSIF isInRange (rangePtr^[i], Upb) THEN
+	       (* range overlaps with range i only *)
+	       rangePtr^[i].lwb := MinCard (rangePtr^[i].lwb, upperLwb);
+	       RETURN;
+	    ELSIF upperLwb <= rangePtr^[i].upb THEN
+	       (* range overlaps at least with range i *)
+	       j := i + 1;	(* determine last overlapping range *)
+	       LOOP
+	          IF j > rangeCount THEN EXIT; END;
+		  IF Upb < rangePtr^[j].lwb THEN EXIT; END;
+		  INC (j);
+	       END;
+	       DEC (j);
+				(* merge overlapping ranges *)
+	       rangePtr^[i].lwb := MinCard (rangePtr^[i].lwb, upperLwb);
+	       rangePtr^[i].upb := MaxCard (rangePtr^[j].upb, Upb);
+				(* remove unnecessary ranges i+1 .. j *)
+	       FOR n := j + 1 TO rangeCount DO
+	          rangePtr^[n - j + i] := rangePtr^[n];
+	       END;
+	       DEC (rangeCount, j - i);
+	       RETURN;
+	    ELSIF upperLwb = rangePtr^[i].upb + 1 THEN
+	       (* merge range with range i *)
+	       rangePtr^[i].upb := Upb;
+	       j := i + 1;	(* determine last overlapping range *)
+	       LOOP
+	          IF j > rangeCount THEN EXIT; END;
+		  IF Upb < rangePtr^[j].lwb THEN EXIT; END;
+		  INC (j);
+	       END;
+	       DEC (j);
+				(* merge overlapping ranges *)
+	       rangePtr^[i].upb := MaxCard (rangePtr^[j].upb, Upb);
+	       IF (j < rangeCount) AND (Upb = rangePtr^[j + 1].lwb - 1) THEN
+		  (* merge ranges i and j+1 *)
+		  rangePtr^[i].upb := rangePtr^[j + 1].upb;
+		  INC (j);
+	       END;
+				(* remove unnecessary ranges i+1 .. j *)
+	       FOR n := j + 1 TO rangeCount DO
+	          rangePtr^[n - j + i] := rangePtr^[n];
+	       END;
+	       DEC (rangeCount, j - i);
+	       RETURN;
+	    END;
+	 END;
+	       (* insert range after last range *)
+	 incrCount (Set);
+	 rangePtr^[rangeCount].lwb := upperLwb;
+	 rangePtr^[rangeCount].upb := Upb;
+      END;
+   END;
+END IncludeRange;
+
+PROCEDURE Exclude	(VAR Set: tSet; Elmt: LONGCARD);
+VAR i, j: LONGINT;
+BEGIN
+   WITH Set DO
+      IF Elmt <= MaxBitset THEN
+	 Sets.Exclude (bitset, Elmt);
+      ELSE
+	 FOR i := 1 TO rangeCount DO
+	    IF isInRange (rangePtr^[i], Elmt) THEN
+	       (* Elmt is contained in range i *)
+	       IF (Elmt = rangePtr^[i].lwb) AND (Elmt = rangePtr^[i].upb) THEN
+	          (* remove this range *)
+		  FOR j := i + 1 TO rangeCount DO
+		     rangePtr^[j - 1] := rangePtr^[j];
+		  END;
+		  DEC (rangeCount);
+	       ELSIF Elmt = rangePtr^[i].lwb THEN
+	          (* modify this range *)
+		  INC (rangePtr^[i].lwb);
+	       ELSIF Elmt = rangePtr^[i].upb THEN
+	          (* modify this range *)
+		  DEC (rangePtr^[i].upb);
+	       ELSE
+	          (* split this range *)
+		  incrCount (Set);
+		  FOR j := rangeCount - 1 TO i BY -1 DO
+		     rangePtr^[j + 1] := rangePtr^[j];
+		  END;
+		  rangePtr^[i].upb := Elmt - 1;
+		  rangePtr^[i + 1].lwb := Elmt + 1;
+	       END;
+	    END;
+	 END;
+      END;
+   END;
+END Exclude;
+
+PROCEDURE ExcludeRange	(VAR Set: tSet; Lwb, Upb: LONGCARD);
+VAR
+   i, j, n: LONGINT;
+   e, lowerUpb, upperLwb: LONGCARD;
+BEGIN
+   WITH Set DO
+      lowerUpb := MinCard (MaxBitset, Upb);
+      upperLwb := MaxCard (MaxBitset + 1, Lwb);
+      FOR e := Lwb TO lowerUpb DO
+	 Sets.Exclude (bitset, e);
+      END;
+      IF upperLwb <= Upb THEN
+	 i := 1;		(* determine first overlapping range *)
+	 LOOP
+	    (* INVARIANT: range does not overlap with ranges 1 .. i-1 *)
+	    IF i > rangeCount THEN EXIT; END;
+	    IF Upb < rangePtr^[i].lwb THEN RETURN END;
+	    IF upperLwb <= rangePtr^[i].upb THEN EXIT; END;
+	    INC (i);
+	 END;
+	 j := rangeCount;	(* determine last overlapping range *)
+	 LOOP
+	    (* INVARIANT: range does not overlap with ranges rangeCount .. j+1 *)
+	    IF j < i THEN EXIT; END;
+	    IF rangePtr^[j].upb < upperLwb THEN RETURN END;
+	    IF rangePtr^[j].lwb <= Upb THEN EXIT; END;
+	    DEC (j);
+	 END;
+	 IF i = j THEN		(* range overlaps with range i only *)
+	    upperLwb := MaxCard (rangePtr^[i].lwb, upperLwb);
+	    Upb := MinCard (rangePtr^[i].upb, Upb);
+	    IF (upperLwb = rangePtr^[i].lwb) AND (Upb = rangePtr^[i].upb) THEN
+	       (* remove this range *)
+	       FOR j := i + 1 TO rangeCount DO
+		  rangePtr^[j - 1] := rangePtr^[j];
+	       END;
+	       DEC (rangeCount);
+	    ELSIF upperLwb = rangePtr^[i].lwb THEN
+	       (* modify this range *)
+	       rangePtr^[i].lwb := Upb + 1;
+	    ELSIF Upb = rangePtr^[i].upb THEN
+	       (* modify this range *)
+	       rangePtr^[i].upb := upperLwb - 1;
+	    ELSE
+	       (* split this range *)
+	       incrCount (Set);
+	       FOR j := rangeCount - 1 TO i BY -1 DO
+		  rangePtr^[j + 1] := rangePtr^[j];
+	       END;
+	       rangePtr^[i].upb := upperLwb - 1;
+	       rangePtr^[i + 1].lwb := Upb + 1;
+	    END;
+	 ELSIF i < j THEN	(* range overlaps with ranges i to j *)
+	    upperLwb := MaxCard (rangePtr^[i].lwb, upperLwb);
+	    Upb := MinCard (rangePtr^[j].upb, Upb);
+	    IF rangePtr^[i].lwb < upperLwb THEN
+	       (* modify range i *)
+	       rangePtr^[i].upb := upperLwb - 1;
+	       INC (i);
+	    END;
+	    IF Upb < rangePtr^[j].upb THEN
+	       (* modify range j *)
+	       rangePtr^[j].lwb := Upb + 1;
+	       DEC (j);
+	    END;
+	       (* remove ranges i to j *)
+	    FOR n := j + 1 TO rangeCount DO
+	       rangePtr^[n - j + i - 1] := rangePtr^[n];
+	    END;
+	    DEC (rangeCount, j - i + 1);
+	 END;
+      END;
+   END;
+END ExcludeRange;
+
+PROCEDURE Card		(VAR Set: tSet): LONGCARD;
+VAR
+   card: LONGCARD;
+   i: LONGINT;
+BEGIN
+   WITH Set DO
+      card := 0;
+      FOR i := 1 TO rangeCount DO
+         INC (card, rangePtr^[i].upb - rangePtr^[i].lwb + 1);
+      END;
+      RETURN Sets.Card (bitset) + card;
+   END;
+END Card;
+
+PROCEDURE Minimum	(VAR Set: tSet): LONGCARD;
+BEGIN
+   WITH Set DO
+      IF NOT Sets.IsEmpty (bitset) THEN
+         RETURN Sets.Minimum (bitset);
+      ELSIF rangeCount > 0 THEN
+	 RETURN rangePtr^[1].lwb;
+      ELSE
+	 RETURN 0;
+      END;
+   END;
+END Minimum;
+
+PROCEDURE Maximum	(VAR Set: tSet): LONGCARD;
+BEGIN
+   WITH Set DO
+      IF rangeCount > 0 THEN
+	 RETURN rangePtr^[rangeCount].upb;
+      ELSIF NOT Sets.IsEmpty (bitset) THEN
+         RETURN Sets.Maximum (bitset);
+      ELSE
+	 RETURN 0;
+      END;
+   END;
+END Maximum;
+
+PROCEDURE Select	(VAR Set: tSet): LONGCARD;
+BEGIN
+   RETURN Minimum (Set);
+END Select;
+
+PROCEDURE Extract	(VAR Set: tSet; VAR Lwb, Upb: LONGCARD);
+VAR j: LONGINT;
+BEGIN
+   WITH Set DO
+      IF NOT Sets.IsEmpty (bitset) THEN
+         Lwb := Sets.Extract (bitset);
+	 Upb := Lwb;
+      ELSIF rangeCount > 0 THEN
+	 (* has to be forward because some algorithms expect ordered sequence *)
+	 Lwb := rangePtr^[1].lwb;
+	 Upb := rangePtr^[1].upb;
+	 FOR j := 2 TO rangeCount DO
+	    rangePtr^[j - 1] := rangePtr^[j];
+	 END;
+	 DEC (rangeCount);
+      ELSE
+	 Lwb := 0;
+	 Upb := 0;
+      END;
+   END;
+END Extract;
+
+PROCEDURE IsSubset	(Set1, Set2: tSet): BOOLEAN;
+VAR
+   i, j: LONGINT;
+   e: LONGCARD;
+BEGIN
+   WITH Set1 DO
+      IF NOT Sets.IsSubset (bitset, Set2.bitset) THEN RETURN FALSE; END;
+      j := 1;
+      FOR i := 1 TO rangeCount DO
+	 e := rangePtr^[i].upb;
+	 WHILE (j <= Set2.rangeCount) AND (Set2.rangePtr^[j].upb < e) DO
+	    INC (j);
+	 END;
+	 IF (j > Set2.rangeCount) OR
+	    NOT isInRange (Set2.rangePtr^[j], rangePtr^[i].lwb) OR
+	    NOT isInRange (Set2.rangePtr^[j], e) THEN RETURN FALSE; END;
+      END;
+      RETURN TRUE;
+   END;
+END IsSubset;
+
+(* PROCEDURE IsStrictSubset (Set1, Set2: tSet): BOOLEAN; *)
+
+PROCEDURE IsEqual	(VAR Set1, Set2: tSet): BOOLEAN;
+VAR i: LONGINT;
+BEGIN
+   WITH Set1 DO
+      IF Sets.IsNotEqual (bitset, Set2.bitset) OR
+	 (rangeCount # Set2.rangeCount) THEN RETURN FALSE; END;
+      FOR i := 1 TO rangeCount DO
+	 IF (rangePtr^[i].lwb # Set2.rangePtr^[i].lwb) OR
+	    (rangePtr^[i].upb # Set2.rangePtr^[i].upb) THEN RETURN FALSE; END;
+      END;
+      RETURN TRUE;
+   END;
+END IsEqual;
+
+PROCEDURE IsNotEqual	(Set1, Set2: tSet): BOOLEAN;
+BEGIN
+   RETURN NOT IsEqual (Set1, Set2);
+END IsNotEqual;
+
+PROCEDURE IsElement	(Elmt: LONGCARD; VAR Set: tSet): BOOLEAN;
+VAR i: LONGINT;
+BEGIN
+   WITH Set DO
+      IF Elmt <= MaxBitset THEN
+	 RETURN Sets.IsElement (Elmt, bitset);
+      ELSE
+	 FOR i := 1 TO rangeCount DO
+	    IF isInRange (rangePtr^[i], Elmt) THEN RETURN TRUE; END;
+	 END;
+      END;
+      RETURN FALSE;
+   END;
+END IsElement;
+
+PROCEDURE IsEmpty	(Set: tSet): BOOLEAN;
+BEGIN
+   WITH Set DO
+      RETURN Sets.IsEmpty (bitset) AND (rangeCount = 0);
+   END;
+END IsEmpty;
+
+(*
+PROCEDURE Forall	(Set: tSet; Proc: ProcOfCardToBool): BOOLEAN;
+PROCEDURE Exists	(Set: tSet; Proc: ProcOfCardToBool): BOOLEAN;
+PROCEDURE Exists1	(Set: tSet; Proc: ProcOfCardToBool): BOOLEAN;
+*)
+
+PROCEDURE Assign	(VAR Set1: tSet; Set2: tSet);
+VAR i: LONGINT;
+BEGIN
+   WITH Set1 DO
+      Sets.Assign (bitset, Set2.bitset);
+      rangeCount := Set2.rangeCount - 1;
+      incrCount (Set1);
+      FOR i := 1 TO rangeCount DO
+	 rangePtr^[i] := Set2.rangePtr^[i];
+      END;
+   END;
+END Assign;
+
+PROCEDURE AssignElmt	(VAR Set: tSet; Elmt: LONGCARD);
+BEGIN
+   AssignEmpty (Set);
+   Include (Set, Elmt);
+END AssignElmt;
+
+PROCEDURE AssignEmpty	(VAR Set: tSet);
+BEGIN
+   WITH Set DO
+      Sets.AssignEmpty (bitset);
+      rangeCount := 0;
+   END;
+END AssignEmpty;
+
+(*
+PROCEDURE ForallDo	(Set: tSet; Proc: ProcOfCard);
+PROCEDURE ReadSet	(f: tFile; VAR Set: tSet);
+*)
+
+PROCEDURE WriteSet	(f: tFile;     Set: tSet);
+VAR i: LONGINT;
+BEGIN
+   WriteC (f, '{');
+   WITH Set DO
+      FOR i := 0 TO MaxBitset DO
+	 IF Sets.IsElement (i, bitset) THEN
+	    WriteC (f, ' ');
+	    WriteI (f, i, 0);
+	 END;
+      END;
+      FOR i := 1 TO rangeCount DO
+	 WriteC (f, ' ');
+	 WriteN (f, rangePtr^[i].lwb, 0, 10);
+	 WriteC (f, '-');
+	 WriteN (f, rangePtr^[i].upb, 0, 10);
+      END;
+   END;
+   WriteC (f, '}');
+END WriteSet;
+
+PROCEDURE isInRange (range: tRange; Elmt: LONGCARD): BOOLEAN;
+BEGIN
+   RETURN (range.lwb <= Elmt) AND (Elmt <= range.upb);
+END isInRange;
+
+PROCEDURE incrCount (VAR Set: tSet);
+BEGIN
+   WITH Set DO
+      INC (rangeCount);
+      IF rangeCount > rangeSize THEN
+	 IF rangeSize = 0 THEN
+	    rangeSize := MaxCard (rangeCount, initRangeSize);
+	    MakeArray (rangePtr, rangeSize, TSIZE (tRange));
+	 ELSIF rangeCount > rangeSize + rangeSize THEN
+	    ResizeArray (rangePtr, rangeSize, rangeCount, TSIZE (tRange));
+	 ELSE
+	    ExtendArray (rangePtr, rangeSize, TSIZE (tRange));
+	 END;
+      END;
+   END;
+END incrCount;
+
+END HugeSets.

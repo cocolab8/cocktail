@@ -1,0 +1,25 @@
+IMPORT {
+# include "StringM.h"
+# include "Idents.h"
+
+# define MyInt int
+}
+
+GLOBAL {
+# define closeint(a)	printf ("%d ", a);
+
+/* compaction on demand */
+extern rbool selector;
+# define readSELECTOR()		if (selector) yySkip ();
+# define writeSELECTOR(a)	if (selector) yyIndentSelector (a);
+}
+
+RULE
+
+Abstract	:= [Hex: MyInt] .
+
+Node <- Abstract= [Mark] [Ident: tIdent] [String: tStringRef] <
+   Node0	= .
+   Node1	= Child1: Node .
+   Node2	= Child1: Node REV Child2: Node [Child3: ttree] .
+> .

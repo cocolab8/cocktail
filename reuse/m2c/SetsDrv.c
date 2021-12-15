@@ -1,0 +1,131 @@
+#include "SYSTEM_.h"
+
+#ifndef DEFINITION_Sets
+#include "Sets.h"
+#endif
+
+#ifndef DEFINITION_IO
+#include "IO.h"
+#endif
+
+#define Z160	1000
+static ZpmCQ_4 Z161, Z162, Z163;
+static CARDINAL Z164;
+static ZfM_3 Z165;
+
+
+void BEGIN_MODULE ARGS ((void))
+{
+BEGIN_Sets ();
+BEGIN_IO ();
+
+ZpmCQ_5(&Z161, (LONGCARD)Z160);
+ZpmCQ_5(&Z162, (LONGCARD)Z160);
+ZpmCQ_5(&Z163, (LONGCARD)Z160);
+for (Z164 = 2; Z164 <= Z160; Z164 += 1) {
+ZpmCQ_13(&Z162, Z164);
+}
+ZpmCQ_32(&Z161);
+ZpmCQ_31(&Z161, 1L);
+ZpmCQ_30(&Z163, Z162);
+ZpmCQ_8(&Z161, Z162);
+ZpmCQ_32(&Z162);
+for (Z164 = 0; Z164 <= Z160; Z164 += 2) {
+ZpmCQ_13(&Z162, Z164);
+}
+ZpmCQ_9(&Z161, Z162);
+for (Z164 = 0; Z164 <= Z160; Z164 += 3) {
+ZpmCQ_14(&Z161, Z164);
+}
+for (Z164 = 0; Z164 <= Z160; Z164 += 5) {
+ZpmCQ_14(&Z161, Z164);
+}
+for (Z164 = 0; Z164 <= Z160; Z164 += 7) {
+ZpmCQ_14(&Z161, Z164);
+}
+for (Z164 = 0; Z164 <= Z160; Z164 += 11) {
+ZpmCQ_14(&Z161, Z164);
+}
+for (Z164 = 0; Z164 <= Z160; Z164 += 13) {
+ZpmCQ_14(&Z161, Z164);
+}
+for (Z164 = 0; Z164 <= Z160; Z164 += 17) {
+ZpmCQ_14(&Z161, Z164);
+}
+for (Z164 = 0; Z164 <= Z160; Z164 += 19) {
+ZpmCQ_14(&Z161, Z164);
+}
+for (Z164 = 0; Z164 <= Z160; Z164 += 23) {
+ZpmCQ_14(&Z161, Z164);
+}
+for (Z164 = 0; Z164 <= Z160; Z164 += 29) {
+ZpmCQ_14(&Z161, Z164);
+}
+Z165 = ZfM_20((STRING)"t", 1L);
+ZpmCQ_35(Z165, Z161);
+ZfM_33(Z165);
+ZfM_21(Z165);
+Z165 = ZfM_4((STRING)"t", 1L);
+ZpmCQ_34(Z165, &Z162);
+ZfM_5(Z165);
+ZpmCQ_35((ZDz6VQCC_4)ZfM_1, Z162);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_16(&Z162), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_15(&Z162), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_17(&Z162), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_18(&Z162), 5L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZpmCQ_32(&Z163);
+for (Z164 = 7; Z164 <= Z160; Z164 += 10) {
+ZpmCQ_13(&Z163, Z164);
+}
+ZpmCQ_35((ZDz6VQCC_4)ZfM_1, Z163);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_16(&Z163), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_15(&Z163), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_17(&Z163), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_18(&Z163), 5L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZpmCQ_10(&Z163, Z162);
+ZpmCQ_35((ZDz6VQCC_4)ZfM_1, Z163);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_16(&Z163), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_15(&Z163), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_17(&Z163), 5L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_18(&Z163), 5L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZpmCQ_7(&Z161);
+ZpmCQ_7(&Z162);
+ZpmCQ_7(&Z163);
+ZpmCQ_5(&Z161, 10L);
+ZpmCQ_13(&Z161, 3L);
+ZpmCQ_13(&Z161, 7L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"enter Size and Set like below! (Size=0 terminates)", 50L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"10 ", 3L);
+ZpmCQ_35((ZDz6VQCC_4)ZfM_1, Z161);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZpmCQ_7(&Z161);
+for (;;) {
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_22((ZDz6VQCC_4)ZfM_1);
+Z164 = ZfM_8((ZDz6VQCC_4)ZfM_0);
+if (Z164 == 0) {
+goto EXIT_1;
+}
+ZpmCQ_5(&Z161, Z164);
+ZpmCQ_34((ZDz6VQCC_4)ZfM_0, &Z161);
+ZpmCQ_35((ZDz6VQCC_4)ZfM_1, Z161);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)" Card = ", 8L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_15(&Z161), 0L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZpmCQ_12(&Z161);
+ZpmCQ_35((ZDz6VQCC_4)ZfM_1, Z161);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)" Card = ", 8L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)ZpmCQ_15(&Z161), 0L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZpmCQ_7(&Z161);
+} EXIT_1:;
+ZfM_34();
+}

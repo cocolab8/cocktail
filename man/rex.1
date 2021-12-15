@@ -1,0 +1,162 @@
+.TH REX 1 "" "CoCoLab Germany"
+.SH NAME
+rex \- generator of lexical analyzers
+.SH SYNOPSIS
+rex [ -options ] [ -k{124} ] [ -f\fIfile\fP ] [ -l\fIdirectory\fP ] [ \fIfile\fP ]
+.SH DESCRIPTION
+.I Rex
+generates program code to be used in lexical analysis of text.
+A typical application is the generation of scanners for compilers.
+The generated scanners can handle single byte input as well as Unicode input.
+The input
+.I file
+contains regular expressions to be searched for, and actions written in the
+implementation language to be executed when strings according to the expressions
+are found. Unrecognized portions of the input are copied to standard output.
+In order to be able to recognize tokens depending on their context,
+\fIRex\fP provides start states to handle left context
+and the right context can be specified by an additional regular expression.
+If several regular expressions match the input characters, the
+longest match is preferred. If there are still several possibilities, the
+regular expression given first in the specification is chosen.
+.PP
+\fIRex\fP generated scanners automatically provide the line and column position
+of every token. For languages like Pascal and Ada where the case of letters is
+insignificant tokens can be normalized to lower or upper case. There are
+predefined rules to skip white space such as blanks, tabs, or newlines
+and there is a mechanism to handle include files.
+The generated scanners are implemented as table-driven deterministic finite
+automatons.
+.SH OPTIONS
+.IP a
+generate all (= ds)
+.IP c
+generate a lexical analyzer in C
+.IP +
+generate a lexical analyzer in C++
+.IP m
+generate a lexical analyzer in Modula-2 (default)
+.IP u
+generate a lexical analyzer in Ada
+.IP e
+generate a lexical analyzer in Eiffel
+.IP j
+generate a lexical analyzer in Java
+.IP d
+generate a header file or definition module
+.IP s
+generate support modules:
+.br
+- a source module for input
+.br
+- a main program to be used as test driver
+.IP v
+do not predefine rules for skipping of white space
+.IP x
+require explicit definitions for used identifiers
+.br
+(default: undefined identifiers are treated as strings)
+.IP y
+do not generate dummy labels
+(might cause compiler messages such as 'statement not reached')
+(default: generate dummy labels, might cause compiler messages such as 'label not used'.)
+.IP r
+reduce the number of generated case/switch labels, might be necessary due to compiler
+restrictions. Effects: slower scanner (2-4%), larger tables, same scanner size
+.IP i
+use ISO 8 bit code (default: ASCII 7 bit code)
+.IP k<n>
+generate scanner for characters having n bytes (default: 1)
+(n > 1 implies -z and disables CHARACTER_SET)
+.IP z[<n>]
+map characters to classes at run time, use an array of n elements, n >= 256
+(default: 16384)
+.IP o
+optimize table size.
+Effects: slower scanner (0-15%), small tables, long generation time (factor 1-10).
+.IP n
+do not optimize table size.
+Effects: fast scanner, large tables (factor 1-10), short generation time.
+.IP " "
+default: improve table size.
+Effects: slower scanner (0-5%), medium size tables (factor 1-2), medium generation time (factor 1-2).
+.IP w
+suppress warnings
+.IP g
+generate # line directives
+.IP b
+do not partition character set into blocks during generation (implies -k1)
+.IP t
+touch output files only if necessary
+.IP p
+print information about ambiguous rules
+.IP 1
+print statistics about the generated lexical analyzer
+.IP h
+print help information
+.IP -f\fIfile\fP
+specify a file to be used as skeleton for the scanner
+.IP -l\fIdir\fP
+specify the directory dir where rex finds its data files
+.SH FILES
+.nf
+.ta 2i
+if output is in C:
+.sp 0.5
+<Scanner>.h	header file of the generated scanner
+<Scanner>.c	body of the generated scanner
+<Scanner>Source.h	header file of support module source
+<Scanner>Source.c	body of support module source
+<Scanner>Drv.c	body of the scanner driver (main program)
+.sp 0.5
+if output is in C++:
+.sp 0.5
+<Scanner>.h	header file of the generated scanner
+<Scanner>.cxx	body of the generated scanner
+<Scanner>Source.h	header file of support module source
+<Scanner>Source.cxx	body of support module source
+<Scanner>Drv.cxx	body of the scanner driver (main program)
+.sp 0.5
+if output is in Modula-2:
+.sp 0.5
+<Scanner>.md	definition module of the generated scanner
+<Scanner>.mi	implementation module of the generated scanner
+<Scanner>Source.md	definition module of support module source
+<Scanner>Source.mi	implementation module of support module source
+<Scanner>Drv.mi	implementation module of the scanner driver
+.sp 0.5
+if output is in Ada:
+.sp 0.5
+<Scanner>.ads	package of the generated scanner
+<Scanner>.adb	package body of the generated scanner
+<Scanner>source.ads	package of support module source
+<Scanner>source.adb	package body of support module source
+<Scanner>drv.adb	package body of the scanner driver
+.sp 0.5
+if output is in Eiffel:
+.sp 0.5
+<Scanner>.e	class of the generated scanner
+<Scanner>buffer.e	class of the character buffer for the scanner
+<Scanner>drv.e	class of the scanner driver (main program)
+<Scanner>.txt	tables controlling the generated scanner (ASCII format)
+source.e	support class for input
+attribute.e	support class for the description of properties of nonterminals
+scanattribute.e	support class for the description of properties of tokens
+position.e	support class for the representation of source positions
+rfile.e 	support class extending the class FILE
+rsystem.e	support class for system specific properties
+.sp 0.5
+if output is in Java:
+.sp 0.5
+<Scanner>.java	class of the generated scanner
+<Scanner>Drv.java	class of the scanner driver (main program)
+.fi
+.SH SEE\ ALSO
+J. Grosch: "Rex - A Scanner Generator",
+CoCoLab Germany, Document No. 5
+.sp 0.5
+J. Grosch: "Efficient Generation of Lexical Analyzers",
+Software - Practice & Experience, 19 (11), 1089-1103, Nov. 1989
+.sp 0.5
+J. Grosch: "Efficient Generation of Table-Driven Scanners",
+CoCoLab Germany, Document No. 2

@@ -1,0 +1,45 @@
+P1
+n                = 2
+r                = 3
+i                = 4711
+a                =  NomyTree
+
+b                =  NomyTree
+
+c                =  NomyTree
+
+d                =  NomyTree
+
+F                = 80dc232
+G                = NomyTree
+ R
+  n                = 42
+  r                = 0
+  F                = 
+01:P1
+    n                = 2
+    r                = 3
+    i                = 4711
+    a                =  NomyTree
+
+    b                =  NomyTree
+
+    c                =  NomyTree
+
+    d                =  NomyTree
+
+    F                =  P1
+      n                = 4
+      r                = 5
+      i                = 815
+      a                =  NomyTree
+
+      b                =  NomyTree
+
+      c                =  NomyTree
+
+      d                =  NomyTree
+
+      F                = ^1
+      G                =  NomyTree
+    G                =  NomyTree

@@ -1,0 +1,124 @@
+SCANNER CScanner
+PARSER  CParser
+
+EXPORT {
+   private int[] regs = new int[26];
+   private java.io.PrintStream stdout = System.out;
+}
+
+GLOBAL {
+   class G1 {}
+}
+
+LOCAL {
+   int base = 10;
+}
+
+BEGIN {
+#ifdef YYDEBUG
+   yyDebug = true;
+#endif
+}
+
+CLOSE {
+#ifdef YYDEBUG
+   yyDebug = false;
+#endif
+}
+
+PREC
+        LEFT    '+'     '-'
+        LEFT    '*'     '/'     '%'
+        LEFT    UNARY
+
+START list stat
+
+PROPERTY INPUT
+
+
+RULE
+
+list    = <
+	= .
+	= list stat '.'.
+	= list '.'.
+>.
+
+stat    = <
+	= expr { =>{stdout.print (expr:value);
+		 stdout.println(); stdout.flush();}; }.
+	= 'expr' { =>{stdout.print ('expr':value);
+		 stdout.println(); stdout.flush();}; }.
+	= LETTER '=' expr { =>{regs[LETTER:value] = expr:value;
+			 stdout.print("set "+'=':Position);
+			 stdout.println();}; }.
+>.
+
+allExpr = <
+expr /*<- hasValue*/   = <
+	= '(' expr {constant := expr:constant; }  { value := expr:value;} ')'.
+	= l:expr '+' r:expr	{ value := l:value + r:value; constant := l:constant && r:constant; }.
+        = l:expr {=>{value = l:value;}; } '-' {=>System.out.println("l="+value);} r:expr { value := {value -= r:value;}; }.
+        = l:expr '*' r:expr	{ value := l:value * r:value; }.
+        = l:expr {[=>{value = l:value;}; ]} '/' {[=>System.out.println("l="+value);]} r:expr {[ value := {value = value / r:value;}; ]}.
+        = l:expr '%' r:expr	{ value := l:value % r:value; }.
+        = '-' PREC UNARY expr	{ value := - expr:value; constant := expr:constant; }.
+        = LETTER		{ value := regs[LETTER:value]; constant := false; }.
+        = 'number'		{ value := 'number':value; constant := true; }.
+>.
+
+'expr'    
+        = l:expr {=>{value = l:value;}; } '-' {=>System.out.println("l="+value);} r:expr { value := {value -= r:value;}; }.
+>.
+
+'number' /*<- hasValue*/ = <
+	= 'DIGIT'		{[ => {
+				    if ('DIGIT':value == 0) base = 8;
+				    else base = 10; }; ]} {[value := 'DIGIT':value; ]}.
+
+        = 'number' 'DIGIT'	{ value := base * 'number':value + 'DIGIT':value; }.
+>.
+
+MODULE Att
+PROPERTY SYN
+DECLARE
+  expr 'number'	'expr'	= [ value: int ].
+//  expr	'expr'	= [ constant: boolean ].
+  allExpr		= [ constant: boolean ].
+RULE
+/*hasValue  := [ value: int ].*/
+END Att
+
+MODULE Terminals
+PARSER
+EXPORT {
+   private boolean terminals;
+}
+
+GLOBAL {
+   class GL {}
+}
+
+LOCAL {
+   int l_base = 10;
+}
+
+BEGIN {
+terminals = true;
+}
+
+CLOSE {
+terminals = false;
+}
+
+PROPERTY INPUT
+
+RULE
+
+'DIGIT'	: $5 [ value: int ] { value := 99; CHECK false => System.out.println("bad digit "+Position);}.
+
+LETTER	: [ value: int ] { value := 25; CHECK true;}.
+
+/*hasValue  := {value:={System.out.println ("never happens!"); };}.*/
+
+END Terminals

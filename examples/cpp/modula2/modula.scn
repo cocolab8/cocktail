@@ -1,0 +1,83 @@
+EXPORT	{
+# include "Position.h"
+# include "StringM.h"
+# include "Idents.h"
+
+# define union struct
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+# include <math.h>
+# include "rString.h"
+# include "Errors.h"
+# include "Global.h"
+
+static char Word [256];
+static int NestingLevel = 0;
+
+INSERT ErrorAttribute
+}
+
+LOCAL	{ char String [256], S [256]; }
+
+DEFAULT	{ gErrors.MessageI ("illegal character", xxError, Attribute.Position, xxCharacter, TokenPtr); }
+
+EOF	{ if (yyStartState == Comment) gErrors.Message ("unclosed comment", xxError, Attribute.Position); }
+
+DEFINE
+   digit	= {0-9}		.
+   letter	= {a-z A-Z}	.
+   CmtCh	= - {*(\t\n}	.
+   StrCh1	= - {'\t\n}	.
+   StrCh2	= - {"\t\n}	.
+
+START	Comment, Str1, Str2
+
+RULES
+
+#STD, Comment# "(*"	:- {NestingLevel ++; yyStart (Comment);}
+#Comment#  "*)"		:- {NestingLevel --; if (NestingLevel == 0) yyStart (STD);}
+#Comment#  "(" | "*" | CmtCh + :- {}
+
+#STD# digit +		,
+#STD# digit + / ".."	,
+#STD# digit + / BY	: {(void) GetWord (Word);
+			   Attribute.IntConst.Integer = atoi (Word);
+			   return IntConst;}
+#STD# {0-7} + B		: {(void) sscanf (TokenPtr, "%o", & Attribute.IntConst.Integer);
+			   return IntConst;}
+#STD# {0-7} + C		: {(void) sscanf (TokenPtr, "%o", & Attribute.CharConst.Char);
+			   return CharConst;}
+#STD# digit {0-9 A-F} * H:{(void) sscanf (TokenPtr, "%x", & Attribute.IntConst.Integer);
+			   return IntConst;}
+#STD# digit + "." digit * (E {+\-} ? digit +) ?
+			: {(void) GetWord (Word);
+			   Attribute.RealConst.Real = atof (Word);
+			   return RealConst;}
+
+#STD#	'		:  {String [0] = '\0'; yyStart (Str1);}
+#Str1#	StrCh1 +	:- {(void) GetWord (S); (void) strcat (String, S);}
+#Str1#	'		:- {Attribute.StringConst.String = gStringM.PutString (String);
+			    yyStart (STD); return StringConst;}
+
+#STD#	\"		:  {String [0] = '\0'; yyStart (Str2);}
+#Str2#	StrCh2 +	:- {(void) GetWord (S); (void) strcat (String, S);}
+#Str2#	\"		:- {Attribute.StringConst.String = gStringM.PutString (String);
+			    yyStart (STD); return StringConst;}
+
+#Str1, Str2# \t		:- {(void) strcat (String, "\t"); yyTab;}
+#Str1, Str2# \n		:- {gErrors.Message ("unclosed string", xxError, Attribute.Position);
+			   Attribute.StringConst.String = gStringM.PutString (String);
+			   yyEol (0); yyStart (STD); return StringConst;}
+
+#STD# "&"		: {return AND;}
+#STD# "<>"		: {return '#';}
+#STD# "~"		: {return NOT;}
+
+INSERT RULES #STD#
+
+#STD# letter (letter | digit) *
+			: {Attribute.Ident.Ident = gIdents.MakeIdent (TokenPtr, TokenLength);
+			   return Ident;}

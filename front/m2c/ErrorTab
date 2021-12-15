@@ -1,0 +1,216 @@
+% $Id: ErrorTab,v 2.3 1992/09/24 13:09:21 grosch rel $
+%
+% $Log: ErrorTab,v $
+% Revision 2.3  1992/09/24 13:09:21  grosch
+% adaption to MS-DOS
+%
+% Revision 2.2  1992/08/07  15:15:11  grosch
+% allow several scanner and parsers; extend module Errors
+%
+% Revision 2.1  1991/11/21  14:51:16  grosch
+% new version of RCS on SPARC
+%
+% Revision 2.0  91/03/08  18:27:09  grosch
+% turned tables into initialized arrays (in C)
+% moved mapping tokens -> strings from Errors to Parser
+% changed interface for source position
+% 
+% Revision 1.5  90/06/26  13:00:39  grosch
+% improved error message 109 = bad file number
+% 
+% Revision 1.4  89/01/26  19:01:04  vielsack
+% changed error messages for LL(1) conflicts
+% 
+% Revision 1.3  89/01/23  15:51:13  vielsack
+% new error messages are needed to describe the handling of LL(1)-conflicts
+% 
+% Revision 1.2  89/01/13  17:15:48  vielsack
+% new error message: LL(1) conflict ignored
+% 
+% Revision 1.1  88/12/08  13:50:11  vielsack
+% corrected spelling error
+% 
+% Revision 1.0  88/10/04  14:26:41  vielsack
+% Initial revision
+% 
+%
+%%%	Error Class Text
+%
+1	Fatal       				eFatal
+2	Restriction 				eRestriction
+3	Error       				eError
+4	Warning     				eWarning
+5	Repair      				eRepair
+6	Note        				eNote
+7	Information 				eInformation
+%
+$
+%%%	Error Code Text -------------------------------------------------
+%
+%%%	Parser
+%
+1	syntax error				eSyntaxError		(s
+2	expected tokens:			eExpectedSymbols	(s
+3	restart	point				eRestartPoint		(s
+4	token inserted :			eSymbolInserted		(s
+5	parse table mismatch			eWrongParseTable	(s
+6	cannot open parse table			eOpenParseTable		(s
+7	cannot read parse table			eReadParseTable		(s
+9	number is out of range			eNumToBig		(s
+%
+%
+%%%	Scanner
+%
+10	character ignored			eCharIgnored		(s
+11	string exceeds line			eEolString		(s
+12	unclosed action				eUnClAction		(s
+13	unclosed comment			eUnClComment		(s
+14	unclosed string				eUnClString		(s
+%
+%
+%%%	interne Fehler
+%
+15	internal error				eInternal		(els
+%
+%
+%%%	ArgCheck
+%
+20	unknown option				eNoOption		(bel
+21	too many arguments			eToManyArgs		(bel
+%
+%%%	Restrictions
+%
+25	illegal internal code				eNoIntCode	(s
+26	token table overflow				eTokenOverflow	(es
+%
+%%%	Tokens
+%
+30	token declared twice				eTokenDeclTwice	(s
+31	code used twice - ignored			eCodeExists	(s
+32	token not declared				eTokenNotDecl	(s
+%
+%%%	Oper
+%
+35	operator already declared - ignored		eTokenInPrio	(s
+%
+%%%	Rules
+%
+40	terminal expected 				eNoTerm		(s
+41	operator expected				eNoOperator	(s
+42	nonterminal expected				eTermLeft	(s
+%
+%%%     ell and lalr
+%
+45	does not produce any sentence			eNotTerm	(el
+46	not defined by a rule				eNoProd		(el
+47	not reachable					eNotReach	(el
+%
+48	colliding symbols				eBadSymbols	(el
+%
+%%%	ell
+%
+50	OPER part will be ignored (only for LALR)	eNoOper		(e
+51	grammar is not LL(1) - stopped			eLL1Abort	(e
+53	left recursion detected				eNotLL1rek	(e
+%
+80	not LL(1) - never entered with			eUnrestricted	(e
+81	not LL(1) - never entered			eEnter		(e
+82	not LL(1) - never skipped			eByPass		(e
+83	not LL(1) - never left				eLeave		(e
+84	not LL(1) - never entered with			eEnterWith	(e
+85	not LL(1) - never skipped with			eByPassWith	(e
+86	not LL(1) - never left with			eLeaveWith	(e
+87	not LL(1) - right part never entered		eEnterRight	(e
+88	not LL(1) - right part never entered with	eEnterRightWith	(e
+89	not LL(1) - left part never entered		eEnterLeft	(e
+90	not LL(1) - left part never entered with	eEnterLeftWith	(e
+%
+%%%	lalr
+%
+60	EBNF operator not allowed			eNoBNF		(l
+61	action in a rule - new nonterminal generated	eActInside	(l
+62	orginal grammar is not LR(k) for any k		eNotLRk		(l
+63	state is inconsistent - state 			eInconState	(l
+64	grammar is not LALR(1)				eConflict	(l
+%
+%	Check
+%
+70	state is not LALR(1) - state			eState		(l
+71	read reduce conflict on				eReadRed	(l
+72	reduce reduce conflict on			eRedRed		(l
+73	read reduce reduce conflict on			eReadRedRed	(l
+74	repaired read reduce conflict on		eRepReadRed	(l
+75	repaired reduce reduce conflict on		eRepRedRed	(l
+76	repaired read reduce reduce conflict on		eRepReadRedRed	(l
+77	automatically repaired read reduce conflict on			(l
+78	automatically repaired reduce reduce conflict on		(l
+79	automatically repaired read reduce reduce conflict on		(l
+%
+%%%	System Errors
+%	-------------
+%
+101	not super-user	
+102	no such file or directory	
+103	no such process	
+104	interrupted system call	
+105	I/O error	
+106	no such device or address	
+107	arg list too long	
+108	exec format error	
+109	bad file number - file not found	
+110	no children	
+111	no more processes	
+112	not enough core	
+113	permission denied	
+114	bad address	
+115	block device required	
+116	mount device busy	
+117	file exists	
+118	cross-device link	
+119	no such device	
+120	not a directory	
+121	is a directory	
+122	invalid argument	
+123	file table overflow	
+124	too many open files	
+125	not a typewriter	
+126	text file busy	
+127	file too large	
+128	no space left on device	
+129	illegal seek	
+130	read only file system	
+131	too many links	
+132	broken pipe	
+133	math arg out of domain of func	
+134	math result not representable	
+135	no message of desired type	
+136	identifier removed	
+137	channel number out of range	
+138	level 2 not synchronized	
+139	level 3 halted	
+140	level 3 reset	
+141	link number out of range	
+142	protocol driver not attached	
+143	no CSI structure available	
+144	level 2 halted	
+145	out of swap space	
+146	path continues onto another machine	
+147	unison request for a retry	
+148	record locking deadlock	
+149	could not resolve IP addr, host down	
+150	no available gateway in route table	
+151	symbolic links form endless loop	
+%
+$
+%%%	Error Count Text ------------------------------------------------
+%
+1	fatal Error(s)	
+2	restriction(s)	
+3	error(s)	
+4	warning(s)	
+5	repair(s)	
+6	note(s)	
+7	information(s)	
+%
+$
+%%%	-----------------------------------------------------------------

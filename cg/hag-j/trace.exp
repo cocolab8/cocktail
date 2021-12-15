@@ -1,0 +1,148 @@
+120
+24
+6
+2
+1
+0
+IT
+R                e F:n                      = 2
+R                v F 1
+P1               e F                        = 80dc3f0
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 80dc56c
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+R                e r                        = 2
+R                v parent
+2
+R                e F:n                      = 0
+R                v F 1
+P1               e F                        = 80dcb5b
+P1               e F:n                      = -1
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 0
+P1               v parent
+R                e r                        = 0
+R                v parent
+0
+IX
+R                e F:n                      = 2
+P1               e F                        = 80dc390
+P1               e F:n                      = 1
+P1               e F                        = 80dc4a3
+P1               e F:n                      = 0
+P2               e r                        = 1
+P1               e r                        = 1
+P1               e r                        = 2
+R                e r                        = 2
+2
+R                e F:n                      = 0
+P1               e F                        = 80dc924
+P1               e F:n                      = -1
+P2               e r                        = 1
+P1               e r                        = 0
+R                e r                        = 0
+0
+IY
+R                e F:n
+P1               e F
+P1               e F:n
+P1               e F
+P1               e F:n
+P2               e r
+P1               e r
+P1               e r
+R                e r
+2
+R                e F:n
+P1               e F
+P1               e F:n
+P2               e r
+P1               e r
+R                e r
+0
+IZ
+R                v F 1
+P1               v F 1
+P1               v F 1
+P2               v parent
+P1               v parent
+P1               v parent
+R                v parent
+2
+R                v F 1
+P1               v F 1
+P2               v parent
+P1               v parent
+R                v parent
+0
+ITU
+P1               e F                        = 80dc2db
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 80dc451
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+2
+P1               e F                        = 80dc8ba
+P1               e F:n                      = -1
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 0
+P1               v parent
+0
+IXU
+P1               e F                        = 80dc2db
+P1               e F:n                      = 1
+P1               e F                        = 80dc440
+P1               e F:n                      = 0
+P2               e r                        = 1
+P1               e r                        = 1
+P1               e r                        = 2
+2
+P1               e F                        = 80dc75c
+P1               e F:n                      = -1
+P2               e r                        = 1
+P1               e r                        = 0
+0
+IYU
+P1               e F
+P1               e F:n
+P1               e F
+P1               e F:n
+P2               e r
+P1               e r
+P1               e r
+2
+P1               e F
+P1               e F:n
+P2               e r
+P1               e r
+0
+IZU
+P1               v F 1
+P1               v F 1
+P2               v parent
+P1               v parent
+P1               v parent
+2
+P1               v F 1
+P2               v parent
+P1               v parent
+0

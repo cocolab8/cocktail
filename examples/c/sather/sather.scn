@@ -1,0 +1,75 @@
+EXPORT	{
+# include "Position.h"
+# include "Errors.h"
+# include "StringM.h"
+# include "Idents.h"
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+# include <math.h>
+# include "rString.h"
+
+static char Word [256];
+
+INSERT ErrorAttribute
+}
+
+LOCAL	{ char String [256]; }
+
+DEFAULT	{ MessageI ("illegal character", xxError, Attribute.Position, xxCharacter, TokenPtr); }
+   
+DEFINE
+   digit	= {0-9}		.
+   letter	= {a-z A-Z}	.
+   StrCh	= - {"\t\n\\}	.
+
+START	Str
+
+RULES
+
+#STD# "--" ANY *	:- {}
+#STD# {\v\f\b\r}	:- {}
+
+#STD# digit + / "." letter,
+#STD# digit +		:  {(void) GetWord (Word);
+			    Attribute.INT_CONST.Integer = atoi (Word);
+			    return INT_CONST;}
+#STD# 0 {xX} {0-9 A-F a-f} +:{(void) sscanf (TokenPtr, "%x", & Attribute.INT_CONST.Integer);
+			    return INT_CONST;}
+#STD# digit * "." digit + ({Ee} {+\-} ? digit +) ? | digit + "." digit * 
+			:  {(void) GetWord (Word);
+			    Attribute.REAL_CONST.Real = atof (Word);
+			    return REAL_CONST;}
+
+#STD# \"		:  {String [0] = '\0'; yyStart (Str);}
+#Str# StrCh +		:- {(void) GetWord (Word); (void) strcat (String, Word);}
+#Str# \\ n		:- {(void) strcat (String, "\n");}
+#Str# \\ t		:- {(void) strcat (String, "\t");}
+#Str# \t		:- {(void) strcat (String, "\t"); yyTab;}
+#Str# \\ ANY		:- {(void) GetWord (Word); (void) strcat (String, Word + 1);}
+#Str# \\ \n		:- {yyEol (0);}
+#Str# \"		:- {Attribute.STR_CONST.String = PutString (String, strlen (String));
+			    yyStart (STD); return STR_CONST;}
+#Str# {\n\\}		:- {Message ("unclosed string", xxError, Attribute.Position);
+			    Attribute.STR_CONST.String = PutString (String, strlen (String));
+			    yyEol (0); yyStart (STD); return STR_CONST;}
+
+#STD# ' \t	'	:- {Attribute.CHAR_CONST.Char = '\t'; yyTab1 (1); return CHAR_CONST;}
+#STD# ' ANY	'	:- {Attribute.CHAR_CONST.Char = TokenPtr [1]; return CHAR_CONST;}
+#STD# ' \\ n	'	:- {Attribute.CHAR_CONST.Char = '\n'; return CHAR_CONST;}
+#STD# ' \\ t	'	:- {Attribute.CHAR_CONST.Char = '\t'; return CHAR_CONST;}
+#STD# ' \\ \t	'	:- {Attribute.CHAR_CONST.Char = '\t'; yyTab1 (2); return CHAR_CONST;}
+#STD# ' \\ {0-7} + '	:- {(void) sscanf (TokenPtr + 2, "%o", & Attribute.CHAR_CONST.Char);
+			    return CHAR_CONST;}
+#STD# ' \\ ANY	'	:- {Attribute.CHAR_CONST.Char = TokenPtr [2]; return CHAR_CONST;}
+
+#STD# false		:- {Attribute.BOOL_CONST.Bool = 0; return BOOL_CONST;}
+#STD# true		:- {Attribute.BOOL_CONST.Bool = 1; return BOOL_CONST;}
+
+INSERT RULES #STD# 
+
+#STD# letter (letter | digit | _) *
+			:  {Attribute.IDENTIFIER.Ident = MakeIdent (TokenPtr, TokenLength);
+			    return IDENTIFIER;}

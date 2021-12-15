@@ -1,0 +1,93 @@
+dnl Process this file with autoconf to produce a config[ure] script.
+
+AC_INIT(Cocktail Toolbox, 2021)
+AC_CONFIG_HEADERS(config.h:config.hin)
+AC_PROG_CC(xlc cc gcc cl)
+AC_PROG_CXX
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+
+AC_C_BIGENDIAN
+AC_C_CONST
+
+dnl The following checks are for C
+dnl This is slightly incorrect, because the results might be different for C++
+AC_CHECK_HEADERS(stdarg.h stddef.h stdint.h stdlib.h string.h strings.h)
+AC_CHECK_HEADERS(inttypes.h fcntl.h memory.h time.h unistd.h wchar.h)
+AC_CHECK_HEADERS(sys/stat.h sys/time.h sys/times.h sys/types.h)
+AC_CHECK_FUNCS(strcasecmp strncasecmp wcscpy wcslen)
+
+AC_TYPE_INT8_T
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_INTPTR_T
+AC_TYPE_LONG_LONG_INT
+
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINTPTR_T
+AC_TYPE_UNSIGNED_LONG_LONG_INT
+
+AC_MSG_CHECKING(for function prototypes)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+void f (int);
+])], AC_DEFINE(HAVE_PROTOTYPES)
+res_c_prototypes=yes, res_c_prototypes=no)
+AC_MSG_RESULT($res_c_prototypes)
+
+AC_SUBST(ANSI_OBJECTS)
+AC_MSG_CHECKING(for ANSI reuse objects)
+ANSI_OBJECTS="rGetopt.o rFsearch.o rSrcMem.o"
+if test $res_c_prototypes = no
+then
+  ANSI_OBJECTS=
+fi
+AC_MSG_RESULT($ANSI_OBJECTS)
+
+AC_MSG_CHECKING(for wchar_t)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+# include <wchar.h>
+wchar_t x = L'a';
+wchar_t * y = L"abc";
+])], AC_DEFINE(HAVE_WCHAR_T)
+res_c_wchar_t=yes, res_c_wchar_t=no)
+AC_MSG_RESULT($res_c_wchar_t)
+
+AC_SUBST(MC)
+AC_MSG_CHECKING(for Modula-2 compiler MOCKA)
+ac_cv_prog_MC=
+for ac_prog in mocka mc; do
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
+  ac_dummy="$PATH"
+  for ac_dir in $ac_dummy; do
+    test -z "$ac_dir" && ac_dir=.
+    if test -x $ac_dir/$ac_prog; then
+      ac_cv_prog_MC="$ac_prog"
+      break
+    fi
+  done
+  IFS="$ac_save_ifs"
+  if test -n "$ac_cv_prog_MC" && $ac_cv_prog_MC -f 2> /dev/null | fgrep compileroption > /dev/null
+  then break
+  else ac_cv_prog_MC=""
+  fi
+done
+if test -z "$ac_cv_prog_MC"; then
+  ac_cv_prog_MC="no"
+  MC="true; :"
+else
+  MC="$ac_cv_prog_MC -noblip"
+fi
+AC_MSG_RESULT($ac_cv_prog_MC)
+
+AC_SUBST(SRC_DIR)
+AC_MSG_CHECKING(for current directory)
+SRC_DIR=`pwd`
+AC_MSG_RESULT($SRC_DIR)
+
+AC_CONFIG_FILES(Makefile)
+AC_OUTPUT

@@ -1,0 +1,22 @@
+#!/bin/sh
+if [ -x /usr/bin/cpp ] ; then
+  if [ `uname` = "Linux" ] ; then
+    FLAG=-traditional
+    VERS=`gcc -dumpversion | \
+    sed -e 's/\([0-9]*\.[0-9]*\)\.[0-9]*/\1/' \
+	-e 's/\.\([0-9][0-9]\)/\1/' \
+	-e 's/\.\([0-9]\)/0\1/'`
+    if [ $VERS -gt 408 ] ; then
+      FLAG="$FLAG -ffreestanding"
+    fi
+  fi
+  /usr/bin/cpp -P -C $FLAG $1 > yyyyy.c		# Linux
+else
+  if [ -x /usr/ccs/lib/cpp ] ; then
+    /usr/ccs/lib/cpp -P -C $1 > yyyyy.c		# Solaris
+  else
+    cc -E -P -C $1 > yyyyy.c
+  fi
+fi
+BIN/tidy yyyyy.c > $1
+rm -f yyyyy.c

@@ -1,0 +1,35 @@
+include ../../../Makefile.config
+
+JFLAGS	= -classpath $(CLASSPATH)
+
+GSRC	= CalcScan.java CalcParserDrv.java CalcParser.java
+SRC	=
+
+calc.compiled: $(GSRC) $(SRC)
+	javac -d . -g $(JFLAGS) *.java
+	touch calc.compiled
+
+gen: Scanner.rex CalcParser.lrk
+
+test:	calc.compiled in1
+	java $(JFLAGS) parsers.CalcParserDrv < in1 > o; diff out1 o
+
+debug:	calc.compiled in1
+	jdb $(JFLAGS) parsers.CalcParserDrv in1
+
+CalcScan.java:	CalcScan.rex
+	rex -j CalcScan.rex
+
+CalcParser.java CalcParserDrv.java:	CalcParser.lrk
+	lark -ajs CalcParser.lrk
+
+CalcScan.rpp CalcParser.lrk:	calc.prs
+	lpp -Jxzj calc.prs
+#	cg -Jxzj calc.prs
+
+CalcScan.rex:	calc.scn CalcScan.rpp
+	rpp CalcScan.rpp < calc.scn > CalcScan.rex
+
+clean:
+	del /F o $(GSRC) *.rpp *.rex *.lrk calc.compiled
+	del -rf parsers scanners

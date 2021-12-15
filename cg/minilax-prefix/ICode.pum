@@ -1,0 +1,123 @@
+TRAFO ICode TREE Tree Defs PUBLIC Code
+
+EXTERN
+   ADD BoolType CHK ENT Emit EmitReal FJP FLT FalseCode INV IXA IntType JMP JSR
+   LDA LDC LDI LES MST MUL REA RET RealType STI SUB TrueCode TypeSize WRI
+
+GLOBAL {
+# include "Tree.h"
+# include "Defs.h"
+# include "Types.h"
+# include "ICodeInt.h"
+}
+
+PROCEDURE Code (t: Tree)
+
+MiniLax	(Proc) :-
+	Code (Proc);
+	.
+Proc (Next := Next:Decls (Proc3 (ParSize := ParSize, DataSize := DataSize), ..),
+		Decls := Decls, Stats := Stats) :-
+	Emit (ENT, DataSize - ParSize, 0);
+	Code (Stats);
+	Emit (RET, 0, 0);
+	Code (Decls);
+	Code (Next);
+	.
+Var (Next := Next) :-
+	Code (Next);
+	.
+Assign (Next, Adr, Expr, _) :-
+	Code (Adr); Code (Adr::Co);
+	Code (Expr); Code (Expr::Co);
+	Emit (STI, 0, 0);
+	Code (Next);
+	.
+Call (Next, Actuals, _, _, Proc3 (Level := Level, Label := Label, ParSize := ParSize),
+		level) :-
+	Emit (MST, level - Level, 0);
+	Code (Actuals);
+	Emit (JSR, ParSize - 3, Label);
+	Code (Next);
+	.
+If (Next, Expr, Then, Else, Label1, Label2) :-
+	Code (Expr); Code (Expr::Co);
+	Emit (FJP, Label1, 0);
+	Code (Then);
+	Emit (JMP, Label2, 0);
+	Code (Else);
+	Code (Next);
+	.
+While (Next, Expr, Stats, Label1, Label2) :-
+	Emit (JMP, Label2, 0);
+	Code (Stats);
+	Code (Expr); Code (Expr::Co);
+	Emit (INV, 0, 0);
+	Emit (FJP, Label1, 0);
+	Code (Next);
+	.
+Read (Next, Adr, TypeCode) :-
+	Code (Adr); Code (Adr::Co);
+	Emit (REA, TypeCode, 0);
+	Emit (STI, 0, 0);
+	Code (Next);
+	.
+Write (Next, Expr, TypeCode) :-
+	Code (Expr); Code (Expr::Co);
+	Emit (WRI, TypeCode, 0);
+	Code (Next);
+	.
+Actual (Next, Expr) :-
+	Code (Expr); Code (Expr::Co);
+	Code (Next);
+	.
+Binary (_, _, _, Lop, Rop, (Times), TypeCode) :-
+	Code (Lop); Code (Lop::Co);
+	Code (Rop); Code (Rop::Co);
+	Emit (MUL, TypeCode, 0);
+	.
+Binary (_, _, _, Lop, Rop, (Plus), TypeCode) :-
+	Code (Lop); Code (Lop::Co);
+	Code (Rop); Code (Rop::Co);
+	Emit (ADD, TypeCode, 0);
+	.
+Binary (_, _, _, Lop, Rop, (Less), TypeCode) :-
+	Code (Lop); Code (Lop::Co);
+	Code (Rop); Code (Rop::Co);
+	Emit (LES, TypeCode, 0);
+	.
+Unary (Expr := Expr) :-
+	Code (Expr); Code (Expr::Co);
+	Emit (INV, 0, 0);
+	.
+IntConst (Value := Value) :-
+	Emit (LDC, IntType, Value);
+	.
+RealConst (Value := Value) :-
+	EmitReal (LDC, RealType, Value);
+	.
+BoolConst (Value := (rtrue)) :-
+	Emit (LDC, BoolType, TrueCode);
+	.
+BoolConst (Value := (rfalse)) :-
+	Emit (LDC, BoolType, FalseCode);
+	.
+Index (_, _, _, Adr, Expr, Array (Type, Lwb, Upb, _)) :-
+	Code (Adr); Code (Adr::Co);
+	Code (Expr); Code (Expr::Co);
+	Emit (CHK, Lwb, Upb);
+	Emit (LDC, IntType, Lwb);
+	Emit (SUB, IntType, 0);
+	Emit (IXA, TypeSize (Type), 0);
+	.
+Ident (_, _, _, _, Var3 (Level := Level, Offset := Offset), level) :-
+	Emit (LDA, level - Level, Offset);
+	.
+Content (Next) :-
+	Emit (LDI, 0, 0);
+	Code (Next);
+	.
+IntToReal (Next) :-
+	Emit (FLT, 0, 0);
+	Code (Next);
+	.

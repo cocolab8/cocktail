@@ -1,0 +1,67 @@
+EXPORT	{
+# include "Position.h"
+# include "Errors.h"
+# include "StringM.h"
+# include "Idents.h"
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+# include "rString.h"
+
+static char Word [256];
+
+INSERT ErrorAttribute
+}
+
+LOCAL	{ char String [256], S [256]; }
+
+DEFAULT	{ MessageI ("illegal character", xxError, Attribute.Position, xxCharacter, TokenPtr); }
+
+DEFINE
+   digit	  = {0-9}		.
+   extended_digit = digit | {A-F a-f}	.
+   letter	  = {a-z A-Z}		.
+   integer	  = digit (_? digit) *	.
+   based_integer  = extended_digit (_? extended_digit) * .
+
+START   STRING, QUOTE
+
+RULES
+
+NOT #STRING# integer ("." integer) ? ({Ee} {+\-} ? integer) ?
+			: {yyStart (STD);
+			   Attribute.integer_literal.String = PutString (TokenPtr, TokenLength);
+			   return integer_literal;}
+
+NOT #STRING# integer "#" based_integer ("." based_integer) ? "#" ({Ee} {+\-} ? integer) ?
+			: {yyStart (STD);
+			   Attribute.integer_literal.String = PutString (TokenPtr, TokenLength);
+			   return integer_literal;}
+
+    #STD#    ' {\ -~} '	: {Attribute.character_literal.Char = TokenPtr [1];
+			   return character_literal;}
+
+NOT #STRING# \"		:  {yyStart (STRING); String [0] = '\0';}
+    #STRING# {\ !#-~} +	:- {(void) GetWord (S); (void) strcat (String, S);}
+    #STRING# \"\"	:- {(void) strcat (String, "\"");}
+    #STRING# \"		:- {yyStart (STD);
+			    Attribute.string_literal.String = PutString (String, strlen (String));
+			    return string_literal;}
+    #STRING# \t		:- {(void) strcat (String, "\t"); yyTab;}
+    #STRING# \n		:- {Message ("unclosed string", xxError, Attribute.Position);
+			   Attribute.string_literal.String = PutString (String, strlen (String));
+			   yyEol (0); yyStart (STD); return string_literal;}
+
+NOT #STRING# "--" ANY *	:- {}
+
+    #QUOTE#  "'"	: {yyStart (STD)  ; return "'"	;}
+NOT #STRING# ")"	: {yyStart (QUOTE); return ')'	;}
+
+INSERT RULES CASE-INSENSITIVE NOT #STRING# {yyStart (STD);}
+
+NOT #STRING# letter (_? (letter | digit)+ )*
+			: {yyStart (QUOTE); (void) GetLower (Word);
+			   Attribute.identifier.Ident = MakeIdent (Word, TokenLength);
+			   return identifier;}

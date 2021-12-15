@@ -1,0 +1,93 @@
+PROGRAM test;
+DECLARE
+
+   PROCEDURE Semantics;                 (* Semantics *)
+   DECLARE
+      a         : ARRAY [1..10] OF REAL;
+      c         : ARRAY [0.. 9] OF REAL;
+      d         : ARRAY [1..10] OF INTEGER;
+      e         : ARRAY [10..1] OF REAL;
+      f         : ARRAY [10..1] OF ARRAY [10..1] OF REAL;
+      g         : ARRAY [1..10] OF ARRAY [1..10] OF REAL;
+      i         : INTEGER;
+      j         : INTEGER;
+      j         : INTEGER;
+      r         : REAL   ;
+      b         : BOOLEAN;
+
+      PROCEDURE p1 (f: INTEGER; f: REAL);
+         DECLARE r: REAL BEGIN r := r END;
+
+      PROCEDURE p2 (a: ARRAY [1..10] OF REAL);
+         DECLARE r: REAL BEGIN r := r END;
+
+      PROCEDURE p3 (VAR i: INTEGER);
+         DECLARE r: REAL BEGIN r := r END;
+
+      PROCEDURE p  (i: INTEGER; VAR a: ARRAY [1..10] OF REAL);
+         DECLARE r: REAL BEGIN r := r END
+
+   BEGIN
+      k := 0;
+      p (i, a);
+      p;
+      p (a);
+      p (b, i, a);
+      p (r, a);
+      p (i, c);
+      p (i, d);
+      p (i, g);
+      p := p + p [i];
+      p3 (i);
+      p3 (0);
+      i := i < r;
+      i := i [r];
+      i := r;
+      r := i;
+      IF i THEN i := i ELSE i := i END;
+      WHILE r DO i := i END;
+      READ (i);
+      READ (a [i]);
+      READ (a);
+      WRITE (0);
+      WRITE (i);
+      WRITE (a [i]);
+      WRITE (a);
+      i
+   END;
+
+                                        (* Scanner *)
+   SymIdent     : INTEGER;              (* identifiers *)
+   x0037        : INTEGER;
+   array        : INTEGER;
+   i            : INTEGER;
+   r            : REAL   ;
+   b            : BOOLEAN
+
+BEGIN%                                  (* illegal character *)
+   IF b THEN                            (* real constants *)
+      r := 12.34E-36;
+      r := .1;
+      r := .123E+5
+   ELSE
+      r := .2E ;
+   IF b THEN r := 12.34    ELSE r := 22.2E+ ;
+   IF b THEN r := 12.34E36 ELSE r := 22.2E- ;
+
+   IF b THEN r := 3.14ELSE b := b END;  (* scanner lookahead *)
+
+   IF b THEN
+      i := 123;                         (* integer constants *)
+      i := 1;
+      i := 0 
+   ELSE
+      i := 12345678901234567890;
+      i := 100.
+   END;
+
+   (* ***)                              (* comments *)
+   (* 
+
+   *)
+   (* test
+END.

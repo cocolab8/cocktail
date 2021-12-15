@@ -1,0 +1,117 @@
+#include "SYSTEM_.h"
+
+#ifndef DEFINITION_IO
+#include "IO.h"
+#endif
+
+#ifndef DEFINITION_Sets
+#include "Sets.h"
+#endif
+
+#ifndef DEFINITION_Relation
+#include "Relation.h"
+#endif
+
+static ZolB7FGBG_3 Z171, Z172;
+static INTEGER Z173;
+static ZpmCQ_4 Z174;
+
+
+void BEGIN_MODULE ARGS ((void))
+{
+BEGIN_IO ();
+BEGIN_Sets ();
+BEGIN_Relation ();
+
+ZolB7FGBG_4(&Z172, 10L, 20L);
+ZolB7FGBG_6(&Z172, 0L, 9L);
+ZolB7FGBG_6(&Z172, 9L, 1L);
+ZolB7FGBG_6(&Z172, 1L, 8L);
+ZolB7FGBG_6(&Z172, 8L, 0L);
+ZolB7FGBG_42((ZDz6VQCC_4)ZfM_1, Z172);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZolB7FGBG_20(&Z172);
+ZolB7FGBG_42((ZDz6VQCC_4)ZfM_1, Z172);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZolB7FGBG_5(&Z172);
+ZolB7FGBG_4(&Z171, 10L, 20L);
+ZolB7FGBG_6(&Z171, 2L, 3L);
+ZolB7FGBG_6(&Z171, 3L, 4L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"enter Size and Relation like below! (Size=0 terminates)", 55L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_25((ZDz6VQCC_4)ZfM_1, 4L, 3L);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)" ", 1L);
+ZolB7FGBG_42((ZDz6VQCC_4)ZfM_1, Z171);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZolB7FGBG_5(&Z171);
+for (;;) {
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_22((ZDz6VQCC_4)ZfM_1);
+Z173 = ZfM_8((ZDz6VQCC_4)ZfM_0);
+if (Z173 == 0) {
+goto EXIT_1;
+}
+ZpmCQ_5(&Z174, (LONGCARD)Z173);
+ZolB7FGBG_4(&Z172, Z173, Z173);
+ZolB7FGBG_41((ZDz6VQCC_4)ZfM_0, &Z172);
+ZolB7FGBG_42((ZDz6VQCC_4)ZfM_1, Z172);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Reflexive	= ", 12L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_13(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Symmetric	= ", 12L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_14(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Transitive	= ", 13L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_15(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Equivalence	= ", 14L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_16(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"HasReflexive	= ", 15L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_17(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Cyclic		= ", 10L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_18(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Card		= ", 8L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_34(&Z172), 1L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZolB7FGBG_19(Z172, &Z174);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Cyclics		= ", 11L);
+ZpmCQ_35((ZDz6VQCC_4)ZfM_1, Z174);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZolB7FGBG_20(&Z172);
+ZolB7FGBG_42((ZDz6VQCC_4)ZfM_1, Z172);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Reflexive	= ", 12L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_13(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Symmetric	= ", 12L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_14(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Transitive	= ", 13L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_15(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Equivalence	= ", 14L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_16(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"HasReflexive	= ", 15L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_17(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Cyclic		= ", 10L);
+ZfM_27((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_18(Z172));
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Card		= ", 8L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, ZolB7FGBG_34(&Z172), 1L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZolB7FGBG_19(Z172, &Z174);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"Cyclics		= ", 11L);
+ZpmCQ_35((ZDz6VQCC_4)ZfM_1, Z174);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZolB7FGBG_5(&Z172);
+ZpmCQ_7(&Z174);
+} EXIT_1:;
+ZfM_34();
+}

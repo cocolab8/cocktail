@@ -1,0 +1,370 @@
+MODULE AbstractSyntax /* ------------------------------------------ */
+
+TREE EXPORT {
+# include "Idents.h"
+# include "Position.h"
+
+# define Tree_PREFIX t.
+}
+
+GLOBAL {
+# include "Idents.h"
+# include "Position.h"
+# include <stdio.h>
+
+Tree t;
+
+/* # define yyALLOC(size1, size2) (tTree) Alloc (size2)	*/
+/* # define yyFREE(ptr, size) Free (size, ptr);		*/
+}
+
+EVAL Semantic
+
+PROPERTY INPUT
+
+RULE
+
+MiniLax		= Proc .
+Decls		= <
+   NoDecl	= .
+   Decl		= Next: Decls REV [Ident: tIdent] [Pos: tPosition] <
+      Var	= Type .
+      Proc	= Formals Decls Stats .
+   >.
+>.
+Formals		= <
+   NoFormal	= .
+   Formal	= Next: Formals REV [Ident: tIdent] [Pos: tPosition] Type .
+>.
+Type		= <
+   Integer	= .
+   Real		= .
+   Boolean	= .
+   Array	= Type OUT            [Lwb] [Upb] [Pos: tPosition] .
+   Ref		= Type OUT .
+   NoType	= .
+   ErrorType	= .
+>.
+Stats		= <
+   NoStat	= .
+   Stat		= Next: Stats REV <
+      Assign	= Adr Expr            [Pos: tPosition] .
+      Call	= Actuals             [Ident: tIdent] [Pos: tPosition] .
+      If	= Expr Then: Stats Else: Stats .
+      While	= Expr Stats .
+      Read	= Adr .
+      Write	= Expr .
+   >.
+>.
+Actuals		= <
+   NoActual	=                     [Pos: tPosition OUT] .
+   Actual	= Next: Actuals REV Expr .
+>.
+Expr		=                     [Pos: tPosition] <
+   Binary	= Lop: Expr Rop: Expr [Operator: short] .
+   Unary	= Expr                [Operator: short] .
+   IntConst	=                     [Value	     OUT] .
+   RealConst	=                     [Value: double OUT] .
+   BoolConst	=                     [Value: rbool  OUT] .
+   Adr		= <
+      Index	= Adr Expr .
+      Ident	=                     [Ident: tIdent] .
+   >.
+>.
+Coercions	= <
+   NoCoercion	= .
+   Coercion	= Next: Coercions OUT <
+      Content	= .		/* fetch contents of location	 */
+      IntToReal	= .		/* convert integer value to real */
+   >.
+>.
+
+END AbstractSyntax
+
+MODULE Output /* -------------------------------------------------- */
+
+PROPERTY OUTPUT
+
+DECLARE
+   Formals Decls	= [Decls: tObjects THREAD] .
+   Call Ident		= [Object: tObjects] [Level2: short] .
+   If While		= [Label1] [Label2] .
+   Read Write Binary	= [TypeCode: short] .
+   Expr			= Type Co: Coercions .
+   Index		= Type2: Type .
+
+END Output
+
+MODULE Decls /* -------------------------------------------------- */
+
+DECLARE Formal Decl	= [Object: tvoid OUT] .
+
+RULE
+
+MiniLax	= { Proc:	DeclsIn	:= nNoObject				; } .
+Decl	= { Next:	DeclsIn	:= nNoObject				;
+			DeclsOut:= Next:	DeclsOut		;
+			Object	:= {}					; } .
+Proc	= { Next:	DeclsIn	:= Defs_PREFIX mProc3 (DeclsIn, Ident, Formals)	;
+			Object	:= {mProc2 (Next:DeclsIn, Level, CodeSizeIn,
+				   Formals:DataSizeOut, Decls:DataSizeOut);};
+	    Formals:	DeclsIn	:= nNoObject				; } .
+Var	= { Next:	DeclsIn	:= Defs_PREFIX mVar3 (DeclsIn, Ident, Type);
+			Object	:= {mVar2 (Next:DeclsIn, Level, DataSizeIn);}; } .
+Formal	= { Next:	DeclsIn	:= Defs_PREFIX mVar3 (DeclsIn, Ident, Type);
+			Object	:= {mVar2 (Next:DeclsIn, Level, DataSizeIn);}; } .
+Call	= {		Object	:= Identify (Ident, Env)		; } .
+Ident	= {		Object	:= Identify (Ident, Env)		; } .
+
+END Decls
+
+MODULE Formals /* -------------------------------------------------- */
+
+DECLARE Actuals = [Formals: tTree] .
+
+RULE
+
+Call	= { Actuals:	Formals	:= GetFormals (Object)			;
+	    => { CheckParams (Actuals, Actuals:Formals); }		; } .
+Actual	= { Next:	Formals	:= Formals->Kind == kFormal ?
+				   Formals->Formal.\Next \: Formals	; } .
+
+END Formals
+
+MODULE Env /* -------------------------------------------------- */
+
+DECLARE Decls Stats Actuals Expr = [Env: tEnv INH] .
+
+RULE
+
+MiniLax	= { Proc:	Env	:= NoEnv				; } .
+Proc	= { Stats:	Env	:= Defs_PREFIX mEnv (Decls:DeclsOut, Env);
+	    Decls:	Env	:= Stats:	Env			; } .
+
+END Env
+
+MODULE Type /* -------------------------------------------------- */
+
+RULE
+
+Expr	= {		Type	:= nNoType				; } .
+Binary	= {		Type	:= ResultType (Lop:Type, Rop:Type, Operator); } .
+Unary	= {		Type	:= ResultType (Expr:Type, nNoType, Operator); } .
+IntConst  = {		Type	:= nInteger				; } .
+RealConst = {		Type	:= nReal				; } .
+BoolConst = {		Type	:= nBoolean				; } .
+Adr	= {		Type	:= nNoType				; } .
+Index	= {		Type	:= Tree_PREFIX mRef (GetElementType (Type2));
+			Type2	:= Reduce (Adr:Type)			; } .
+Ident	= {		Type	:= GetType (Object)			; } .
+
+END Type
+
+MODULE TypeCode /* -------------------------------------------------- */
+
+EVAL GLOBAL {
+# define IntType  1
+# define RealType 2
+# define BoolType 3
+}
+
+RULE
+
+Read	= {		TypeCode := ICodeType [Reduce (Adr:Type)->Kind]	; } .
+Write	= {		TypeCode := ICodeType [Reduce (Expr:Type)->Kind]; } .
+Binary	= {		TypeCode := ICodeType [Reduce (Rop:Type)->Kind]	; } .
+
+END TypeCode
+
+MODULE Co /* -------------------------------------------------- */
+
+RULE
+
+Assign	= { Adr :	Co := Coerce (Adr :Type, ReduceToRef (Adr:Type));
+	    Expr:	Co := Coerce (Expr:Type, Reduce (Adr:Type))	; } .
+If	= { Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+While	= { Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+Read	= { Adr :	Co := Coerce (Adr :Type, ReduceToRef (Adr:Type)); } .
+Write	= { Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+Actual	= { Expr:	Co := Formals->Kind == kNoFormal ? Tree_PREFIX mNoCoercion () \:
+			     Coerce (Expr:Type, Reduce1 (Formals->Formal.Type)); } .
+Binary	= { Lop :	Co := Coerce (Lop :Type, Reduce (Lop:Type))	;
+	    Rop :	Co := Coerce (Rop :Type, Reduce (Rop:Type))	; } .
+Unary	= { Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+Index	= { Adr :	Co := Coerce (Adr :Type, ReduceToRef (Adr:Type));
+	    Expr:	Co := Coerce (Expr:Type, Reduce (Expr:Type))	; } .
+
+END Co
+
+MODULE DataSize /* -------------------------------------------------- */
+
+DECLARE Decls Formals = [DataSize THREAD] .
+
+RULE
+
+MiniLax	= { Proc:	DataSizeIn	:= 0				; } .
+Decl	= {		DataSizeOut	:= Next:	DataSizeOut	; } .
+Proc	= { Formals:	DataSizeIn	:= 3				; } .
+Var	= { Next:	DataSizeIn	:=		DataSizeIn + TypeSize (Reduce1 (Type)); } .
+Formal	= { Next:	DataSizeIn	:=		DataSizeIn + 1	; } .
+
+END DataSize
+
+MODULE CodeSize /* -------------------------------------------------- */
+
+DECLARE Decls Stats Actuals Expr = [CodeSize THREAD] .
+	Expr Coercions		 = [CoercionSize SYN] .
+
+RULE
+
+MiniLax	= { Proc:	CodeSizeIn	:= 0				; } .
+Decl	= {		CodeSizeOut	:= Next:	CodeSizeOut	; } .
+Proc	= { Stats:	CodeSizeIn	:=		CodeSizeIn  + 1	; /* ENT */
+	    Decls:	CodeSizeIn	:= Stats:	CodeSizeOut + 1	; /* RET */
+	    Next:	CodeSizeIn	:= Decls:	CodeSizeOut	; } .
+Stat	= {		CodeSizeOut	:= Next:	CodeSizeOut	; } .
+Assign	= { Adr:	CodeSizeIn	:=		CodeSizeIn	;
+	    Expr:	CodeSizeIn	:= Adr:		CodeSizeOut + Adr:CoercionSize;
+	    Next:	CodeSizeIn	:= Expr:	CodeSizeOut + Expr:CoercionSize + 1; /* STI */ } .
+Call	= { Actuals:	CodeSizeIn	:=		CodeSizeIn + 1	; /* MST */
+	    Next:	CodeSizeIn	:= Actuals:	CodeSizeOut + 1	; /* JSR */ } .
+If	= { Expr:	CodeSizeIn	:=		CodeSizeIn	;
+	    Then:	CodeSizeIn	:= Expr:	CodeSizeOut + Expr:CoercionSize + 1; /* FJP */
+	    Else:	CodeSizeIn	:= Then:	CodeSizeOut + 1	; /* JMP */
+	    Next:	CodeSizeIn	:= Else:	CodeSizeOut	; } .
+While	= { Stats:	CodeSizeIn	:=		CodeSizeIn  + 1	; /* JMP */
+	    Expr:	CodeSizeIn	:= Stats:	CodeSizeOut	;
+	    Next:	CodeSizeIn	:= Expr:	CodeSizeOut + Expr:CoercionSize + 2; /* INV, FJP */ } .
+Read	= { Adr:	CodeSizeIn	:=		CodeSizeIn	;
+	    Next:	CodeSizeIn	:= Adr:		CodeSizeOut + Adr:CoercionSize + 2; /* REA, STI */ } .
+Write	= { Expr:	CodeSizeIn	:=		CodeSizeIn	;
+	    Next:	CodeSizeIn	:= Expr:	CodeSizeOut + Expr:CoercionSize + 1; /* WRI */ } .
+Actual	= { Expr:	CodeSizeIn	:=		CodeSizeIn	;
+	    Next:	CodeSizeIn	:= Expr:	CodeSizeOut + Expr:CoercionSize;
+			CodeSizeOut	:= Next:	CodeSizeOut	; } .
+Binary	= { Rop:	CodeSizeIn	:= Lop:		CodeSizeOut + Lop:CoercionSize;
+			CodeSizeOut	:= Rop:		CodeSizeOut + Rop:CoercionSize + 1; /* INV, MUL, ADD or LES */ } .
+Unary	= {		CodeSizeOut	:= Expr:	CodeSizeOut + Expr:CoercionSize + 1; /* NOT */ } .
+IntConst  = {		CodeSizeOut	:=		CodeSizeIn + 1	; /* LDC */ } .
+RealConst = {		CodeSizeOut	:=		CodeSizeIn + 1	; /* LDC */ } .
+BoolConst = {		CodeSizeOut	:=		CodeSizeIn + 1	; /* LDC */ } .
+Index	  = { Expr:	CodeSizeIn	:= Adr:		CodeSizeOut + Adr:CoercionSize;
+			CodeSizeOut	:= Expr:	CodeSizeOut + Expr:CoercionSize + 4; /* CHK, LDC, SUB, IXA */ } .
+Ident	  = {		CodeSizeOut	:=		CodeSizeIn + 1	; /* LDA */ } .
+
+Expr	  = {		CoercionSize	:= Co:		CoercionSize	;	    } .
+Coercions = {		CoercionSize	:= 0				;	    } .
+Content   = {		CoercionSize	:= Next:	CoercionSize + 1; /* LDI */ } .
+IntToReal = {		CoercionSize	:= Next:	CoercionSize + 1; /* FLT */ } .
+
+END CodeSize
+
+MODULE Level /* -------------------------------------------------- */
+
+DECLARE Decls Formals Stats Actuals Expr = [Level: short INH] .
+
+RULE
+
+MiniLax	= { Proc:	Level	:= 0					; } .
+Proc	= { Formals:	Level	:=		Level + 1		;
+	    Decls:	Level	:= Formals:	Level			;
+	    Stats:	Level	:= Formals:	Level			; } .
+Call	= {		Level2	:=		Level			; } .
+Ident	= {		Level2	:=		Level			; } .
+
+END Level
+
+MODULE Label /* -------------------------------------------------- */
+
+RULE
+
+If	= {		Label1	:= Else:	CodeSizeIn		;
+			Label2	:= Else:	CodeSizeOut		; } .
+While	= {		Label1	:= Stats:	CodeSizeIn		;
+			Label2	:= Expr:	CodeSizeIn		; } .
+
+END Label
+
+MODULE Conditions /* -------------------------------------------------- */
+
+RULE
+
+Decl	= { CHECK ! IsDeclared (Ident, DeclsIn)
+	       => Error ("identifier already declared"		, Pos)		; } .
+Formal	= { CHECK ! IsDeclared (Ident, DeclsIn)
+	       => Error ("identifier already declared"		, Pos)		;
+	    CHECK IsSimpleType (Reduce1 (Type))
+	       => Error ("value parameter must have simple type", Pos)		; } .
+Array	= { CHECK Lwb <= Upb
+	       => Error ("lower bound exceeds upper bound"	, Pos)		; } .
+Assign	= { CHECK IsAssignmentCompatible (Adr:Type, Expr:Type)
+	       => Error ("types not assignment compatible"	, Pos)		; } .
+Call	= { CHECK Object->Kind != kNoObject
+	       => Error ("identifier not declared"		, Pos) AND_THEN
+	    CHECK IsObjectKind (Object, kProc3)
+	       => Error ("only procedures can be called"	, Pos)		; } .
+If	= { CHECK Tree_PREFIX Tree_IsType (Reduce (Expr:Type), kBoolean)
+	       => Error ("boolean expression required"		, Expr:Pos)	; } .
+While	= { CHECK Tree_PREFIX Tree_IsType (Reduce (Expr:Type), kBoolean)
+	       => Error ("boolean expression required"		, Expr:Pos)	; } .
+Read	= { CHECK IsSimpleType (Reduce (Adr:Type))
+	       => Error ("simple type operand required"		, Adr:Pos)	; } .
+Write	= { CHECK IsSimpleType (Reduce (Expr:Type))
+	       => Error ("simple type operand required"		, Expr:Pos)	; } .
+Binary	= { CHECK Type->Kind != kErrorType
+	       => Error ("operand types incompatible"		, Pos)		; } .
+Unary	= { CHECK Type->Kind != kErrorType
+	       => Error ("operand types incompatible"		, Pos)		; } .
+Index	= { CHECK Tree_PREFIX Tree_IsType (Reduce (Adr:Type), kArray)
+	       => Error ("only arrays can be indexed"		, Adr:Pos)	;
+	    CHECK Tree_PREFIX Tree_IsType (Reduce (Expr:Type), kInteger)
+	       => Error ("integer expression required"		, Expr:Pos)	; } .
+Ident	= { CHECK Object->Kind != kNoObject
+	       => Error ("identifier not declared"		, Pos) AND_THEN
+	    CHECK IsObjectKind (Object, kVar3)
+	       => Error ("variable required"			, Pos)		; } .
+
+END Conditions
+
+MODULE TypeDecls /* -------------------------------------------------- */
+
+TREE EXPORT {
+# include "Errors.h"
+# include "Defs.h"
+# include "Types.h"
+
+typedef char tvoid;
+
+# define   Plus		1
+# define   Times	2
+# define   Less		3
+# define   Not		4
+}
+
+EVAL GLOBAL {
+# include "Global.h"
+# include "ExtTree.h"
+# include "ExtDefs.h"
+
+# define Error(Text, Position) gErrors.Message (Text, xxError, Position)
+
+static tObjects nNoObject;
+static tTree    nInteger, nReal, nBoolean, nNoType;
+static char     ICodeType [kErrorType + 1];
+}
+
+BEGIN {
+   nNoObject	= Defs_PREFIX mNoObject	();
+   nInteger	= Tree_PREFIX mInteger	();
+   nReal	= Tree_PREFIX mReal	();
+   nBoolean	= Tree_PREFIX mBoolean	();
+   nNoType	= Tree_PREFIX mNoType	();
+
+   ICodeType [kInteger	] = IntType	;
+   ICodeType [kReal	] = RealType	;
+   ICodeType [kBoolean	] = BoolType	;
+   ICodeType [kNoType	] = BoolType	;
+   ICodeType [kErrorType] = BoolType	;
+}
+
+END TypeDecls

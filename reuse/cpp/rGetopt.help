@@ -1,0 +1,33 @@
+# Help messages
+# $Id: rGetopt.help,v 1.4 2003/11/18 13:34:10 vollmer Exp $
+
+--@START@
+The following describes the command line options.
+--
+
+--@END@
+Have a nice day!
+--
+
+--help
+Shows a short help message.
+--
+
+--HelpMore
+Show the user manual. (Note: here a new line follows)
+
+--verbose
+Verbose output.
+--
+
+--int
+Give an integer option.
+And more text.
+And more text.
+And more text.
+And more text.
+--
+
+some more text to be ignored
+
+

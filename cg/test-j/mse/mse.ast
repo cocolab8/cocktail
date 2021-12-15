@@ -1,0 +1,68 @@
+TREE trees.Tree
+
+GLOBAL {
+/* This uses the undocumented features of tidy & cg to add some code to
+   the generated classes
+ */
++Tree.methods
+   public abstract void identify (CocktailWriter f) throws java.io.IOException;
+=Tree.methods
++Root.methods
+      public void identify (CocktailWriter f) throws java.io.IOException {
+         f.write (NodeNames [yyKind ()] + " ");
+         f.write (r);
+         f.writeNl ();
+      }
+=Root.methods
++Thing.methods
+      public void identify (CocktailWriter f) throws java.io.IOException {
+         f.write (NodeNames [yyKind ()]);
+         f.writeNl ();
+      }
+=Thing.methods
++IntThing.methods
+      public void identify (CocktailWriter f) throws java.io.IOException {
+         f.write (NodeNames [yyKind ()] + " ");
+         f.write (x);
+         f.writeNl ();
+      }
+=IntThing.methods
++IdThing.methods
+      public void identify (CocktailWriter f) throws java.io.IOException {
+         f.write (NodeNames [yyKind ()] + " " + id.value + "=");
+         f.write (id);
+         f.writeNl ();
+      }
+=IdThing.methods
++PosThing.methods
+      public void identify (CocktailWriter f) throws java.io.IOException {
+         f.write (NodeNames [yyKind ()] + " ");
+         f.write (pos);
+         f.writeNl ();
+      }
+=PosThing.methods
+}
+
+RULE
+
+HasThing	:= Thing .
+
+Root		= [r] <
+  List <- HasThing = [l] <
+    None	= [n] .
+    Element	= Next: List REVERSE [o] <
+      E1	= [c1] .
+      E2	= [c2] t: Thing  [t2: Thing] .
+    >.
+    Item	= Next: List /* not REVERSE ! */ <
+      Item1     = RealNext: List REVERSE L: List .
+      Item2     = NotNext: List AllNext: Root REVERSE .
+    >.
+  >.
+>.
+
+Thing		= <
+  IntThing	= [x] .
+  IdThing	= [id: Ident] .
+  PosThing	= [pos: Position] .
+> .

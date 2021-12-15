@@ -1,0 +1,13 @@
+Generator for Abstract Syntax Trees	Ast
+Generator for Attribute Evaluators	Ag
+Generator for Scanner Specifications	Lpp
+-------------------------------------------
+Common Grammar Tool			Cg
+===========================================
+
+Cg makes use of a library of reusable Modula-2 modules (MLIB=reuse).
+This library must be compiled before Cg itself.
+
+To generate Cg use:
+
+   make install BIN=... LIB=... OPT=...

@@ -1,0 +1,612 @@
+/*
+ * This is a parser for ISO/ANSI SQL.
+ * See  ANSI X3.135-1986 and ANSI X3.135.1-198x Addendum 1
+ *      ISO 9075-1987(E) Addendum 1
+ *
+ * This software is Copyright (c)  1989 by Leroy Cain.
+ *
+ * Permission is hereby granted to copy, reproduce, redistribute or
+ * otherwise use this software as long as: there is no monetary
+ * profit gained specifically from the use or reproduction or this
+ * software, it is not sold, rented, traded or otherwise marketed
+ * except under licence from the author, and this copyright notice
+ * is included prominently in any copy made.
+ *
+ * The author makes no claims as to the fitness or correctness of
+ * this software for any use whatsoever, and it is provided as is.
+ * Any use of this software is at the user's own risk.
+ *
+ * Leroy Cain;      Columbia Union College;      Mathematical Sciences Department
+ * 7600 Flower Ave. WH406;                       Takoma Park, Md 20912
+ * (301) 891-4172                                uunet!cucstud!lcain
+ */
+
+PREC
+   LEFT	 '/' '*'
+   LEFT	 '+' '-'
+   LEFT	 '=' '<>' '<' '>' '>=' '<='
+
+RULE
+
+sql		= <
+		= ansi_sql_module .
+		= ansi_sql_embedded .
+		= ansi_sql_internal_statement .
+> .
+ansi_sql_module	= module .
+
+ansi_sql_embedded	= <
+		= embedded_sql_statement .
+		= embedded_sql_declare_section .
+> .
+ansi_sql_internal_statement	= <
+		= sql_statement .
+		= declare_cursor .
+		= schema .
+> .
+embedded_exception_declaration	= WHENEVER condition exception_action .
+
+condition	= <
+		= SQLERROR .
+		= NOT FOUND .
+> .
+exception_action	= <
+		= CONTINUE .
+		= GOTO target .
+> .
+target		= <
+		= ':' host_identifier .
+		= NUMERIC .
+> .
+embedded_sql_statement	= <
+		= sql_prefix declare_cursor sql_terminator .
+		= embedded_exception_declaration .
+		= sql_prefix sql_statement sql_terminator .
+		= sql_prefix schema sql_terminator .
+> .
+sql_prefix	= SQL .
+
+sql_terminator	= <
+		= 'END' EXEC .
+		= ';' .
+> .
+embedded_sql_declare_section	= sql_prefix 'BEGIN' 'DECLARE' SECTION sql_terminator host_variable_definition_list ';' EXEC sql_prefix 'END' 'DECLARE' SECTION sql_terminator .
+
+host_variable_definition_list	= <
+		= c_variable_definition .
+		= host_variable_definition_list ';' c_variable_definition .
+> .
+c_variable_definition	= <
+		= CHAR IDENTIFIER .
+		= CHAR IDENTIFIER '[' UINTEGER ']' .
+		= INT IDENTIFIER .
+		= FLOAT IDENTIFIER .
+		= DOUBLE IDENTIFIER .
+> .
+update_statement_search	= UPDATE table_name SET set_clause_list WHERE search_condition .
+
+update_statement_position	= UPDATE table_name SET set_clause_list WHERE CURRENT OF cursor_name .
+
+set_clause_list	= <
+		= set_clause .
+		= set_clause_list ',' set_clause .
+> .
+set_clause	= <
+		= column_name '=' value_expression .
+		= column_name '=' NULL .
+> .
+select_statement	= 'SELECT' op_ad select_list INTO select_target_list table_expression .
+
+select_target_list	= <
+		= target_specification .
+		= select_target_list ',' target_specification .
+> .
+rollback_statement	= ROLLBACK WORK .
+
+open_statement	= OPEN cursor_name .
+
+insert_statement	= <
+		= INSERT INTO table_name op_insert_column_list VALUES '(' insert_value_list ')' .
+		= INSERT INTO table_name op_insert_column_list query_specification .
+> .
+op_insert_column_list	= <
+		= .
+		= '(' insert_column_list ')' .
+> .
+insert_column_list	= <
+		= column_name .
+		= insert_column_list ',' column_name .
+> .
+insert_value_list	= <
+		= insert_value .
+		= insert_value_list ',' insert_value .
+> .
+insert_value	= <
+		= value_specification .
+		= NULL .
+> .
+fetch_statement	= FETCH cursor_name INTO fetch_target_list .
+
+fetch_target_list	= <
+		= target_specification .
+		= fetch_target_list ',' target_specification .
+> .
+delete_statement_search	= DELETE FROM table_name op_where_clause .
+
+delete_statement_position	= DELETE FROM table_name WHERE CURRENT OF cursor_name .
+
+declare_cursor	= 'DECLARE' cursor_name CURSOR 'FOR' cursor_specification .
+
+cursor_specification	= <
+		= query_expression .
+		= query_expression order_by_clause .
+> .
+query_expression	= <
+		= query_term .
+		= query_expression UNION op_all query_term .
+> .
+query_term	= <
+		= query_specification .
+		= '(' query_expression ')' .
+> .
+order_by_clause	= ORDER BY sort_specification_list .
+
+sort_specification_list	= <
+		= sort_specification .
+		= sort_specification_list ',' sort_specification .
+> .
+sort_specification	= <
+		= NUMERIC op_asc_desc .
+		= column_specification op_asc_desc .
+> .
+op_asc_desc	= <
+		= .
+		= ASC .
+		= DESC .
+> .
+commit_statement	= COMMIT WORK .
+
+close_statement	= 'CLOSE' cursor_name .
+
+procedure	= <
+		= PROCEDURE procedure_name parameter_declaration_list ';' sql_statement ';' .
+		= PROCEDURE procedure_name parameter_declaration_list ';' schema ';' .
+> .
+parameter_declaration_list	= <
+		= parameter_declaration .
+		= parameter_declaration_list parameter_declaration .
+> .
+parameter_declaration	= <
+		= parameter_name data_type .
+		= SQLCODE .
+> .
+sql_statement	= <
+		= close_statement .
+		= commit_statement .
+		= delete_statement_position .
+		= delete_statement_search .
+		= fetch_statement .
+		= insert_statement .
+		= open_statement .
+		= rollback_statement .
+		= select_statement .
+		= cursor_specification .
+		= update_statement_position .
+		= update_statement_search .
+> .
+module_name_clause	= <
+		= 'MODULE' .
+		= 'MODULE' module_name .
+> .
+module		= module_name_clause language_clause module_authorization_clause op_declare_cursor_list procedure_list .
+
+language_clause	= LANGUAGE lang_type .
+
+lang_type	= <
+		= C .
+		= COBOL .
+		= FORTRAN .
+		= PASCAL .
+		= PLI .
+> .
+module_authorization_clause	= <
+		= .
+		= AUTHORIZATION module_authorization_identifier .
+> .
+module_authorization_identifier	= authorization_identifier .
+
+op_declare_cursor_list	= <
+		= .
+		= declare_cursor_list .
+> .
+declare_cursor_list	= <
+		= declare_cursor .
+		= declare_cursor_list declare_cursor .
+> .
+procedure_list	= <
+		= procedure .
+		= procedure_list procedure .
+> .
+privilege_definition	= GRANT privileges ON table_name TO grantee_list op_with_grant_option .
+
+op_with_grant_option	= <
+		= .
+		= WITH GRANT OPTION .
+> .
+privileges	= <
+		= ALL PRIVILEGES .
+		= action_list .
+> .
+action_list	= <
+		= action .
+		= action_list ',' action .
+> .
+action		= <
+		= 'SELECT' .
+		= INSERT .
+		= DELETE .
+		= UPDATE op_grant_column_list .
+> .
+op_grant_column_list	= <
+		= .
+		= '(' grant_column_list ')' .
+> .
+grant_column_list	= <
+		= column_name .
+		= grant_column_list ',' column_name .
+> .
+grantee_list	= <
+		= grantee .
+		= grantee_list ',' grantee .
+> .
+grantee		= <
+		= PUBLIC .
+		= authorization_identifier .
+> .
+view_definition	= CREATE 'VIEW' table_name op_view_column_list AS query_specification op_with_check_option .
+
+op_view_column_list	= <
+		= .
+		= '(' view_column_list ')' .
+> .
+view_column_list	= <
+		= column_name .
+		= view_column_list ',' column_name .
+> .
+op_with_check_option	= <
+		= .
+		= WITH CHECK OPTION .
+> .
+check_constraint_definition	= CHECK '(' search_condition ')' .
+
+referential_constraint_definition	= FOREIGN KEY '(' references_columns ')' references_specification .
+
+references_specification	= REFERENCES referenced_table_and_columns .
+
+references_columns	= references_column_list .
+
+referenced_table_and_columns	= <
+		= table_name .
+		= table_name '(' references_column_list ')' .
+> .
+references_column_list	= <
+		= column_name .
+		= references_column_list ',' column_name .
+> .
+unique_constraint_definition	= <
+		= UNIQUE '(' unique_column_list ')' .
+		= PRIMARY KEY '(' unique_column_list ')' .
+> .
+unique_column_list	= <
+		= column_name .
+		= unique_column_list ',' column_name .
+> .
+table_constraint_definition	= <
+		= unique_constraint_definition .
+		= referential_constraint_definition .
+		= check_constraint_definition .
+> .
+default_clause	= <
+		= DEFAULT literal .
+		= DEFAULT NULL .
+		= DEFAULT USER .
+> .
+column_definiton	= column_name data_type op_default_clause op_column_constraint_list .
+
+op_default_clause	= <
+		= .
+		= default_clause .
+> .
+op_column_constraint_list	= <
+		= .
+		= column_constraint op_column_constraint_list .
+> .
+column_constraint	= <
+		= NOT NULL .
+		= NOT NULL UNIQUE .
+		= references_specification .
+		= CHECK '(' search_condition ')' .
+> .
+table_definition	= CREATE TABLE table_name '(' table_element_list ')' .
+
+table_element_list	= <
+		= table_element .
+		= table_element_list ',' table_element .
+> .
+table_element	= <
+		= column_definiton .
+		= table_constraint_definition .
+> .
+schema		= CREATE SCHEMA schema_authorization_clause schema_element_list .
+
+schema_authorization_clause	= AUTHORIZATION schema_authorization_identifier .
+
+schema_authorization_identifier	= authorization_identifier .
+
+schema_element_list	= <
+		= schema_element .
+		= schema_element_list schema_element .
+> .
+schema_element	= <
+		= table_definition .
+		= view_definition .
+		= privilege_definition .
+> .
+query_specification	= 'SELECT' op_ad select_list table_expression .
+
+select_list	= <
+		= value_expression_list .
+		= '*' .
+> .
+value_expression_list	= <
+		= value_expression .
+		= value_expression_list ',' value_expression .
+> .
+subquery	= '(' 'SELECT' op_ad result_specification table_expression ')' .
+
+op_ad		= <
+		= .
+		= ALL .
+		= DISTINCT .
+> .
+result_specification	= <
+		= value_expression .
+		= '*' .
+> .
+having_clause	= HAVING search_condition .
+
+group_by_clause	= GROUP BY column_specification_list .
+
+column_specification_list	= <
+		= column_specification .
+		= column_specification_list ',' column_specification .
+> .
+where_clause	= WHERE search_condition .
+
+from_clause	= FROM table_reference_list .
+
+table_reference_list	= <
+		= table_reference .
+		= table_reference_list ',' table_reference .
+> .
+table_reference	= <
+		= table_name .
+		= table_name correlation_name .
+> .
+table_expression	= from_clause op_where_clause op_group_by_clause op_having_clause .
+
+op_where_clause	= <
+		= .
+		= where_clause .
+> .
+op_group_by_clause	= <
+		= .
+		= group_by_clause .
+> .
+op_having_clause	= <
+		= .
+		= having_clause .
+> .
+search_condition	= <
+		= boolean_term .
+		= search_condition OR boolean_term .
+> .
+boolean_term	= <
+		= boolean_factor .
+		= boolean_term AND boolean_factor .
+> .
+boolean_factor	= <
+		= boolean_primary .
+		= NOT boolean_primary .
+> .
+boolean_primary	= <
+		= predicate .
+		= '(' search_condition ')' .
+> .
+exists_predicate	= EXISTS subquery .
+
+quantified_predicate	= value_expression comp_op quantifier subquery .
+
+quantifier	= <
+		= all .
+		= some .
+> .
+all		= ALL .
+
+some		= <
+		= SOME .
+		= ANY .
+> .
+null_predicate	= column_specification IS op_not NULL .
+
+like_predicate	= column_specification op_not LIKE pattern op_escape .
+
+op_escape	= ESCAPE escape_character .
+
+pattern		= value_specification .
+
+escape_character	= value_specification .
+
+in_predicate	= <
+		= value_expression op_not IN subquery .
+		= value_expression op_not IN '(' in_value_list ')' .
+> .
+in_value_list	= <
+		= value_specification .
+		= in_value_list ',' value_specification .
+> .
+between_predicate	= value_expression op_not BETWEEN value_expression AND value_expression .
+
+op_not		= <
+		= .
+		= NOT .
+> .
+comparison_predicate	= <
+		= value_expression comp_op value_expression .
+		= value_expression comp_op subquery .
+> .
+comp_op		= <
+		= '=' .
+		= '<>' .
+		= '>' .
+		= '<' .
+		= '<=' .
+		= '>=' .
+> .
+predicate	= <
+		= comparison_predicate .
+		= between_predicate .
+		= in_predicate .
+		= like_predicate .
+		= null_predicate .
+		= quantified_predicate .
+		= exists_predicate .
+> .
+value_expression	= <
+		= value_expression '*' value_expression .
+		= value_expression '/' value_expression .
+		= value_expression '+' value_expression .
+		= value_expression '-' value_expression .
+		= primary .
+		= factor .
+> .
+factor		= <
+		= '+' primary .
+		= '-' primary .
+> .
+primary		= <
+		= value_specification .
+		= column_specification .
+		= set_function_specification .
+		= '(' value_expression ')' .
+> .
+set_function_specification	= <
+		= COUNT '(' '*' ')' .
+		= distinct_set_function .
+		= all_set_function .
+> .
+distinct_set_function	= <
+		= AVG '(' DISTINCT column_specification ')' .
+		= MAX '(' DISTINCT column_specification ')' .
+		= MIN '(' DISTINCT column_specification ')' .
+		= SUM '(' DISTINCT column_specification ')' .
+		= COUNT '(' DISTINCT column_specification ')' .
+> .
+all_set_function	= <
+		= AVG '(' op_all value_expression ')' .
+		= MAX '(' op_all value_expression ')' .
+		= MIN '(' op_all value_expression ')' .
+		= SUM '(' op_all value_expression ')' .
+		= COUNT '(' op_all value_expression ')' .
+> .
+op_all		= <
+		= .
+		= ALL .
+> .
+column_specification	= <
+		= column_name .
+		= IDENTIFIER '.' column_name .
+> .
+value_specification	= <
+		= parameter_specification .
+		= variable_specification .
+		= literal .
+		= USER .
+> .
+target_specification	= <
+		= parameter_specification .
+		= variable_specification .
+> .
+parameter_specification	= IDENTIFIER op_indicator IDENTIFIER .
+
+variable_specification	= ':' IDENTIFIER op_indicator IDENTIFIER .
+
+op_indicator	= <
+		= .
+		= INDICATOR .
+> .
+data_type	= <
+		= char_string_type .
+		= exact_numeric_type .
+		= approx_numeric_type .
+> .
+char_string_type	= <
+		= CHARACTER .
+		= CHARACTER '(' length ')' .
+> .
+exact_numeric_type	= <
+		= NUMERIC '(' precision op_scale ')' .
+		= DEC '(' precision op_scale ')' .
+		= INTEGER .
+		= SMALLINT .
+> .
+op_scale	= <
+		= .
+		= ',' scale .
+> .
+approx_numeric_type	= <
+		= FLOAT '(' precision ')' .
+		= REAL .
+		= DOUBLE PRECISION .
+> .
+length		= UINTEGER .
+
+precision	= UINTEGER .
+
+scale		= UINTEGER .
+
+table_name	= <
+		= table_identifier .
+		= authorization_identifier '.' table_identifier .
+> .
+authorization_identifier	= IDENTIFIER .
+
+table_identifier	= IDENTIFIER .
+
+column_name	= IDENTIFIER .
+
+correlation_name	= IDENTIFIER .
+
+host_identifier	= IDENTIFIER .
+
+cursor_name	= IDENTIFIER .
+
+module_name	= IDENTIFIER .
+
+procedure_name	= IDENTIFIER .
+
+parameter_name	= IDENTIFIER .
+
+literal		= <
+		= STRING .
+		= NUMERIC .
+		= UINTEGER .
+		= SINTEGER .
+> .
+Terminal	: [Dummy: char] { Dummy := ' '; } <
+   IDENTIFIER	: .
+   NUMERIC	: .
+   SINTEGER	: .
+   UINTEGER	: .
+   STRING	: .
+> .

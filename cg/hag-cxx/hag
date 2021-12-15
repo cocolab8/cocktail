@@ -1,0 +1,14 @@
+/* hag */
+
+PROPERTY RULE
+
+R	= F IN [n IN] [r OUT] { F:n := n; r := F:r; } .
+
+F	=      [n]    [r]     { r   := 1; } <
+
+   P1	= f:F                 { f   := n <= 1 ? new P2 () : (P2 *) new P1 ();
+		                f:n := n - 1;
+		                r   := f:r * n; } .
+
+   P2	= .
+> .

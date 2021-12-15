@@ -1,0 +1,13 @@
+program ScannerDrv
+ 
+root scannerdrv: "main"
+
+cluster
+
+    "./" end
+    "../../reuse/eiffel/" end
+
+    include  "$EIFFEL_S/library/lib.pdl"
+    link     "../../reuse/eiffel/my_file.o"
+  
+end -- program ScannerDrv

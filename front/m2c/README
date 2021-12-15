@@ -1,0 +1,9 @@
+Common Front-End for Lalr, Ell, and Bnf
+=======================================
+
+The front-end (front) makes use of a library of reusable Modula-2 modules.
+This library (MLIB=reuse) must have been compiled before.
+
+To generate the front-end use:
+
+   make install LIB=... OPT=...

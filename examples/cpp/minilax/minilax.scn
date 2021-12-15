@@ -1,0 +1,46 @@
+EXPORT  {
+# include "Idents.h"
+# include "Position.h"
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+# include <math.h>
+# include "Global.h"
+
+INSERT ErrorAttribute
+}
+
+DEFAULT	{
+   ErrorsObj->MessageI ("illegal character", xxError, Attribute.Position,
+      xxCharacter, TokenPtr);
+}
+
+EOF	{
+   if (yyStartState == Comment)
+      ErrorsObj->Message ("unclosed comment", xxError, Attribute.Position);
+}
+
+DEFINE	digit	= {0-9} .
+	letter	= {a-z A-Z} .
+
+START	Comment
+
+RULE
+	  "(*"	:- {yyStart (Comment);}
+#Comment# "*)"	:- {yyStart (STD);}
+#Comment# "*" | - {*\t\n} + :- {}
+
+#STD# digit +	: {Attribute.IntegerConst.Integer = atoi (TokenPtr);
+		   return IntegerConst;}
+
+#STD# digit * "." digit + (E {+\-} ? digit +) ?
+		: {Attribute.RealConst.Real = (float) atof (TokenPtr);
+		   return RealConst;}
+
+INSERT RULES #STD#
+
+#STD# letter (letter | digit) *
+		: {Attribute.Ident.Ident = gIdents.MakeIdent (TokenPtr, TokenLength);
+		   return Ident;}

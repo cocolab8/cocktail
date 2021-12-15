@@ -1,0 +1,79 @@
+  -- this is a comprehensive exercise of occam syntax
+        -- pjmp @ hrc 31/7/86
+VAR fred, joe[BYTE - #fAf], bill[ (20>>2)/\#0F]:
+VAR heinz:
+CHAN mary,jane[TRUE]:
+CHAN sue:
+DEF one =1, alphabet="abcdefghijklmnopq"
+"rstuvwxyz":
+DEF Tablet   = TABLE [ BYTE 0 ]:
+
+PROC time =
+  mary!NOW
+:
+
+PROC relay ( CHAN from, to, VAR via ) =
+  SEQ
+    from?via
+    to!via
+:
+
+PROC zilch ( VALUE t[] ) =
+  SKIP
+:
+
+WHILE NOT FALSE
+
+  SEQ
+    time
+    bill[0]   := TABLE [ 2, 3, 5, 7, 11, 13, 17, 19, 23] [fred]
+    WAIT NOW AFTER bill[joe[BYTE 0]]
+
+    VAR cats, dogs:
+    CHAN raining[ one ]:
+    PAR WHICH = [ 0 FOR one ]
+      relay( raining[ cats AND dogs], jane[WHICH], alphabet[WHICH] )
+
+    zilch( "abc"[2] )
+
+    SEQ
+
+    mary!ANY
+
+    CHAN jane:
+    jane?ANY
+
+    PAR
+
+    VAR john,tarzan:
+    CHAN janet,jane:
+    PAR
+      janet?john;john
+      jane!tarzan; tarzan
+
+    IF
+      'a' << #2
+        IF
+
+      IF
+        '**' >> ( 1 OR 2 )
+          IF fred = [ 0 FOR '*#FF' ]
+            fred <> ( alphabet[ fred >< bill[ fred /\ bill [ fred \/ fred ]]] )
+              joe := (fred>0) AND (fred<100) AND (fred>='a') AND (fred<='-')
+
+    VAR then:
+    ALT fred = [ 1+1+1 FOR 2*2*(2-1)+(4\2)*(2/2) ]
+      ALT
+        ALT
+        SKIP
+          SKIP
+        fred = 3 & SKIP
+          SKIP
+        fred >3 & WAIT NOW
+          SKIP
+        WAIT NOW AFTER then
+          SKIP
+        fred < 20 & mary?ANY
+          then := NOW
+        jane[fred]?then
+          then := then + 4

@@ -1,0 +1,165 @@
+TRAFO ICode TREE Tree Defs PUBLIC Code
+
+EXTERN
+   ADD BoolType CHK ENT Emit EmitReal FJP FLT FalseCode INV IXA IntType JMP JSR
+   LDA LDC LDI LES MST MUL REA RET RealType STI SUB TrueCode TypeSize WRI
+
+IMPORT {
+   import trees.Tree;
+   import trees.Tree.*;
+   import trees.Defs;
+   import trees.Defs.*;
+}
+
+GLOBAL {
+# include "ICodeIntConst.h"
+//#define YYTRACE
+}
+
+EXPORT {
+   public static native void Emit (int oc, int Param1, int Param2);
+   public static native void EmitReal  (int oc, int Param1, float Param2);
+   public static native void WriteCode ();
+   public static native void Interpret ();
+
+   static {
+      System.loadLibrary("icode");
+   }
+}
+
+PROCEDURE Code (t: Tree)
+
+MiniLax	(Proc) :-
+	Code (Proc);
+	.
+Proc (Next := Next:Decls (Proc3 (ParSize := ParSize, DataSize := DataSize), ..),
+		Decls := Decls, Stats := Stats) :-
+	Emit (ENT, DataSize - ParSize, 0);
+	Code (Stats);
+	Emit (RET, 0, 0);
+	Code (Decls);
+	Code (Next);
+	.
+Tree.Var (Next := Next) :-
+	Code (Next);
+	.
+Assign (Next, Adr, Expr, _) :-
+	Code (Adr); Code (Adr::Co);
+	Code (Expr); Code (Expr::Co);
+	Emit (STI, 0, 0);
+	Code (Next);
+	.
+Call (Next, Actuals, _, _, Proc3 (Level := Level, Label := Label, ParSize := ParSize),
+		level) :-
+	Emit (MST, level - Level, 0);
+	Code (Actuals);
+	Emit (JSR, ParSize - 3, Label);
+	Code (Next);
+	.
+If (Next, Expr, Then, Else, Label1, Label2) :-
+	Code (Expr); Code (Expr::Co);
+	Emit (FJP, Label1, 0);
+	Code (Then);
+	Emit (JMP, Label2, 0);
+	Code (Else);
+	Code (Next);
+	.
+While (Next, Expr, Stats, Label1, Label2) :-
+	Emit (JMP, Label2, 0);
+	Code (Stats);
+	Code (Expr); Code (Expr::Co);
+	Emit (INV, 0, 0);
+	Emit (FJP, Label1, 0);
+	Code (Next);
+	.
+Read (Next, Adr, TypeCode) :-
+	Code (Adr); Code (Adr::Co);
+	Emit (REA, TypeCode, 0);
+	Emit (STI, 0, 0);
+	Code (Next);
+	.
+Write (Next, Expr, TypeCode) :-
+	Code (Expr); Code (Expr::Co);
+	Emit (WRI, TypeCode, 0);
+	Code (Next);
+	.
+Actual (Next, Expr) :-
+	Code (Expr); Code (Expr::Co);
+	Code (Next);
+	.
+Binary (_, _, _, Lop, Rop, (Tree.Times), TypeCode) :-
+	Code (Lop); Code (Lop::Co);
+	Code (Rop); Code (Rop::Co);
+	Emit (MUL, TypeCode, 0);
+	.
+Binary (_, _, _, Lop, Rop, (Tree.Plus), TypeCode) :-
+	Code (Lop); Code (Lop::Co);
+	Code (Rop); Code (Rop::Co);
+	Emit (ADD, TypeCode, 0);
+	.
+Binary (_, _, _, Lop, Rop, (Tree.Less), TypeCode) :-
+	Code (Lop); Code (Lop::Co);
+	Code (Rop); Code (Rop::Co);
+	Emit (LES, TypeCode, 0);
+	.
+Unary (Expr := Expr) :-
+	Code (Expr); Code (Expr::Co);
+	Emit (INV, 0, 0);
+	.
+IntConst (Value := Value) :-
+	Emit (LDC, IntType, Value);
+	.
+RealConst (Value := Value) :-
+	EmitReal (LDC, RealType, (float)Value);
+	.
+BoolConst (Value := (true)) :-
+	Emit (LDC, BoolType, TrueCode);
+	.
+BoolConst (Value := (false)) :-
+	Emit (LDC, BoolType, FalseCode);
+	.
+Index (_, _, _, Adr, Expr, Array (Type, Lwb, Upb, _)) :-
+	Code (Adr); Code (Adr::Co);
+	Code (Expr); Code (Expr::Co);
+	Emit (CHK, Lwb, Upb);
+	Emit (LDC, IntType, Lwb);
+	Emit (SUB, IntType, 0);
+	Emit (IXA, Types.TypeSize (Type), 0);
+	.
+Identifier (_, _, _, _, Var3 (Level := Level, Offset := Offset), level) :-
+	Emit (LDA, level - Level, Offset);
+	.
+Content (Next) :-
+	Emit (LDI, 0, 0);
+	Code (Next);
+	.
+IntToReal (Next) :-
+	Emit (FLT, 0, 0);
+	Code (Next);
+	.
+
+PROCEDURE loop (Tree)
+
+MiniLax	(Proc) :-
+	j: Stat;
+	FOR j := NIL; j != NIL; j := {(trees.Tree.Stat) j::Next} DO loop (j); END
+
+	FOR i: Stat := NIL; i != NIL; i := {(trees.Tree.Stat) i::Next} DO loop (i); END
+
+	FOR j IN Assign (Pos := null) DO loop (j); END
+
+	FOR k: Stat IN NIL DO loop (k); END
+
+	FOR p: [Assign] IN NIL DO loop (p); END
+/*
+	FOR j DO loop (j); END
+	FOR j = NIL DO loop (j); END
+	FOR 1 IN NIL DO loop (j); END
+	n: int;
+	FOR n IN NIL DO loop (n); END
+	FOR m: int IN NIL DO loop (m); END
+	FOR o: [Stat, Expr] IN NIL DO loop (o); END
+	FOR p: [Stats] IN NIL DO loop (p); END
+	FOR p: [Assign, Write] IN NIL DO loop (p); END
+*/
+	.

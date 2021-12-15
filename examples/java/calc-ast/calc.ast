@@ -1,0 +1,111 @@
+TREE
+
+GLOBAL {
+/* This uses features of tidy & cg to add some code to
+   the generated classes
+ */
++Tree.methods
+   public void execute () throws java.io.IOException {}
+=Tree.methods
+
++Assign.methods
+   public void execute () throws java.io.IOException {
+      Expression.traverseBU (new Tree.ProcTree () {
+         public void proc (Tree yyt) {
+            yyt.eval ();
+         }
+      } );
+      regs [l] = Expression.value;
+   }
+=Assign.methods
+
++Print.methods
+   public void execute () throws java.io.IOException {
+      Expression.traverseBU (new Tree.ProcTree () {
+         public void proc (Tree yyt) {
+            yyt.eval ();
+         }
+      } );
+      stdout.print (Expression.value);
+      stdout.println (); stdout.flush ();
+   }
+=Print.methods
+
++Tree.methods
+   public void eval () {}
+=Tree.methods
+
++Number.methods
+   public void eval () { value = n; }
+=Number.methods
+
++Var.methods
+   public void eval () { value = regs [l]; }
+=Var.methods
+
++UMinus.methods
+   public void eval () { value = - Expression.value; }
+=UMinus.methods
+
++UPlus.methods
+   public void eval () { value = Expression.value; }
+=UPlus.methods
+
++Add.methods
+   public void eval () { value = lhs.value + rhs.value; }
+=Add.methods
+
++Subtract.methods
+   public void eval () { value = lhs.value - rhs.value; }
+=Subtract.methods
+
++Multiply.methods
+   public void eval () { value = lhs.value * rhs.value; }
+=Multiply.methods
+
++Divide.methods
+   public void eval () { value = lhs.value / rhs.value; }
+=Divide.methods
+
++Remainder.methods
+   public void eval () { value = lhs.value % rhs.value; }
+=Remainder.methods
+}
+
+EXPORT {
+   static private int [] regs = new int [26];
+   static private java.io.PrintStream stdout = System.out;
+}
+
+RULE
+
+Statements	= <
+  NoStat	= .
+  Statement	= Next: Statements REVERSE <
+    Assign	= [ l ] Expression .
+    Print	= Expression.
+  >.
+>.
+
+Expression	= <
+  Number	= [ n ] .
+  Var		= [ l ] .
+  Unary		= Expression <
+    UMinus	= .
+    UPlus	= .
+  >.
+  Binary	= lhs: Expression rhs: Expression <
+    Add		= .
+    Subtract	= .
+    Multiply	= .
+    Divide	= .
+    Remainder	= .
+  >.
+>.
+
+MODULE output
+PROPERTY OUTPUT
+DECLARE
+Expression	= -> [ value ] .
+END output
+

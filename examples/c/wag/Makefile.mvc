@@ -1,0 +1,103 @@
+CT_LIB	= "$(CT_DIR)"\lib
+INCDIR	= $(CT_LIB)\include
+CFLAGS	= /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE /I$(INCDIR)
+CC	= cl /nologo
+CPPC	= cl /nologo /MT
+
+SOURCES	= Scanner.h Scanner.c Parser.h Parser.c Tree.h Tree.c Semantic.h Semantic.c \
+	  Types.h Types.c ICode.h ICode.c ICodeInt.h ICodeInt.c minilax.c
+
+OBJS	= minilax.obj Scanner.obj Parser.obj Tree.obj Types.obj Semantic.obj ICode.obj ICodeInt.obj
+
+all:	minilax
+	if exist minilax.exe minilax < in1
+	rem if test -f in5; then if exist minilax.exe minilax < in5; fi
+
+run:	minilax
+	$(MAKE) all
+
+minilax-cpp:	
+	$(CPPC) $(CFLAGS) /c *.c
+	link /nologo /incremental:no /out:minilax.exe $(OBJS) $(CT_LIB)\librugpp.a 
+
+minilax:	$(OBJS)
+	link /nologo /incremental:no /out:minilax.exe $(OBJS) $(CT_LIB)\libreuse.lib 
+
+Scanner.rpp Parser.lrk:	minilax.prs
+	lpp -cxzj minilax.prs
+
+minilax.rex:	minilax.scn Scanner.rpp
+	rpp < minilax.scn > minilax.rex
+
+Scanner.h Scanner.c:	minilax.rex
+	rex -cd minilax.rex
+
+Parser.h Parser.c:	Parser.lrk
+	lark -cdis Parser.lrk
+
+Tree.h Tree.c:	minilax.cg
+	ast -cdimRDIL minilax.cg
+
+Semantic.h Semantic.c:	minilax.cg
+	ag -cDIL minilax.cg
+
+Tree.TS:	minilax.cg
+	echo SELECT AbstractSyntax Output > temp1
+	copy /b temp1 + minilax.cg temp2
+	ast -c4 temp2
+	del temp1
+	del temp2
+
+Types.h Types.c:	Types.pum Tree.TS
+	puma -cdipku Types.pum
+
+ICode.h ICode.c:	ICode.pum Tree.TS
+	puma -cdiu ICode.pum
+
+Scanner.obj:	Scanner.h
+Parser.obj:	Parser.h Tree.h Scanner.h
+Semantic.obj:	Semantic.h Tree.h Types.h ICodeInt.h
+Tree.obj:		Tree.h
+Types.obj:	Types.h Tree.h Semantic.h
+ICode.obj:	ICode.h Tree.h ICodeInt.h
+minilax.obj:	Scanner.h Parser.h Tree.h Semantic.h Types.h ICode.h ICodeInt.h
+
+lint:	$(SOURCES)
+	lint $(CFLAGS) -u *.c
+
+test:	$(SOURCES)
+	cg -cdimRDI0 minilax.cg
+	make minilax CT_LIB=$(CT_LIB)
+	tcsh /c "if exist minilax.exe minilax < in5; time minilax < in5; time minilax < in5; time minilax < in5"
+	wc Semantic.c
+	size Semantic.obj
+	cg -cdimRDI09 minilax.cg
+	make minilax CT_LIB=$(CT_LIB)
+	if exist minilax.exe minilax < in5
+	cg -cdimRDI minilax.cg
+	make minilax CT_LIB=$(CT_LIB)
+	tcsh /c "if exist minilax.exe minilax < in5; time minilax < in5; time minilax < in5; time minilax < in5"
+	wc Semantic.c
+	size Semantic.obj
+	cg -cdimRDI9 minilax.cg
+	make minilax CT_LIB=$(CT_LIB)
+	if exist minilax.exe minilax < in5
+
+test2:	$(SOURCES)
+	cg -cdimRDIL minilax.cg
+	make minilax CT_LIB=$(CT_LIB)
+	tcsh /c "if exist minilax.exe minilax < in5; time minilax < in5; time minilax < in5; time minilax < in5"
+	wc Semantic.c
+	size Semantic.obj
+	cg -cdimRDIL9 minilax.cg
+	make minilax CT_LIB=$(CT_LIB)
+	if exist minilax.exe minilax < in5
+
+clean:
+	del /F Scanner.? Parser.? Tree.? Semantic.? Types.? ICode.? *.TS yy*.h *.obj
+	del /F core* _Debug minilax minilax.rex Parser.lrk Scanner.rpp
+
+.SUFFIXES:	.c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

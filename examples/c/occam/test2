@@ -1,0 +1,13 @@
+VAR volume:
+SEQ
+  volume:=0
+  WHILE TRUE
+    ALT
+      louder?ANY
+         SEQ
+           volume:=volume+1
+           amplifier!volume
+      softer?ANY
+         SEQ
+           volume:=volume-1
+           amplifier!volume

@@ -1,0 +1,8008 @@
+PROGRAM test;
+DECLARE
+
+n: INTEGER;
+
+PROCEDURE t0;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t1;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t2;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t3;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t4;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t5;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t6;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t7;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t8;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t9;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t10;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t11;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t12;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t13;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t14;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t15;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t16;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t17;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t18;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t19;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t20;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t21;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t22;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t23;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t24;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t25;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t26;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t27;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t28;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t29;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t30;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t31;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t32;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t33;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t34;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t35;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t36;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t37;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t38;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE t39;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u0;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u1;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u2;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u3;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u4;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u5;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u6;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u7;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u8;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u9;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u10;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u11;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u12;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u13;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u14;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u15;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u16;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u17;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u18;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u19;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u20;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u21;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u22;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u23;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u24;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u25;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u26;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u27;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u28;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u29;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u30;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u31;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u32;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u33;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u34;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u35;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u36;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u37;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u38;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END;
+
+PROCEDURE u39;
+ 
+  (* read, sort and write an array of n numbers            *)
+  (* this program shows the following features:            *)
+  (*   procedure calls from main level, to a local, and to *)
+  (*     a global procedure                                *)
+  (*   access to a global array                            *)
+  (*   access to local, global and intermediate variables  *)
+  (*   recursion                                           *)
+  (*   reading and writing of all types                    *)
+  (*   integer to real conversion                          *)
+ 
+DECLARE
+  test : BOOLEAN;
+  n    : INTEGER;
+  a    : ARRAY [1..100] OF REAL;
+ 
+  PROCEDURE skip; (* do nothing *)
+  DECLARE
+    n: INTEGER
+  BEGIN
+    n := n
+  END;
+ 
+  PROCEDURE read (VAR n: INTEGER; VAR a: ARRAY [1..100] OF REAL);
+  DECLARE
+    i: INTEGER
+  BEGIN
+    WRITE (TRUE); READ (test);
+    WRITE (5); READ (n);
+    i := 1;
+    WHILE i < n DO
+      i := i + 1; WRITE (1.0E-7); READ (a [i])
+    END
+  END;
+ 
+  PROCEDURE write (m: INTEGER); (* write a [m..n] *)
+  DECLARE
+    x: INTEGER
+  BEGIN
+    WRITE (a [m]);
+    IF m < n THEN write (m + 1) ELSE skip END
+  END;
+ 
+  PROCEDURE sort (VAR a: ARRAY [1..100] OF REAL); (* sort a [1..n] *)
+  DECLARE
+    i : INTEGER;
+    j : INTEGER;
+    k : INTEGER;
+    h : REAL;
+    ok: BOOLEAN;
+ 
+    PROCEDURE check (VAR ok: BOOLEAN); (* check order of a [1..n] *)
+    DECLARE
+      continue: BOOLEAN
+    BEGIN
+      IF test THEN write (1) ELSE skip END;
+      i := 1; continue := TRUE;
+      WHILE continue DO
+        IF i < n THEN
+          continue := NOT (a [i + 1] < a [i]);
+          IF continue THEN i := i + 1 ELSE skip END
+        ELSE
+          continue := FALSE
+        END
+      END;
+      ok := NOT (i < n)
+    END
+ 
+  BEGIN (* sort *)
+    i := 1;
+    WHILE i < n DO
+      write (1);
+      j := i; k := i;
+      WHILE j < n DO   (* a [k] = MIN a [i..j] *)
+        j := j + 1;
+        IF a [j] < a [k] THEN k := j ELSE skip END
+      END;
+      h := a [i]; a [i] := a [k]; a [k] := h;
+      i := i + 1
+    END;
+    check (ok); WRITE (ok)
+  END
+ 
+BEGIN (* main program *)
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  a [1] := 2.1415926536;
+  a [1] := a [1] + 1.0;
+  read (n, a);
+  sort (a);
+  IF NOT test THEN write (0) ELSE skip END
+END
+
+BEGIN
+  n := n
+END.

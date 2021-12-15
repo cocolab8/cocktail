@@ -1,0 +1,281 @@
+%PDF-1.4
+%âãÏÓ
+9 0 obj
+<</S/GoTo/D[10 0 R/FitH null]>>
+endobj
+2 0 obj
+<</A 9 0 R/Next 3 0 R/Parent 1 0 R/Title(Abstract)>>
+endobj
+11 0 obj
+<</S/GoTo/D[10 0 R/FitH null]>>
+endobj
+3 0 obj
+<</A 11 0 R/Next 4 0 R/Parent 1 0 R/Title(1 Overview)/Prev 2 0 R>>
+endobj
+12 0 obj
+<</S/GoTo/D[13 0 R/FitH null]>>
+endobj
+4 0 obj
+<</A 12 0 R/Next 5 0 R/Parent 1 0 R/Title(2 DynArray: dynamic and flexible arrays)/Prev 3 0 R>>
+endobj
+14 0 obj
+<</S/GoTo/D[13 0 R/FitH null]>>
+endobj
+5 0 obj
+<</A 14 0 R/Next 6 0 R/Parent 1 0 R/Title(3 Idents: identifier table - unambiguous encoding of strings)/Prev 4 0 R>>
+endobj
+15 0 obj
+<</S/GoTo/D[13 0 R/FitH null]>>
+endobj
+6 0 obj
+<</A 15 0 R/Next 7 0 R/Parent 1 0 R/Title(4 Position: handling of source positions)/Prev 5 0 R>>
+endobj
+16 0 obj
+<</S/GoTo/D[13 0 R/FitH null]>>
+endobj
+7 0 obj
+<</A 16 0 R/Next 8 0 R/Parent 1 0 R/Title(5 Errors: error handler for parsers and compilers)/Prev 6 0 R>>
+endobj
+17 0 obj
+<</S/GoTo/D[18 0 R/FitH null]>>
+endobj
+8 0 obj
+<</A 17 0 R/Parent 1 0 R/Title(6 General: miscellaneous functions)/Prev 7 0 R>>
+endobj
+1 0 obj
+<</Count 7/First 2 0 R/Last 8 0 R>>
+endobj
+19 0 obj
+<</Subtype/XML/Type/Metadata/Length 3286>>stream
+<?xpacket begin="ï»¿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta x:xmptk="XMP toolkit 2.9.1-13, framework 1.6" xmlns:x="adobe:ns:meta/">
+<rdf:RDF xmlns:iX="http://ns.adobe.com/iX/1.0/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:Description pdf:Producer="GPL Ghostscript 9.06" rdf:about="uuid:344385f1-8c07-11f1-0000-1812e4973b38" xmlns:pdf="http://ns.adobe.com/pdf/1.3/"><pdf:Producer>GPL Ghostscript 9.06; modified using iText 2.1.7 by 1T3XT</pdf:Producer></rdf:Description>
+<rdf:Description rdf:about="uuid:344385f1-8c07-11f1-0000-1812e4973b38" xmlns:xmp="http://ns.adobe.com/xap/1.0/"><xmp:ModifyDate>2019-02-01T18:21:44+01:00</xmp:ModifyDate>
+<xmp:CreateDate>2016-07-27T13:09:58+02:00</xmp:CreateDate>
+<xmp:CreatorTool>groff version 1.22.2</xmp:CreatorTool></rdf:Description>
+<rdf:Description rdf:about="uuid:344385f1-8c07-11f1-0000-1812e4973b38" xapMM:DocumentID="uuid:344385f1-8c07-11f1-0000-1812e4973b38" xmlns:xapMM="http://ns.adobe.com/xap/1.0/mm/"></rdf:Description>
+<rdf:Description dc:format="application/pdf" rdf:about="uuid:344385f1-8c07-11f1-0000-1812e4973b38" xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title><rdf:Alt><rdf:li xml:lang="x-default">Untitled</rdf:li></rdf:Alt></dc:title></rdf:Description>
+</rdf:RDF>
+</x:xmpmeta>                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+<?xpacket end="w"?>
+endstream
+endobj
+20 0 obj
+<</Metadata 19 0 R/Type/Catalog/Outlines 1 0 R/Pages 21 0 R>>
+endobj
+21 0 obj
+<</Kids[22 0 R 23 0 R 10 0 R 13 0 R 18 0 R 24 0 R]/Type/Pages/Count 6/ITXT(2.1.7)>>
+endobj
+22 0 obj
+<</Contents 25 0 R/Type/Page/Resources<</ProcSet[/PDF/Text]/ExtGState 26 0 R/Font 27 0 R>>/Parent 21 0 R/Rotate 0/MediaBox[0 0 595 842]>>
+endobj
+25 0 obj
+<</Filter/FlateDecode/Length 1986>>stream
+xœuÙAoÇàûüŠ¹…<p23ý^wÏ‘’%‚"ÙÔÆ€ä (´Ç„a)±þ~fÈííîª2ƒp±@~ðÕûë8OË8ÿœ¿~|þxŸÆO_›òøuXÆ×û¿?óøjHsžVÓüüõqH±~ÞiMÐÉ‰::Ù¨Ñã°ÍÔhïDîDè,óJ%ÌŽ³1Û[Ã1Û[+Ó1;ZŒÇlo¡¤BHoBo¤w¡wÒ»Ð;é£ÐGÒG¡¤OBŸHŸ…>“>}&ý&ôé7¡ßP¿Î¬Çlo-¬Çìh±³½µ²³£ÅzÌöVú@zz#½	½‘Þ…ÞIïBï¤BIŸ„>‘>	}"}úLú,ô™ô›Ðo¨3ë1;Z¬Çlo-¬Çìh±³½µ²³½„>>} ½	½‘Þ„ÞHïBï¤BI…>’>	=ml#‹ÙÞ3‹ÙÞC‹ÙÑzÚZ[‹ÙÑb=f{Kl-f{Kl-fG‹õ˜í-±µ˜-¡§­5±µ˜í-±µ˜-¡§­5±µ˜-¡§­5±µ˜í-±µ˜-¡§­5±µ˜-¡§­u±µ˜í-±µ˜-Öc¶·ÄÖbv´XÙÞ[‹ÙÞ[‹ÙÑzÚZ[;Ÿ†_÷ðÓpþòñq|qÚ¯…<.ëxúqx> –1¬>mÙÆèiŠnãéqøûÕýÃÿ¾|øçÏãû_~üï×ëežæeÉW>?\ÿãôzãéãþøœöö›áêöõõ†›yZí)ŽSëþ£Oÿ®>üv}úé\Ÿ§ýoÜV¾ñíñùüsò²]¾ññ?>=ßÜ¢­GáÆ–i[oÖ¼_9GëôùÜ(?zÿ“—ŸÂÍ:Åòu¸zømü¥þúØþúÏoë¯÷)Æùþòïã;w§á»r@yZÖçÿÕçªÍÕtr¢N†Îù¯xÛèr@µˆ.T×‰Ð)ÇR[Â¬P}ÝåXêZÊË±ÔµV´—c©o‘>} }ú@zz#½½“Þ…ÞI…>’>
+}$}úDú,ô™ôYè3é7¡ßH¿	ý†úr,µ-ÌêÕµÔ—c©o¡¾K]kE}9–úéƒÐÒ›ÐéMèô.ôNzz'}úHú$ô‰ôIèé³ÐgÒg¡Ï¤ß„~C}9–Úfõ€ê[¨/ÇR×ZP_Ž¥¾…úr,u­•ôAèéƒÐÒ›ÐéMèô.ôNú(ô‘ôQè#é“ÐÓÆ1²˜ÕªkÑÎ1´˜Õªo¡ÞÄÖbV¨¾…z[‹Y= ºm­‰­Å¬P]‹¶ÖÄÖbV¨®E[kbk1«Tß"½ØZÌêÕ·H/¶³z@u-ÚZ[‹Y= ºm­‰­Å¬Pm³z@u-ÚZ[‹Y= ºm­‹­Å¬P]‹¶ÖÅÖbV¨¾Ez±µç§ÿ:ïÇÑÚ<ýKÐ<ý›NNÔÉÐ9ÿýi;]žþm¢ËÓ¿ëDè”g~[Â¬>ýûºË3¿k-(/Ïü®µ¢½<óûéƒÐÒ¡¤7¡7Ò»Ð;é]èôQè#é£ÐGÒ'¡O¤ÏBŸIŸ…>“~úô›Ðo¨/Ïü¶…Y}úw­õå™ß·P_žù]kE}yæ÷-Ò¡¤7¡7Ò›Ðé]èô.ôNú(ô‘ôIèé“Ð'Òg¡Ï¤ÏBŸI¿	ý†úòÌo[˜Õ§ßB}yæw­õå™ß·P_žù]k%}ú@ú ôô&ôFzz#½½“>
+}$}úHú$ô´±AŒ,fõéßµhgƒZÌêÓ¿o¡ÞÄÖbVŸþ}õ&¶³úôïZ´µ&¶³úôïZ´µ&¶³úôïZ´µ&¶³úôï[¤[‹Y}ú÷-Ò‹­Å¬>ý»m­‰­Å¬>ý»m­‰­Å¬>ýÛfõéßµhk]l-fõéßµhk]l-fõéßµhk]l-fõéß·H/¶ö÷>7Ù~çs“%…)­çÏM¾¹ŸÆ×ïÞßýi|u½>}jbWïÞ¿üóÓÇ&Ï_¼®^¾{ùîÍí‹ñfüæøèd™ìé£“”&¿|tr{ªQ„)oq9ãîí÷w÷·÷/îþrúÛÛWOŸƒlûOXóÒ|@òêîþ¯·oÀÏ2òŽ]›{æüßÍ9S9a#÷óÔ¦Ñ'—K¦iôÉåŽi±o”‹¥©@To˜®Úr­´¼åVi;ëŒ"CTo—¶ÐØÐll64;›ÍÎfGsdsDsdsDsbsBsfsFsfsFóÆæÍ›70—{¤é@T/”¶³ÌØ!3Dõ:i;ëŠ2CT/“¶Ðll64›ÍÎfG³³ÙÑÙÑœØœÐœØœÐœÙœÑœÙœÑ¼±ys¹7šDõé:`.·FÛYVì¢z{´ÍÍÍÍÍÆfC³±ÙÐìlv4G6G4G6G4'6ãþÀ€xn`à¸‚g0àï áï áï áï áï áï áï áï áï áï áï áï áï áï áï áï áï á:ï ã:ï ã:ï ã:ï ã:ï ã:ï ã:ï ã:ï ã:ïàwÃÿÄ˜®ð
+endstream
+endobj
+28 0 obj
+<</Type/ExtGState/OPM 1>>
+endobj
+29 0 obj
+<</Subtype/Type1/BaseFont/Times-Roman/Type/Font/Encoding 30 0 R>>
+endobj
+31 0 obj
+<</Subtype/Type1/BaseFont/Helvetica/Type/Font>>
+endobj
+26 0 obj
+<</R7 28 0 R>>
+endobj
+27 0 obj
+<</R8 29 0 R/R9 31 0 R>>
+endobj
+23 0 obj
+<</Contents 32 0 R/Type/Page/Resources<</ProcSet[/PDF/Text]/ExtGState 33 0 R/Font 34 0 R>>/Parent 21 0 R/Rotate 0/MediaBox[0 0 595 842]>>
+endobj
+32 0 obj
+<</Filter/FlateDecode/Length 1443>>stream
+xœ•ÙÛnÛFà{>Å^Êh¹Ýó!Wmì4€[I¬» ´JIL()‡Gê[vwMšÚ™i"lŒ~.?K‘f&þÌ—Lä?Ó×Í®ùé½g÷‡F°ûæs#Ëƒlú²Ù±—ë–)ÁÖwÍÓE’)o¹gÎKîØz×¬.‡ÍÇc÷¸½XÿÕ´¥¸I—…éªV
+Ëmd­Wlýg³Z9'rH	îdŒéÐüÀ°½¾±»ad—ÃîÓã¶ÏßìÇñ´9>û|Õ«uó®1<°¯	sþæƒ^71*®,³Ú—¯»ôƒØª²mnRÍJ%”µœrDÊÁ”R8j9ˆT€)mpJ#½!ôé¡7Ho	½EzKè-Ò;BïÞzôžÐ{¤„> } ôé#¡P¯ÖÃZNa=¬¥”ÄzXË)¬‡µ”RXk)¥	½FzMè5ÒBoÞzƒô–Ð[¤w„Þ!½#ôé=¡÷Hï	½Gú@èÒGB‘>úõZ`=¬åÖÃZJI¬‡µ”RXk9…õ°–RšÐk¤×„^#½!ôé-¡·Ho	½EzGèÒ;BïÞzôÐ¤„> }$ôé#¡PoÖÃZJ½Ör
+ëa-¥ˆ^k9…õ°–RD¯…µ”"z-¬å¡G½Ö½ÖrŠÐ£^kˆ^k)EôZXË)Bz­!z-¬å¡G½Ö½Öv%z-¬åÖÃZJ½Ör
+ëa-¥ˆ^û#´tç#´žûà˜	‘«2D¿ïO‡îvÛ³›áîøµó¸kò,Ó”œ>ˆ§!¹o¹.s¶àåQ£yú¤O¶šët›¯ÍªûÂº)&Ë<®<7é½;ò¶{žÁ¥O3¸›ê›Ý}?]gŸçø'z›Ÿ§ô"²Öú<ãçQ~<§HÃí9ÅªBé¿°áù‡QŠ§ïénã›óM 1]»êù‘roSîíO=Þ¦{[^ÖQÎ¾îö§nüÎ¤ü1mB<ïÓF §÷û²Ì•óà,5}"U)P[6‚:å`júDªR ¶lu*À”68¥‘Þzƒô†Ð¤·„Þ"½%ôé¡wHï	½GzOè=ÒB>ú€ô‘ÐG¨Ÿ§ÿó¬-A‚úyú¯Rêçé¿NAý<ýW)…ôšÐk¤×„^#½!ôé¡7Ho	½EzGèÒ;BïÞzôžÐ{¤„> }$ôé#¡P?Oÿç)X[6‚:õóô_¥$ÔÏÓ•RP?Oÿu
+é5¡×H¯	½FzCèÒ[Bo‘Þz‹ôŽÐ;¤w„Þ!½'ôé¡H}@úHè#ÒGB¡Þ¬‡µe#¨R¨×¢×ÂÚ²T)Ôkçé¿N!=ÑkamÙªêµ†èµ°¶lU
+õZCôZX[6‚*…z­!z-¬-ABz¢×ÂÚ²Ô)¤'z-¬-Áy
+Ö– NA½%z-¬-A‚zKôÚÛÒd«ªÿSwÇ ˜
+vZ®†Íi×ïìÍÀ™veÒ6Š;çX›¦þ2X]Ÿ.¤àBH·ú>>Þ?ÙßefWãÅëëF—Ñ\¤½šÆk~½Lÿ"8oÃ¡¿c¯Çá°)ãw›HBè¸ÜnuUþ§#ÿïiirOï[ÉÚ´'˜’¸.‡ß»[Ö²«îØïç}%ä£Ò3–}åK¿ÜC¦mh®ÝxÛ?Oûû'°K·þì/Çþ°íNýÈnŽ‹Ý¥-D…yÛàn9|þ¡Ì¦˜ÅaÓ«²èLÏÈoÝ¸=Œ§‡ÂJTT2.¡«×ý¸ëöÒr!EzaÊ+‘_=-3OÉizû0ìûì[¯deZ&ÓxS=Ž‹>bÏ¿vçÏFX~ƒò¥ËQiërÚWÂW»îqû‚Ý—×ççÍ°¶Ýí…Éÿ’‚]ñÍ°+æ²L½kþXÌJ
+endstream
+endobj
+35 0 obj
+<</Subtype/Type1/BaseFont/Times-Bold/Type/Font/Encoding 36 0 R>>
+endobj
+33 0 obj
+<</R7 28 0 R>>
+endobj
+34 0 obj
+<</R15 35 0 R/R8 29 0 R>>
+endobj
+10 0 obj
+<</Contents 37 0 R/Type/Page/Resources<</ProcSet[/PDF/Text]/ExtGState 38 0 R/Font 39 0 R>>/Parent 21 0 R/Rotate 0/MediaBox[0 0 595 842]>>
+endobj
+37 0 obj
+<</Filter/FlateDecode/Length 843>>stream
+xœUÉ’Û6½ó+úê@. oÞ’ÊTªy³sÀ—1@JžHþ9pì’RIÍ»û½×ô(a@ýg±uÝÜpp…Cô5bá%,¦îàM…,Æ¡ÚGs^”¤
+´9T]ßéÉiHàvW}‰JTu”æ$-rŽ!U%œd˜äÅêÊ»QïÃ9%i™Ï>1ái‘)KHDN_ß»Ñªzô/É¥ô7wre%=‰ß¼ßî§9+‰l¦s[£÷ÐhW[ó8š¡‡a
+ø~jáQÕê ý™E1ê¾ÕP·Ê9íàlÍ8êL·êR¡””TÎ@Œðè¤À¼ ‹|èÊ'v‡Ë,EªYù\¤9…9ÞŠ„>L¦ÏrŠàÒ¨Žz#n\H+J,b%”†€à< ø~ÔŒÃ‚î‹WG#"§+µósc˜ ²`¯Ø6ê¡{4­¶øÐcC¦Ú×ø€‹IòŒpð<ŸáE€g~?…’PÂÙÒîO±¶;F	¥iŸŒ>ïþ¬n/›dÞ—z-¡Å«¯ºÜˆýµÕn4ýaë•²ú•z_E¢”H8ãØÞâ×ëú%b—„g§%÷¶‹Ò‚¾8i£ÿº	òjX&‰ärQ .Ú<MË·žTžK!eåZKå6‚1Û:ËÉÿ¢Ã™/~‡é•wOýkkÕ4O½êLíá¾,–N„º~ŠUßÀßz‡“S–¹ˆ¿¿ÊGºÐšdÚ†KàôÎ[ýkƒóåÀxcþÂÆNJya¯˜Ç½9LÃä@÷õÐøâêá\áÓ<ÉKô†•Š­¶5B9üñŽÒ×\¾â3ÕªUN;îÕˆ2Ví„ãñ9>›ñ8L#Ø©‡Ñt¸åG]?¸Ï»Yâ’mCÅðy„ÿœ	·ÆËÔ"ËY!»ØÃdkÜÌ%b•Ã^f¨'!ï­,Âï‹ƒXæ)»Ì@q÷öƒÅ·N£¿o×º”î»‘Ê2y5Rë‰©ë³ïÁ÷¹®÷ç¿Œ§¿™Pq†ÂÃ²Ä?Om‹ò¨Lë Ãù¼×(pBY¦ŸïÎÖB®—F3Ôä8víé½ÃÿÊDg$41ÔáCô‡ð¼‰
+endstream
+endobj
+40 0 obj
+<</Subtype/Type1/BaseFont/Times-Italic/Type/Font>>
+endobj
+38 0 obj
+<</R7 28 0 R>>
+endobj
+39 0 obj
+<</R15 35 0 R/R21 40 0 R/R8 29 0 R>>
+endobj
+13 0 obj
+<</Contents 41 0 R/Type/Page/Resources<</ProcSet[/PDF/Text]/ExtGState 42 0 R/Font 43 0 R>>/Parent 21 0 R/Rotate 0/MediaBox[0 0 595 842]>>
+endobj
+41 0 obj
+<</Filter/FlateDecode/Length 1880>>stream
+xœWÛ’Û¸}×WôÛR&@ð6¾T9±«2®w3¥äeÆ
+Ò0Ë‹@žÑ~Ãì?§ )Jv*®yÐˆl ûœ>}Ñˆ‡˜þ†Ïª]¼¼Éag1ì_Ü¿„á£já¯k4à)pëí"â ò’åE9~f°nÑ>X+ø¸\ÿg±ŠYëj!3&óLà‘õf±,ÅK‘ú
+ŠÌb²"f²Ì‚M$üq™§¬(JX%=Mü)Áàý±{gŒ:^‘U.Y–wÇÞbsìT[W ºü©ŸêûFƒ"{Kö/oŠÅJ–þèŠÌ;à,áÞÉmô·FY«-žÓ°7ý’KV…ˆ¾Ö½mo@5¸÷Ê¢¯jùyýqBÌË‚%e¢â¬×F_¸	1yÍóÑdò|Ü£[ï2%ou·ƒs@ÞO3&¸8–ÞÁ,ƒõƒö<&($•L¥¥?`ë?4ô[P''tjí´iëñ*æÐ«[ýÂGÑ¢É=:jÐßo†â¬…¦Þj²cäYf	bÀáŒO§pâ€¼šq¾Ñ¶ÞuÕz»)‹ã„GÏU­»jä:/<‘iÎd&/G61<Sìj4ZÉ˜'5%®7ºsÖk)•sÕô¢~Öœ"ZWp@ŠîëÝ¡?XÀ0zŸdÏ:Â)/AÊMßq0"0âôŽ×K¬²H³Èû rýó“ò¹3å‘ê¾ã°ò0U¦¸-D‰tžú¼Zù—õ™ÇÛì)&òˆ(¸à,K&yåå N
+ÔM)É†”8x\"Ž’Kr¤{«¾Ý« ‹)ßµj¿§7è»×‡(GŸç²ˆ0®¾ª•Clu‡ð[åê¾{¨¬{lïû&äˆ…LiÉþeH¶dðÛò'l5,.Å¼eÜF½­éÚ+xÀ›‘Øþ`–<Çô”<ª0ƒ•õKÆã<ÈlL¹`eœüÔQ¢wöTï(À¤ä#§þ0¹®Û=&Þè½ÁDt.À‰™<úïýïK#çeéÓÜx#{Æ*¬¶nˆýY7ëå‚hBÏXI"¸,<ÊJÕ7‡¶cËUÇ¨R¬/	¨0ÙXéÚwÀR$Ñ“Ó)o®ú}M’ÃãNÕMO­Àõ>pÔ¢ùÉ{õý0¡êlwâ$aYV„ç·‘Öûê-tºÒÖ*s\f^di”</è$§ª*.:eðÁr$LJÉÏÓlìh3d5çø d‹Msz†Êµ£^IÈ5Ø!„©¾¿<e;fYá“lûÍó‚ÿuˆ¹¹?Nït§õcíB®ý«ñF´,øà/‘9+âa¦D2¿Ÿ÷‘°˜úBÇ‰êB\Gºiè}"žkx*»ö,Žçç]uÊ¡`I:B¹¨Æö¡ÑcÄ©¼Ô[t¯C«B© ê{ã(#HzK9ßiRí¡›†ŠEv^Ô¬n¶š„ª9¢Ú}½S{}•}Ãÿ `£‡•$Î|Ô1¶«x»Ó"Â9£$é>”c6¡¹*j‘®w8¦}uß¨“4TR(Õ\–Ñµ‚îE<óÞ,ï.šU¢ÀÞéëmDÀÃØÃ„—#€¯þx\Ž¹êÌ	œœÍc½oTåÛ*^¾¡1×cÔÚy5ýåPÝÒl»Q(êÁ_Ú²œr?Öµ:÷3n|Ñ~ßÔ•ïk,è"AbËo:ýúÁh*eØËœéÃ‚eÝ±'Õ·~h‹Ó‡
+LK–¡Ü›Zc?´-N¡?<=[E6neÁ§=bÇ}
+×ú–ÚwNð¡uZù¹eÏ3€T²ì<ñ7ìÕLñ†m¾Ä 'ô¸%YèÏÆºAR>`ž]ÜwÍÑ3áMÏ#íi"P»ŸÇL{ê™ÿñÒÉ¿DÿCßr¸æa¦4Œÿ„e€Ìi¤6?—Û|(oçU|3ÚguÕoÏè[I>ìßC ‘~ú>‡{]Q«“ÞÞ-I©Êø.Å_=(£ÐÀœðñ"?µåÛèÃ“¢!{E1Ù4½ß^x"¢G*ÝßÂ~/9nbÂßÕz*äÜãi–‰÷‡dü¥ÒÛï³h®««¡çôƒÊo†2e96Ÿ•ÀÅ< <:Y½‹úƒÛÜÝòUàŸVl›»ºÃõÉ[ñp
+Gå]¤àÜ†GScÞðë«ÀÂÉ
+ç5»\Mã9=×Ûá×ÌT´|RÆ¶~ãàØ»°©kJdç³9ã08œòNgƒ„õæj˜™ô ø—ÅúçÛ(y<¹¢qÃ
+—\<æå~çìƒéõLk¸é.Œ
+$Å÷t1õó«ÏSVVôt¤â;÷è§A]þB\P^oà/¸í¿~¯ßÀÛ7ðÞÂõ'øõ~†—ðþúßð_ßÃ»OïÉ‰¿3=¿79§p®íûºsÝˆÍnô^Õ7ÉnÀ€ÓDoú‡í×ÿði~Bü?>G£gòÕÿdòòžo˜|qâòêÙœáø!¦>¬ÿÄ¿ÿ§¶Ø
+endstream
+endobj
+44 0 obj
+<</Subtype/Type1/BaseFont/Courier/Type/Font>>
+endobj
+42 0 obj
+<</R7 28 0 R>>
+endobj
+43 0 obj
+<</R15 35 0 R/R21 40 0 R/R8 29 0 R/R27 44 0 R>>
+endobj
+18 0 obj
+<</Contents 45 0 R/Type/Page/Resources<</ProcSet[/PDF/Text]/ExtGState 46 0 R/Font 47 0 R>>/Parent 21 0 R/Rotate 0/MediaBox[0 0 595 842]>>
+endobj
+45 0 obj
+<</Filter/FlateDecode/Length 819>>stream
+xœµTËnÛ8Ýë+î.R&¦ùõp“ 3H0HÑjÝ$]È6í¨•I—¤’ôæ£ç’’å )fº)dXyçžËï@	êŸá½ÚEÓE[QØFß#6ax­vðW…lŒCµ‰ú$</I^ÈñAµ‹â…ì¬„	¼Mª¯Ñ„Õ*J3’æÇ”jM8™a‘Ç(® öaÔÇpNIZf}L,üútQý&i>#EQÂDd~Ÿ†ü›,M#7ÐXp¦“àî¥Â?üÄßJïöFZ+×Ð(§Á=úšg9bH‡^ºA0N„˜•ÃF£¤÷@xîµðH8/I‘Á„„û¨ÛXœs¸6F›d’rJãîÔz*Ÿörå°ÿ¾Lï¸€?P™óK8¿€Ë8‡K¸ù p
+S¸ºùï?^ÁŸ®’/ÕÛÈU§¡>ÿ¿úo¦g0v˜ÿj£À¬ðç÷î™¦µZÃ?Æ:¨|©.ÊÚµUVðµÃ­$´¨Ö<9y®U/ÑHâ7ˆôš€ïuàp6@&H@­j'›ºm{Fw1r‚µÜ$%)!x\#/q¤z K‰†’dhŒÎf…wŒÈSRÎŽäh1ÆK‹a]Ù£ÃÉ²Ãú½6NšW%N“ø#„¼"šÒSÐMiôÆó‡z¹42á3B)‹šÚ7±îG‹øíFm´ÙÕ®Ñ˜µÔó®pµq°×8o¨œÁ+Ïsú[h,Êœ¥èécï<Ì±Ta`m·6Ü‡Ø	KIêã¡|ænãp¤ÄÖ[é¹G-µËAšÐ”Q¬‡p+g',Y–\ÄñF|3F
+6\B¾_:ôÆA,ÑÃ…‚ÖèI#Ðx€EúƒoÍ”’Â{T„¢¿¥’¦nýØd‚.cô×Û®±+Ù¶µ’º³°A{±íK·2Ñ$\ŽYÈFˆÐê-÷á}^÷.ì=Ý%~«H÷`²é),¤ëŒêO³kÓ¸ûøÛ–5^íÜ+xòtBÌCžNû`éXéàúiÿS ²ÍÖÙj<2„òæ?°ðCÿ½~”æØ¾¤Çö×Uô	Ÿ¯„Ò¨
+endstream
+endobj
+46 0 obj
+<</R7 28 0 R>>
+endobj
+47 0 obj
+<</R15 35 0 R/R8 29 0 R/R27 44 0 R>>
+endobj
+24 0 obj
+<</Contents 48 0 R/Type/Page/Resources<</ProcSet[/PDF/Text]/ExtGState 49 0 R/Font 50 0 R>>/Parent 21 0 R/Rotate 0/MediaBox[0 0 595 842]>>
+endobj
+48 0 obj
+<</Filter/FlateDecode/Length 522>>stream
+xœ½SÁrÓ0½ë+öè²ÕJ²dq+ÐaèèøÖáà8J0Û©l§äàŸ‘l·¤3äÂ„ZivßJï=ï> G×¼—5»º3°í‡-{`4&aÞÊÞæ@)€|Ã¦"a,šL‚	»†¼fÉ:K¸]äßÙ’£„¼dJ£2Z„’|Í–ÓpÉ#KŠÆ#FŽÊê	“ÐX®LŠYfa)õ}×6½kú.&¯î²™LªQ[ÊŠPDÇTÑøÂõªë}Qö€¯ÿE’Š,’5E³W*ðŸ!„O‡ˆ2„ôìXâü¡r1,QjÝ’¨3cçü#>ÛH)r‘NqaÆK_[8L:‰Û³:Âûcsí}q|ÁD„ÚÌ?ŸGÈ}²>6E]•P4køå¤ÐfZ$?ªÕÎAK»Å×ü–‘Ô(H^X2ˆQ„Pæ¬‰ðqÛq”`Ê4µ'’*f«ŸÎC_DÒK‚¤UµÚ¡×”íºj¶Ðn ti8}-T˜ùrfÆRª³ŒÂç¶«úªm&Ûy ýÂöä[°{÷Äª|é`?—ŒôHZL/îö‰ßt–}Špã}ëg¿%rzAÝÅ$Œ‚å›pÞ¾s¾[¨lë}“
+Ë13—PñÄ;“gyk„®q¾ØÍ¦rž2¯«®t»]Ñ¸Ø›¡)ÿøMqŠè4ÈøÈMÎ¾„õ(“^Š
+endstream
+endobj
+49 0 obj
+<</R7 28 0 R>>
+endobj
+50 0 obj
+<</R15 35 0 R/R8 29 0 R>>
+endobj
+30 0 obj
+<</Type/Encoding/Differences[140/fi/fl 169/copyright]>>
+endobj
+36 0 obj
+<</Type/Encoding/Differences[140/fi/fl]>>
+endobj
+51 0 obj
+<</ModDate(D:20190201182144+01'00')/Creator(groff version 1.22.2)/CreationDate(D:20160727130958+02'00')/Producer(GPL Ghostscript 9.06; modified using iText 2.1.7 by 1T3XT)>>
+endobj
+xref
+0 52
+0000000000 65535 f 
+0000001071 00000 n 
+0000000062 00000 n 
+0000000178 00000 n 
+0000000308 00000 n 
+0000000467 00000 n 
+0000000647 00000 n 
+0000000807 00000 n 
+0000000976 00000 n 
+0000000015 00000 n 
+0000008951 00000 n 
+0000000130 00000 n 
+0000000260 00000 n 
+0000010167 00000 n 
+0000000419 00000 n 
+0000000599 00000 n 
+0000000759 00000 n 
+0000000928 00000 n 
+0000012427 00000 n 
+0000001122 00000 n 
+0000004484 00000 n 
+0000004562 00000 n 
+0000004662 00000 n 
+0000007131 00000 n 
+0000013552 00000 n 
+0000004816 00000 n 
+0000007059 00000 n 
+0000007090 00000 n 
+0000006871 00000 n 
+0000006913 00000 n 
+0000014369 00000 n 
+0000006995 00000 n 
+0000007285 00000 n 
+0000008878 00000 n 
+0000008909 00000 n 
+0000008797 00000 n 
+0000014441 00000 n 
+0000009105 00000 n 
+0000010083 00000 n 
+0000010114 00000 n 
+0000010016 00000 n 
+0000010321 00000 n 
+0000012332 00000 n 
+0000012363 00000 n 
+0000012270 00000 n 
+0000012581 00000 n 
+0000013468 00000 n 
+0000013499 00000 n 
+0000013706 00000 n 
+0000014296 00000 n 
+0000014327 00000 n 
+0000014499 00000 n 
+trailer
+<</Info 51 0 R/ID [<5cbc8850dd89f9f08df35ad90b01992f><310dac8997510b13c33375f7f840ff1e>]/Root 20 0 R/Size 52>>
+startxref
+14689
+%%EOF

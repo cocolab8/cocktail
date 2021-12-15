@@ -1,0 +1,7 @@
+RULE
+
+R	= F [n] -> [r OUT] .
+F	= -> [n] [r] [i:Integer] <
+  P1	= -> F .
+  P2	= .
+> .

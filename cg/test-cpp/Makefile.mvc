@@ -1,0 +1,30 @@
+!INCLUDE ..\..\config.mak
+
+REUSE	= C:/Programme/Cocktail/lib
+TCL_DIR	= C:/Programme/Tcl
+CFLAGS	= $(CFG_CFLAGS) /c /W4 /TP /I. /I$(REUSE)/cplusinc /I$(TCL_DIR)/include /DSUPPORT_TVA /DBEAUTY
+CPPC	= cl
+TCL_LIB	= $(TCL_DIR)/lib/tcl84.lib $(TCL_DIR)/lib/tk84.lib
+LDFLAGS	= $(REUSE)/librucpp.lib $(TCL_LIB)
+
+test1:	Main.exe
+	Main > out
+	fc expected.out out
+
+Main.exe:	Main.obj Tree.obj
+	$(CPPC) /nologo Main.obj Tree.obj $(LDFLAGS) /link /out:Main.exe
+
+Tree.h Tree.cxx yyTree.h:	g.ast
+	ast -+aeL +X g.ast
+
+Tree.obj:	Tree.h yyTree.h
+Main.obj:	Tree.h
+
+clean:
+	rm -f Main Main? [Tt]ree*.* yy[Tt]ree*.h a aa aaa b bb
+	rm -f *.obj core* yyNode yySource out
+
+.SUFFIXES:	.cxx .obj
+
+.cxx.obj:
+	$(CPPC) $(CFLAGS) -c $*.cxx

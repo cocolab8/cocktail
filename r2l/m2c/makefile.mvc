@@ -1,0 +1,56 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE)
+
+LDFLAGS	= $(REUSE_LIB) $(WIBU_LIB)
+
+# HEAD
+
+all	: r2l.exe
+
+DefTable.obj	: DefTable.c	\
+	DefTable.h
+
+Errors.obj	: Errors.c	\
+	Errors.h
+
+Parser.obj	: Parser.c	\
+	Parser.h	\
+	DefTable.h	\
+	Errors.h	\
+	Scanner.h
+
+Scanner.obj	: Scanner.c	\
+	Scanner.h	\
+	Errors.h
+
+r2l.obj	: r2l.c	\
+	Parser.h	\
+	DefTable.h	\
+	Errors.h	\
+	Scanner.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+r2l_OBJS =	\
+	r2l.obj	\
+	Parser.obj	\
+	DefTable.obj	\
+	Errors.obj	\
+	Scanner.obj
+
+r2l.exe	: $(r2l_OBJS) $(SYSTEM)
+	$(CC) /nologo $(r2l_OBJS) $(SYSTEM) /link /out:r2l.exe $(LDFLAGS)
+
+install:
+	copy r2l.exe "%ct_dir%"\bin
+
+# TAIL
+
+clean	:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

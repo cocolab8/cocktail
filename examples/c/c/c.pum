@@ -1,0 +1,812 @@
+/*
+   Copyright (c) 1998 Dr. Josef Grosch, CoCoLab - Datenverarbeitung
+
+   This file contains proprietary and confidential information and
+   remains the property of CoCoLab. Use, disclosure, or reproduction
+   is prohibited except as permitted by express written license agreement
+   with CoCoLab.
+
+   Phone: +49-7841-669144
+   Fax  : +49-7841-669145
+   Email: grosch@cocolab.com
+*/
+
+TRAFO	Trafo
+
+TREE	Tree
+
+PUBLIC	get_type set_type get_specifiers name_analysis get_bpos
+
+GLOBAL {
+# include "deftab.h"
+# include "Idents.h"
+# include "Errors.h"
+# include "DynArray.h"
+
+# define k_non_class		(k_all - k_enum - k_class - k_struct - k_union)
+
+# define hash_size_global	1024
+# define hash_size_ident	2
+# define hash_size_other	32
+
+static tscope make_scope
+# ifdef HAVE_ARGS
+   (tscope scope, tkind kind, tTree tree)
+# else
+   (scope, kind, tree) tscope scope; tkind kind; tTree tree;
+# endif
+{
+   register int i;
+   tscope new_scope = mscope (scope, kind, tree, NoTree);
+   new_scope->scope.hash_table_size = kind == k_namespace ? hash_size_global :
+      kind == k_ident ? hash_size_ident : hash_size_other;
+   MakeArray ((char * *) & new_scope->scope.hash_table,
+      & new_scope->scope.hash_table_size, sizeof (tobject));
+   for (i = 0; i < new_scope->scope.hash_table_size; i ++)
+      new_scope->scope.hash_table [i] = NULL;
+   return new_scope;
+}
+
+tTree Identify
+# ifdef HAVE_ARGS
+   (register tIdent ident, tkind kind, tscope scope)
+# else
+   (ident, kind, scope) register tIdent ident; tkind kind; tscope scope;
+# endif
+{
+   while (scope != NoTree) {
+      int hash_index = ident & (scope->scope.hash_table_size - 1);
+      register tobject object = scope->scope.hash_table [hash_index];
+      while (object != NoTree) {
+	 if (object->object.ident == ident && (object->object.kind & kind)) {
+# ifdef YYDEBUG
+	    printf ("IDFY ");
+	    write_kind (stdout, object->object.kind);
+	    printf ("%s at ", GetCStr (ident));
+	    WritePosition (stdout, object->object.pos);
+	    printf ("\n");
+# endif
+	    return object;
+	 } else
+	    object = object->object.collision;
+      }
+      scope = scope->scope.scope;
+   }
+# ifdef YYDEBUG
+   printf ("IDFY ");
+   write_kind (stdout, kind);
+   printf ("%s failed\n", GetCStr (ident));
+# endif
+   return NoTree;
+}
+
+tTree IdentifyLocal
+# ifdef HAVE_ARGS
+   (register tIdent ident, tkind kind, tscope scope)
+# else
+   (ident, kind, scope) register tIdent ident; tkind kind; tscope scope;
+# endif
+{
+   int hash_index = ident & (scope->scope.hash_table_size - 1);
+   register tobject object = scope->scope.hash_table [hash_index];
+   while (object != NoTree) {
+      if (object->object.ident == ident && (object->object.kind & kind)) {
+# ifdef YYDEBUG
+	 printf ("IFYl ");
+	 write_kind (stdout, object->object.kind);
+	 printf ("%s at ", GetCStr (ident));
+	 WritePosition (stdout, object->object.pos);
+	 printf ("\n");
+# endif
+	 return object;
+      } else
+	 object = object->object.collision;
+   }
+   return NoTree;
+}
+
+static void decl_object
+# ifdef HAVE_ARGS
+   (tscope scope, tIdent ident, tPosition pos, tkind kind, tTree tree)
+# else
+   (scope, ident, pos, kind, tree)
+   tscope scope; tIdent ident; tPosition pos; tkind kind; tTree tree;
+# endif
+{
+   tobject object = mobject (scope->scope.objects, ident, pos, kind, tree);
+   int hash_index = ident & (scope->scope.hash_table_size - 1);
+   tobject obj = IdentifyLocal (ident,
+	    (tkind) (kind & (k_struct | k_union) ? kind : k_non_class), scope);
+
+   if (obj) {
+      if (obj->object.kind != kind || (kind & (k_function | k_ident)) == 0) {
+failure:
+	 MessageI ("identifier already declared", xxError, pos, xxIdent,
+	    (char *) & ident);
+      } else if (kind == k_ident) {
+	 if (Tree_IsType (tree, kdata_declaration) &&
+	     Tree_IsType (obj->object.object, kdata_declaration)) {
+	    if (tree->data_declaration.specifiers & c_extern ||
+		obj->object.object->data_declaration.specifiers & c_extern) {
+	       /* extern declarations of variables are OK */
+	    } else {
+	       goto failure;
+	    }
+	 } else {
+	    goto failure;	/* enumerator */
+	 }
+      } else if (kind == k_function) {
+	 if (Tree_IsType (tree, kfunction_declaration) &&
+	     Tree_IsType (obj->object.object, kfunction_declaration))
+	    goto failure;
+	 /* forward or extern declarations are OK */
+      }
+   }
+   scope->scope.objects = object;
+   object->object.collision = scope->scope.hash_table [hash_index];
+   scope->scope.hash_table [hash_index] = object;
+
+# ifdef YYDEBUG
+   printf ("DECL ");
+   write_kind (stdout, kind);
+   printf ("%s at ", GetCStr (ident));
+   WritePosition (stdout, pos);
+   printf ("\n");
+# endif
+}
+}
+
+FUNCTION get_type (specifier_l) type
+
+specifier_l :-
+   get_type_2 (specifier_l => specifier_set, type);
+   IF ! type THEN
+      type := simple_type (specifiers := specifier_set & c_simple_type);
+   END;
+   RETURN type;
+   .
+
+FUNCTION get_specifiers (specifier_l) tspecifier
+
+specifier_l :-
+   get_type_2 (specifier_l => specifier_set, _);
+   RETURN specifier_set;
+   .
+
+PROCEDURE get_type_2 (specifier_l => tspecifier, type)
+
+NIL => 0, NIL :-
+   .
+s_type_name (next := next, name := name) => set, name_type (name := name) :-
+   get_type_2 (next => set, _);
+   .
+s_class (next := next, type := type) => set, type :-
+   get_type_2 (next => set, _);
+   .
+s_enum (next := next, type := type) => set, type :-
+   get_type_2 (next => set, _);
+   .
+s_typeof (next := next, expression :=
+      type_expr (specifier_l := specifier_l, type := type)) => set | s2, type :-
+   get_type_2 (next => set, _);
+   get_type_2 (specifier_l => s2, _);
+   .
+s_typeof (next := next, expression := expression) => set, type :-
+   get_type_2 (next => set, type);
+   .
+self:
+specifier (next := next) => set, type :-
+   get_type_2 (next => set, type);
+{  switch (self->Kind) {
+   case ks_typedef	: set |= c_typedef	; break;
+   case ks_auto		: set |= c_auto		; break;
+   case ks_register	: set |= c_register	; break;
+   case ks_static	: set |= c_static	; break;
+   case ks_extern	: set |= c_extern	; break;
+   case ks_const	: set |= c_const	; break;
+   case ks_volatile	: set |= c_volatile	; break;
+   case ks_char		: set |= c_char		; break;
+   case ks_short	: set |= c_short	; break;
+   case ks_int		: set |= c_int		; break;
+   case ks_long		: set |= c_long		; break;
+   case ks_signed	: set |= c_signed	; break;
+   case ks_unsigned	: set |= c_unsigned	; break;
+   case ks_float	: set |= c_float	; break;
+   case ks_double	: set |= c_double	; break;
+   case ks_void		: set |= c_void		; break;
+   }
+};
+   .
+nospecifier (...) => 0, NIL :-
+   .
+
+FUNCTION set_type (t: type, type) type
+
+structured_type (type := type:> NIL), typ :-
+   type := typ;
+   RETURN t;
+   .
+structured_type (type := type:> notype (...)), typ :-
+   type := typ;
+   RETURN t;
+   .
+structured_type (type := type:> simple_type (...)), typ :-
+   type := typ;
+   RETURN t;
+   .
+structured_type (type := type), typ :-
+   dummy: type := set_type (type, typ);
+   RETURN t;
+   .
+_, typ :-
+   RETURN typ;
+   .
+
+PREDICATE has_specifier (specifier_l, spec: int)
+
+s: specifier (next := next), ... :-
+   CONDITION s->Kind == spec || has_specifier (next, spec);
+   .
+
+FUNCTION get_scope (s: scope, tkind) scope
+
+NIL, ...			:- RETURN s; .
+scope (kind := kind), k		:- CONDITION kind == k; RETURN s; .
+scope (scope := scope), kind	:- RETURN get_scope (scope, kind); .
+
+FUNCTION get_kind (tspecifier, type) tkind
+
+specifiers, _		:- CONDITION specifiers & c_typedef; RETURN k_typedef; .
+_, function_type (...)	:- RETURN k_function; .
+s, n: name_type (...)	:- RETURN get_kind (s, get_typ (n)); .
+_, _			:- RETURN k_ident; .
+
+/* name_analysis: build symbol table and compute object attribute */
+
+PROCEDURE name_analysis (t: Tree, scope: scope)
+
+translation_unit (statement_l := statement_l, scope := new_scope), ... :-
+   new_scope := make_scope (scope, k_namespace, t);
+   name_analysis (statement_l, new_scope);
+   .
+data_decl (next := next, name := ident (pos := pos, ident := ident),
+      specifiers := specifiers, type := type), ... :-
+   decl_object (scope, ident, pos, get_kind (specifiers, type), t);
+   name_analysis (next, scope);
+   .
+init_decl (next := next, name := ident (pos := pos, ident := ident),
+      specifiers := specifiers, type := type, expression := expression), ... :-
+   decl_object (scope, ident, pos, get_kind (specifiers, type), t);
+   name_analysis (expression, scope);
+   name_analysis (next, scope);
+   .
+bit_field_decl (next := next, name := ident (pos := pos, ident := ident),
+      specifiers := specifiers, type := type, expression := expression), ... :-
+   decl_object (scope, ident, pos, get_kind (specifiers, type), t);
+   name_analysis (expression, scope);
+   name_analysis (next, scope);
+   .
+function_decl (next := next, name := ident (pos := pos, ident := ident),
+      specifier_l := specifier_l, type := type, ctor_init := ctor_init,
+      statement_l := statement_l, scope := new_scope), ... :-
+   name_analysis (specifier_l, scope);
+   decl_object (scope, ident, pos, k_function, t);
+   new_scope := make_scope (scope, k_function, t);
+   name_analysis (type, new_scope);
+   name_analysis (statement_l, new_scope);
+   goto_analysis (statement_l, new_scope);
+   name_analysis (next, scope);
+   .
+function_old_decl (next := next, name := ident (pos := pos, ident := ident),
+      specifier_l := specifier_l, type := type, ctor_init := ctor_init,
+      statement_l := statement_l, declaration_l := declaration_l,
+      scope := new_scope), ... :-
+   name_analysis (specifier_l, scope);
+   decl_object (scope, ident, pos, k_function, t);
+   new_scope := make_scope (scope, k_function, t);
+   name_analysis (declaration_l, new_scope);
+   name_analysis (type, new_scope);
+   name_analysis (statement_l, new_scope);
+   goto_analysis (statement_l, new_scope);
+   name_analysis (next, scope);
+   .
+list_decl (next := next, pos := pos, specifier_l := specifier_l, type := type,
+      declaration_l := declaration_l), ... :-
+   name_analysis (specifier_l, scope);
+   name_analysis (declaration_l, scope);
+   name_analysis (next, scope);
+   .
+case_stmt (next := next: statement_l, pos := pos, expression := expression), ... :-
+   name_analysis (expression, scope);
+   name_analysis (next, scope);
+   .
+compound_stmt (next := next, statement_l := statement_l, scope := new_scope), ... :-
+   new_scope := make_scope (scope, k_ident, t);
+   name_analysis (statement_l, new_scope);
+   name_analysis (next, scope);
+   .
+do_stmt (next := next: statement_l, pos := pos, statement := statement, expression := expression), ... :-
+   name_analysis (statement, scope);
+   name_analysis (expression, scope);
+   name_analysis (next, scope);
+   .
+expr_stmt (next := next: statement_l, pos := pos, expression := expression), ... :-
+   name_analysis (expression, scope);
+   name_analysis (next, scope);
+   .
+for_stmt (next := next: statement_l, pos := pos, init := init: expression, test := test: expression, incr := incr: expression, statement := statement), ... :-
+   name_analysis (init, scope);
+   name_analysis (test, scope);
+   name_analysis (incr, scope);
+   name_analysis (statement, scope);
+   name_analysis (next, scope);
+   .
+goto_stmt (next := next: statement_l, pos := pos, name := name: id_expression), ... :-
+/* name_analysis (name, scope);	deferred to phase 2 because of forward references */
+   name_analysis (next, scope);
+   .
+if_stmt (next := next: statement_l, pos := pos, expression := expression, then := then: statement, Else := Else: statement_l), ... :-
+   name_analysis (expression, scope);
+   name_analysis (then, scope);
+   name_analysis (Else, scope);
+   name_analysis (next, scope);
+   .
+labeled_stmt (next := next: statement_l, pos := pos, ident := ident), ... :-
+   decl_object (get_scope (scope, k_function), ident, pos, k_label, t);
+   name_analysis (next, scope);
+   .
+return_stmt (next := next: statement_l, pos := pos, expression := expression), ... :-
+   name_analysis (expression, scope);
+   name_analysis (next, scope);
+   .
+switch_stmt (next := next: statement_l, pos := pos, expression := expression, statement := statement), ... :-
+   name_analysis (expression, scope);
+   name_analysis (statement, scope);
+   name_analysis (next, scope);
+   .
+while_stmt (next := next: statement_l, pos := pos, expression := expression, statement := statement), ... :-
+   name_analysis (expression, scope);
+   name_analysis (statement, scope);
+   name_analysis (next, scope);
+   .
+statement (next := next: statement_l, pos := pos), ... :-
+   name_analysis (next, scope);
+   .
+pointer (type := type, specifier_l := specifier_l), ... :-
+   name_analysis (type, scope);
+   name_analysis (specifier_l, scope);
+   .
+array (type := type, expression := expression), ... :-
+   name_analysis (type, scope);
+   name_analysis (expression, scope);
+   .
+function (type := type, parameters := parameters: statement_l, specifier_l := specifier_l, exceptions := exceptions: notype_id), ... :-
+   name_analysis (type, scope);
+   name_analysis (parameters, scope);
+   name_analysis (specifier_l, scope);
+   name_analysis (exceptions, scope);
+   .
+function_old (type := type, identifier_l := identifier_l), ... :-
+   name_analysis (type, scope);
+   name_analysis (identifier_l, scope);
+   .
+s_class (next := next, name := ident (pos := pos, ident := ident, object := obj),
+      type := type, kind := kind, base_class_l := base_class_l,
+      members := nostatement (), scope := new_scope), ... :-
+				/* class without members: reference */
+   obj := Identify (ident, kind, scope);
+   new_scope := scope;		/* store current scope */
+   name_analysis (next, scope);
+   .
+s_class (next := next, name := ident (pos := pos, ident := ident),
+      type := type, kind := kind, base_class_l := base_class_l,
+      members := members, scope := new_scope), ... :-
+				/* class with name: definition */
+   decl_object (scope, ident, pos, kind, t);
+   new_scope := make_scope (scope, kind, t);
+   name_analysis (members, new_scope);
+   name_analysis (next, scope);
+   .
+s_class (next := next, name := name: id_expression,
+      type := type, kind := kind, base_class_l := base_class_l,
+      members := members, scope := new_scope), ... :-
+				/* class without name: unnamed type */
+   new_scope := make_scope (scope, kind, t);
+   name_analysis (members, new_scope);
+   name_analysis (next, scope);
+   .
+s_enum (next := next, name := ident (pos := pos, ident := ident),
+      type := type, enumerator_l := enumerator_l), ... :-
+   decl_object (scope, ident, pos, k_enum, t);
+   name_analysis (enumerator_l, scope);
+   name_analysis (next, scope);
+   .
+s_enum (next := next, name := name: id_expression,
+      type := type, enumerator_l := enumerator_l), ... :-
+   name_analysis (enumerator_l, scope);
+   name_analysis (next, scope);
+   .
+s_type_name (next := next: specifier_l, name := name: id_expression), ... :-
+   name_analysis (name, scope);
+   name_analysis (next, scope);
+   .
+s_typeof (next := next: specifier_l, expression := expression), ... :-
+   name_analysis (expression, scope);
+   name_analysis (next, scope);
+   .
+specifier (next := next: specifier_l), ... :-
+   name_analysis (next, scope);
+   .
+enumerator (next := next, ident := ident, pos := pos, expression := expression), ... :-
+   name_analysis (expression, scope);
+   decl_object (scope, ident, pos, k_ident, t);
+   name_analysis (next, scope);
+   .
+identifier (next := next, ident := ident, pos := pos, object := obj), ... :-
+   obj := IdentifyLocal (ident, k_non_class, scope);
+   IF obj == NoTree THEN
+      MessageI ("identifier not redeclared", xxError, pos, xxIdent,
+         {(char *) & ident});
+   END
+   name_analysis (next, scope);
+   .
+expression_e (next := next: expression_l, expression := expression), ... :-
+   name_analysis (expression, scope);
+   name_analysis (next, scope);
+   .
+ident (typ := typ, pos := pos, ident := ident, object := obj), ... :-
+   obj := Identify (ident, k_non_class, scope);
+   IF obj == NoTree THEN
+      MessageI ("identifier not declared", xxError, pos, xxIdent,
+         {(char *) & ident});
+   END
+   typ := get_typ (obj);
+   .
+aggregate_expr (typ := typ, pos := pos, expression_l := expression_l), ... :-
+   name_analysis (expression_l, scope);
+   typ := notype ();
+   .
+assign_expr (typ := typ, pos := pos, lval := lval: expression, Operator := Operator, rval := rval: expression), ... :-
+   name_analysis (lval, scope);
+   name_analysis (rval, scope);
+   typ := lval::typ;
+   .
+binary_expr (typ := typ, pos := pos, lop := lop: expression, Operator := Operator, rop := rop: expression), ... :-
+   name_analysis (lop, scope);
+   name_analysis (rop, scope);
+   typ := result_type_binary (lop::typ, rop::typ, Operator);
+   .
+call_expr (typ := typ, expression := expression:
+      ident (pos := pos, ident := ident, object := obj),
+      expression_l := expression_l), ... :-
+   obj := Identify (ident, k_non_class, scope);
+   IF obj == NoTree THEN
+/*
+      MessageI ("identifier implicitly declared", xxWarning, pos, xxIdent,
+         {(char *) & ident});
+*/
+      typ := simple_type (c_int);
+   ELSE
+      typ := type_op (get_typ (obj), kfunction);
+   END
+   name_analysis (expression_l, scope);
+   .
+call_expr (typ := typ, pos := pos, expression := expression, expression_l := expression_l), ... :-
+   name_analysis (expression, scope);
+   typ := type_op (expression::typ, kfunction);
+   name_analysis (expression_l, scope);
+   .
+cast_expr (typ := typ, pos := pos, Operator := Operator, specifier_l := specifier_l, type := type, expression := expression), ... :-
+   name_analysis (specifier_l, scope);
+   name_analysis (type, scope);
+   name_analysis (expression, scope);
+   typ := get_typ (type);
+   .
+conditional_expr (typ := typ, pos := pos, condition := condition: expression, true_expr := true_expr: expression, false_expr := false_expr: expression), ... :-
+   name_analysis (condition, scope);
+   name_analysis (true_expr, scope);
+   name_analysis (false_expr, scope);
+   typ := true_expr::typ;
+   .
+mem_access_expr (typ := typ, pos := p, expression := expression:ident,
+      Operator := Operator,
+      name := ident (pos := pos, ident := id, object := obj)), ... ;
+mem_access_expr (typ := typ, pos := p, expression := expression:expression_pos,
+      Operator := Operator,
+      name := ident (pos := pos, ident := id, object := obj)), ... :-
+
+   name_analysis (expression, scope);
+   obj := NoTree;
+   type: type := expression::typ;
+   IF type->Kind != knotype THEN
+      IF Operator == op_arrow THEN
+	 IF type->Kind == kpointer THEN
+	    type := get_typ (type->pointer.type);
+	 ELSE
+	    Message ("pointer type required", xxError, expression::pos);
+	    type := notype ();
+	 END
+      END
+      IF type->Kind != knotype THEN
+	 IF type->Kind == kclass_type THEN
+	    class: s_class := type->class_type.s_class;
+	    IF class->s_class.members->Kind == knostatement &&
+	       class->s_class.name->Kind == kident &&
+	       class->s_class.name->ident.object == NoTree THEN
+	       Message ("incomplete type", xxError, expression::pos);
+	    ELSE
+	       obj := IdentifyLocal (id, k_non_class, class->s_class.scope);
+	       IF obj == NoTree THEN
+		  MessageI ("member not declared", xxError, pos, xxIdent,
+		     {(char *) & id});
+	       END
+	    END
+	 ELSE
+	    IF Operator == op_dot THEN
+	       Message ("struct or union type required",
+		  xxError, expression::pos);
+	    ELSE
+	       Message ("pointer to struct or union type required",
+		  xxError, expression::pos);
+	    END
+	 END
+      END
+   END
+   typ := get_typ (obj);
+   .
+sizeof_expr (typ := typ, pos := pos, expression := expression), ... :-
+   name_analysis (expression, scope);
+   typ := simple_type (c_long);
+   .
+subscript_expr (typ := typ, pos := pos, base := base: expression, index := index: expression), ... :-
+   name_analysis (base, scope);
+   name_analysis (index, scope);
+   typ := type_op (base::typ, karray);
+   .
+type_expr (typ := typ, pos := pos, specifier_l := specifier_l, type := type), ... :-
+   name_analysis (specifier_l, scope);
+   name_analysis (type, scope);
+   typ := NoTree;
+   .
+unary_expr (typ := typ, pos := pos, Operator := Operator, expression := expression), ... :-
+   name_analysis (expression, scope);
+   typ := result_type_unary (expression::typ, Operator);
+   .
+char_const (typ := typ, pos := pos, type := type, value := value), ... :-
+   typ := simple_type (type);
+   .
+float_const (typ := typ, pos := pos, type := type, value := value), ... :-
+   typ := simple_type (type);
+   .
+int_const (typ := typ, pos := pos, type := type, value := value), ... :-
+   typ := simple_type (type);
+   .
+string_const (typ := typ, pos := pos, type := type, value := value), ... :-
+   typ := array (simple_type (type), _);
+   .
+string_list (typ := typ, pos := pos, type := type, expression_l := expression_l), ... :-
+   typ := array (simple_type (type), _);
+   .
+expression (typ := typ), ... :-
+   typ := notype ();
+   .
+
+/* goto analysis: compute object attribute for goto statements */
+
+PROCEDURE goto_analysis (t: Tree, scope: scope)
+
+compound_stmt (next := next, pos := pos, statement_l := statement_l), ... :-
+   goto_analysis (statement_l, scope);
+   goto_analysis (next, scope);
+   .
+do_stmt (next := next, pos := pos, statement := statement, expression := expression), ... :-
+   goto_analysis (statement, scope);
+   goto_analysis (next, scope);
+   .
+for_stmt (next := next, pos := pos, init := init: expression, test := test: expression, incr := incr: expression, statement := statement), ... :-
+   goto_analysis (statement, scope);
+   goto_analysis (next, scope);
+   .
+goto_stmt (next := next, pos := pos, name := name: id_expression), ... :-
+   name_analysis (name, scope);
+   goto_analysis (next, scope);
+   .
+if_stmt (next := next, pos := pos, expression := expression, then := then: statement, Else := Else: statement_l), ... :-
+   goto_analysis (then, scope);
+   goto_analysis (Else, scope);
+   goto_analysis (next, scope);
+   .
+switch_stmt (next := next, pos := pos, expression := expression, statement := statement), ... :-
+   goto_analysis (statement, scope);
+   goto_analysis (next, scope);
+   .
+while_stmt (next := next, pos := pos, expression := expression, statement := statement), ... :-
+   goto_analysis (statement, scope);
+   goto_analysis (next, scope);
+   .
+statement (next := next, pos := pos), ... :-
+   goto_analysis (next, scope);
+   .
+
+/* type analysis: compute typ attribute */
+
+FUNCTION get_typ (Tree) type
+
+NIL :- RETURN notype (); .
+
+object (object := object) :- RETURN get_typ (object); .
+
+data_declaration (type := type) :-
+   RETURN get_typ (type);
+   .
+function_declaration (type := type) :-
+   RETURN get_typ (type);
+   .
+labeled_stmt (...) :-
+   RETURN notype ();
+   .
+s_class (type := type) :-
+   RETURN type;
+   .
+s_enum (type := type) :-
+   RETURN get_typ (type);
+   .
+enumerator (...) :-
+   RETURN simple_type (c_int);
+   .
+name_type (name := ident (object := NIL)) :-
+   RETURN notype ();
+   .
+name_type (name := ident (object := object (object := data_decl (type := type)))) :-
+   RETURN get_typ (type);
+   .
+t:
+class_type (s_class :=
+   s_class (name := name: ident (ident := ident, pos := pos, object := obj:NIL),
+      type := type, kind := kind,
+      members := nostatement (), scope := scope)) :-
+				/* class without members: forward reference */
+   obj := IdentifyLocal (ident, kind, scope);
+   IF obj == NoTree THEN	/* incomplete type */
+/*
+      MessageI ("identifier not declared", xxError, pos, xxIdent,
+         {(char *) & ident});
+*/
+      RETURN t;
+   END
+   RETURN get_typ (obj);
+   .
+class_type (s_class :=
+   s_class (name := name: ident (ident := ident, pos := pos, object := obj),
+      type := type, kind := kind,
+      members := nostatement (), scope := scope)) :-
+				/* class without members: backward reference */
+   RETURN get_typ (obj);
+   .
+t:
+class_type (s_class :=
+   s_class (name := name: id_expression, type := type, kind := kind,
+      members := members: statement_l, scope := scope)) :-
+				/* class with members: definition */
+   RETURN t;
+   .
+t:
+type () :-
+   RETURN t;
+   .
+
+FUNCTION type_op (type, int) type
+
+array		(type := type), (karray		) ;
+array		(type := type), (kpointer	) ;
+pointer		(type := type), (kpointer	) ;
+pointer		(type := type), (karray		) ;
+function	(type := type), (kfunction	) ;
+function_old	(type := type), (kfunction	) :- RETURN get_typ (type); .
+...						  :- RETURN notype (); .
+
+FUNCTION result_type_unary (type, toperator) type
+
+pointer	(type := type), (op_indirect) :- RETURN get_typ (type); .
+type, (op_address_of	) :- RETURN pointer (type, nospecifier ()); .
+type, (op_plus		) :- RETURN type; .
+type, (op_negate	) :- RETURN type; .
+type, (op_not		) :- RETURN simple_type (c_int); .
+type, (op_complement	) :- RETURN type; .
+type, (op_pre_incr	) :- RETURN type; .
+type, (op_pre_decr	) :- RETURN type; .
+type, (op_post_incr	) :- RETURN type; .
+type, (op_post_decr	) :- RETURN type; .
+...			  :- RETURN notype (); .
+
+FUNCTION result_type_binary (type, type, toperator) type
+
+t1, t2, (op_times	) ;
+t1, t2, (op_divide	) :- IF is_integral (t1) && is_integral (t2) THEN
+				RETURN t1;
+			     END;
+			     RETURN simple_type (c_double);
+			     .
+t1, t2, (op_modulo	) :- IF is_integral (t1) && is_integral (t2) THEN
+				RETURN t1;
+			     END;
+			     RETURN simple_type (c_int);
+			     .
+t1: pointer (...), t2, (op_plus) :- is_integral (t2); RETURN t1;
+			     .
+t1, t2, (op_plus	) :- IF is_integral (t1) && is_integral (t2) THEN
+				RETURN t1;
+			     END;
+			     RETURN simple_type (c_double);
+			     .
+t1: pointer (...), t2, (op_minus) :- is_integral (t2); RETURN t1;
+			     .
+pointer (...), pointer (...), (op_minus) :- RETURN simple_type (c_int);
+			     .
+t1, t2, (op_minus	) :- IF is_integral (t1) && is_integral (t2) THEN
+				RETURN t1;
+			     END;
+			     RETURN simple_type (c_double);
+			     .
+t1, t2, (op_lshift	) ;
+t1, t2, (op_rshift	) :- RETURN t1;
+			     .
+t1, t2, (op_less	) ;
+t1, t2, (op_greater	) ;
+t1, t2, (op_less_equal	) ;
+t1, t2, (op_greater_equal);
+t1, t2, (op_equal	) ;
+t1, t2, (op_not_equal	) :- RETURN simple_type (c_int);
+			     .
+t1, t2, (op_and		) ;
+t1, t2, (op_xor		) ;
+t1, t2, (op_or		) :- IF is_integral (t1) && is_integral (t2) THEN
+				RETURN t1;
+			     END;
+			     RETURN simple_type (c_int);
+			     .
+t1, t2, (op_and_and	) ;
+t1, t2, (op_or_or	) :- RETURN simple_type (c_int);
+			     .
+...			  :- RETURN notype ();
+			     .
+
+PREDICATE is_integral (type)
+
+simple_type (specifiers := specifiers) :- CONDITION specifiers &
+   (c_char | c_wchar_t | c_short | c_int | c_long | c_signed | c_unsigned);
+   .
+
+FUNCTION get_bpos (expression) tPosition
+
+ident (pos := pos) :-
+   RETURN pos;
+   .
+assign_expr (lval := lval) :-
+   RETURN get_bpos (lval);
+   .
+binary_expr (lop := lop) :-
+   RETURN get_bpos (lop);
+   .
+call_expr (expression := expression) :-
+   RETURN get_bpos (expression);
+   .
+conditional_expr (condition := condition) :-
+   RETURN get_bpos (condition);
+   .
+mem_access_expr (expression := expression) :-
+   RETURN get_bpos (expression);
+   .
+subscript_expr (base := base) :-
+   RETURN get_bpos (base);
+   .
+unary_expr (Operator := (op_post_incr), expression := expression) ;
+unary_expr (Operator := (op_post_decr), expression := expression) :-
+   RETURN get_bpos (expression);
+   .
+expression_pos (pos := pos) :-
+   RETURN pos;
+   .
+_ :-
+   RETURN NoPosition;
+   .

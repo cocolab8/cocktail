@@ -1,0 +1,33 @@
+!INCLUDE ..\..\config.mak
+
+                # C library (reuse)
+REUSE	= ..\..\reuse\c
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I$(REUSE) /I../..
+
+LDFLAGS	= $(REUSE_LIB)
+
+OBJS	= y2l.obj Parser.obj Scanner.obj Tables.obj
+
+# targets
+
+y2l.exe: $(OBJS)
+	$(CC) /nologo $(OBJS) /link /out:y2l.exe $(LDFLAGS)
+
+install:
+	copy y2l.exe "%ct_dir%"\bin
+
+# dependencies
+
+y2l.obj:	y2l.c Scanner.h Parser.h Tables.h
+Parser.obj:	Parser.c Parser.h Scanner.h Tables.h
+Scanner.obj:	Scanner.c Scanner.h Tables.h
+Tables.obj:	Tables.c Tables.h
+
+clean:
+	del *.obj *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

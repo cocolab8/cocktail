@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<FILE EXT="cg">
+TREE <Java>trees.</Java>Defs
+
+EXPORT {
+<C>
+#define String char *
+</C>
+}
+
+RULE
+
+<TAG NAME="defs_rules"/>
+</FILE>
+

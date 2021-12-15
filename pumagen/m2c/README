@@ -1,0 +1,85 @@
+*************************************************************************
+*									*
+*  Pumagen								*
+*									*
+*  Generator for Puma-Light						*
+*									*
+*  Copyright (C) by							*
+*									*
+*  Dr. Josef Grosch							*
+*  CoCoLab - Datenverarbeitung						*
+*  Hoehenweg 6								*
+*  D-77855 Achern							*
+*  Germany								*
+*									*
+*  Phone   : +49-7841-669144						*
+*  Fax	   : +49-7841-669145						*
+*  Email   : grosch@cocolab.de						*
+*  Internet: www.cocolab.de						*
+*									*
+*************************************************************************
+
+Puma-Light
+----------
+
+Unter Puma-Light werden spezialisierte Instanzen des Cocktail-Werkzeugs Puma
+verstanden. Eine Instanz von Puma-Light hat im wesentlichen die gleichen
+Eigenschaften wie Puma bis auf folgende Abweichungen:
+
+- Es koennen nur Baeume bearbeitet werden, die einer festen abstrakten
+  Syntax gehorchen.
+- Es kann nur eine Baum-Definition bearbeitet werden - die TREE Klausel wird
+  ignoriert.
+- Es koennen nur Transformatoren in den Sprachen C und C++ erzeugt werden,
+  Modula-2 wird nicht unterstuetzt.
+
+Eine Instanz von Puma-Light wird durch den Generator Pumagen aus einer
+abstrakten Syntax erzeugt. Der Ablauf fuer die Erstellung einer Instanz von
+Puma-Light wird durch das unten angegebene Makefile beschrieben. Es sind
+folgende Schritte notwendig:
+
+1. Der Aufruf pumagen $(LANGUAGE).ast erzeugt aus einer abstrakten Syntax ein
+   C-Programm in der Datei Tree3.c.
+2. Das C-Programm in der Datei Tree3.c wird mit einem C-Compiler uebersetzt.
+3. Das Object Tree3.o wird mit den Bibliotheken libreuse.a und libpumal.a
+   zu einem ausfuehrbaren Programm gebunden, welches eine Instanz von
+   Puma-Light bildet (z. B. puma-minilax). (Das doppelte Vorkommen von
+   libreuse.a in den LDFLAGS mag seltsam erscheinen, ist jedoch erforderlich.)
+4. Beim Aufruf des Programms ist die Option -l... notwendig, welche ein
+   Verzeichnis mit Dateien fuer Puma-Light angibt.
+   Es empfiehlt sich, daf\*ur ein Shellscript bereitzustellen, etwa nach dem
+   Vorbild von puma, welches das Programm mit der Option -l... versorgt.
+
+Das Makefile erzeugt eine ausf\*uhrbare Version von Puma-Light.
+Anstelle eines Makefiles kann man auch ein kleines Shellscript verwenden.
+Zur Weitergabe von Puma-Light in Quellform muss man die Quellen aus
+3 Verzeichnissen zusammenstellen:
+
+- Tree3.h und Tree3.c werden von pumagen generiert
+- ein Teil der puma-Quellen aus dem Verzeichnis cocktail/puma/m2c
+  (alles ausser: puma.c, Mod.h/.c, Tree2.h/.c)
+- ein Teil der reuse-Quellen aus dem Verzeichnis cocktail/reuse/m2c
+
+Makefile:
+---------
+
+LANGUAGE= minilax
+LIB	= $(HOME)/lib
+PLIB	= $(LIB)/pumagen
+CC	= cc -g
+CFLAGS	= -I$(PLIB)
+LDFLAGS	= $(PLIB)/libreuse.a $(PLIB)/libpumal.a $(PLIB)/libreuse.a
+
+all:	puma-$(LANGUAGE)
+
+Tree3.h Tree3.c:	$(LANGUAGE).ast
+	pumagen $(LANGUAGE).ast
+
+Tree3.o:	Tree3.h Tree3.c
+	$(CC) $(CFLAGS) -c Tree3.c
+
+puma-$(LANGUAGE):	Tree3.o
+	$(CC) -o puma-$(LANGUAGE) Tree3.o $(LDFLAGS)
+
+Trafo.h Trafo.c:	xxx.puma puma-$(LANGUAGE)
+	puma-$(LANGUAGE) -di xxx.puma -l$(PLIB)

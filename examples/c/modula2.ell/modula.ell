@@ -1,0 +1,102 @@
+BEGIN	{ BeginScanner (); }
+
+TOKEN
+
+  Ident			= 1
+  Integer		= 2
+  Real			= 3
+  String		= 4
+
+RULE
+
+CompilationUnit		: DefinitionModule
+			| [ 'IMPLEMENTATION' ] ProgramModule .
+
+Number			: Integer
+			| Real .
+Qualident		: Ident || '.' .
+
+ConstantDeclaration	: Ident '=' ConstExpression .
+ConstExpression		: Expression .
+
+TypeDeclaration		: Ident '=' Type .
+Type			: SimpleType
+			| 'ARRAY' ( SimpleType || ',' ) 'OF' Type
+			| 'RECORD' FieldListSequence 'END'
+			| 'SET' 'OF' SimpleType
+			| 'POINTER' 'TO' Type
+			| 'PROCEDURE' [ FormalTypeList ] .
+SimpleType		: Qualident [ '[' ConstExpression '..' ConstExpression ']' ]
+			| '(' IdentList ')'
+			| '[' ConstExpression '..' ConstExpression ']' .
+IdentList		: Ident || ',' .
+FieldListSequence	: FieldList || ';' .
+FieldList		: IdentList ':' Type
+			| 'CASE' [ Ident ] ':' Qualident 'OF' ( Variant || '|' )
+			     [ 'ELSE' FieldListSequence ] 'END'
+			| .
+Variant			: [ CaseLabelList ':' FieldListSequence ] .
+CaseLabelList		: CaseLabels || ',' .
+CaseLabels		: ConstExpression [ '..' ConstExpression ] .
+FormalTypeList		: '(' [ ( [ 'VAR' ] FormalType ) || ',' ] ')' [ ':' Qualident ] .
+
+VariableDeclaration	: IdentList ':' Type .
+Designator		: Ident ( '.' Ident | '[' ExpList ']' | '^' ) * .
+
+ExpList			: Expression || ',' .
+Expression		: SimpleExpression [ Relation SimpleExpression ] .
+Relation		: '=' | '#' | '<' | '<=' | '>' | '>=' | 'IN' .
+SimpleExpression	: [ '+' | '-' ] Term ( AddOperator Term ) * .
+AddOperator		: '+' | '-' | 'OR' .
+Term			: Factor ( MulOperator Factor ) * .
+MulOperator		: '*' | '/' | 'DIV' | 'MOD' | 'AND' .
+Factor			: Number
+			| String
+			| Set 
+			| Designator ( [ ActualParameters ] | Set )
+			| '(' Expression ')'
+			| 'NOT' Factor .
+Set			: '{' [ Element || ','] '}' .
+Element			: Expression [ '..' Expression ] .
+ActualParameters	: '(' [ ExpList ] ')' .
+
+StatementSequence	:
+			( Designator ( ':=' Expression | [ActualParameters] )
+			| 'IF' Expression 'THEN' StatementSequence
+			     ( 'ELSIF' Expression 'THEN' StatementSequence ) *
+			     [ 'ELSE' StatementSequence ] 'END'
+			| 'CASE' Expression 'OF' ( Case || '|' ) [ 'ELSE' StatementSequence ] 'END'
+			| 'WHILE' Expression 'DO' StatementSequence 'END'
+			| 'REPEAT' StatementSequence 'UNTIL' Expression
+			| 'LOOP' StatementSequence 'END'
+			| 'FOR' Ident ':=' Expression 'TO' Expression
+			     [ 'BY' ConstExpression ] 'DO' StatementSequence 'END'
+			| 'WITH' Designator 'DO' StatementSequence 'END'
+			| 'EXIT'
+			| 'RETURN' [ Expression ] 
+			|
+			) || ';' .
+Case			: [ CaseLabelList ':' StatementSequence ] .
+
+ProcedureDeclaration	: ProcedureHeading ';' Block Ident .
+ProcedureHeading	: 'PROCEDURE' Ident [ FormalParameters ] .
+Block			: Declaration * [ 'BEGIN' StatementSequence ] 'END' .
+Declaration		: 'CONST' ( ConstantDeclaration ';' ) *
+			| 'TYPE' ( TypeDeclaration ';' ) *
+			| 'VAR' ( VariableDeclaration ';' ) *
+			| ProcedureDeclaration ';'
+			| ModuleDeclaration ';' .
+FormalParameters	: '(' [ FPSection || ';' ] ')' [ ':' Qualident ] .
+FPSection		: [ 'VAR' ] IdentList ':' FormalType .
+FormalType		: [ 'ARRAY' 'OF' ] Qualident .
+
+ModuleDeclaration	: 'MODULE' Ident [ Priority ] ';' Import * [ Export ] Block Ident .
+Priority		: '[' ConstExpression ']' .
+Export			: 'EXPORT' [ 'QUALIFIED' ] IdentList ';' .
+Import			: [ 'FROM' Ident ] 'IMPORT' IdentList ';' .
+DefinitionModule	: 'DEFINITION' 'MODULE' Ident ';' Import * Definition * 'END' Ident '.' .
+Definition		: 'CONST' ( ConstantDeclaration ';' ) *
+			| 'TYPE' ( Ident [ '=' Type ] ';' ) *
+			| 'VAR' ( VariableDeclaration ';' ) *
+			| ProcedureHeading ';' .
+ProgramModule		: 'MODULE' Ident [ Priority ] ';' Import * Block Ident '.' .

@@ -1,0 +1,159 @@
+PARSER
+
+IMPORT {
+   package minilax;
+
+   import de.cocolab.reuse.*;
+   import minilax.Tree;
+   import minilax.Tree.*;
+}
+
+PREC	LEFT	'<'				/* operator precedence	*/
+	LEFT	'+'
+	LEFT	'*'
+	LEFT	NOT
+
+PROPERTY INPUT
+
+RULE						/* concrete syntax	*/
+
+Prog		= PROGRAM Identifier ';' 'DECLARE' Decls 'BEGIN' Stats 'END' '.' .
+Decls		= <
+   Decls1	= Decl .
+   Decls2	= Decls ';' Decl .
+> .
+Decl		= <
+   Var		= Identifier ':' Type .
+   Proc0	= PROCEDURE Identifier ';' 'DECLARE' Decls 'BEGIN' Stats 'END' .
+   Proc		= PROCEDURE Identifier '(' Formals ')' ';'
+				      'DECLARE' Decls 'BEGIN' Stats 'END' .
+> .
+Formals		= <
+   Formals1	= Formal .
+   Formals2	= Formals ';' Formal .
+> .
+Formal		= <
+   Value	= Identifier ':' Type .
+   Ref		= VAR Identifier ':' Type .
+> .
+Type		= <
+   Int		= INTEGER .
+   Real		= REAL .
+   Bool		= BOOLEAN .
+   Array	= ARRAY '[' Lwb: IntegerConst '..' Upb: IntegerConst ']' OF Type .
+> .
+Stats		= <
+   Stats1	= Stat .
+   Stats2	= Stats ';' Stat .
+> .
+Stat		= <
+   Assign	= Adr ':=' Expr .
+   Call0	= Identifier .
+   Call		= Identifier '(' Actuals ')' .
+   If		= IF Expr THEN Then: Stats ELSE Else: Stats 'END' .
+   While	= WHILE Expr DO Stats 'END' .
+   Read		= READ '(' Adr ')' .
+   Write	= WRITE '(' Expr ')' .
+> .
+Actuals		= <
+   Expr1	= Expr .
+   Expr2	= Actuals ',' Expr .
+> .
+Expr		= <
+   Less		= Lop: Expr '<' Rop: Expr .
+   Plus		= Lop: Expr '+' Rop: Expr .
+   Times	= Lop: Expr '*' Rop: Expr .
+   Not		= NOT Expr .
+   '()'		= '(' Expr ')' .
+   IConst	= IntegerConst .
+   RConst	= RealConst .
+   False	= FALSE .
+   True		= TRUE .
+   Adr		= <
+      Name	= Identifier .
+      Index	= Adr '[' Expr ']' .
+   > .
+> .
+
+					/* terminals (with attributes)	*/
+
+Identifier	: [Ident: Ident	] { Ident	:= IdentTable.noIdent	; } .
+IntegerConst	: [Integer	] { Integer	:= 0			; } .
+RealConst	: [Real : double] { Real	:= 0.0			; } .
+
+MODULE Tree
+
+PARSER EXPORT	{
+   static Type nInteger, nReal, nBoolean;
+   public MiniLax treeRoot;
+}
+
+BEGIN	{
+   nInteger	= new Int	();
+   nReal	= new Real	();
+   nBoolean	= new Bool	();
+}
+			/* attributes for tree construction		*/
+DECLARE
+  Decls		= [Tree: Decls	] .
+  Decl		= [Tree: Decl	] .
+  Formals	= [Tree: Formals] .
+  Formal	= [Tree: Formal	] .
+  Type		= [Tree: Type	] .
+  Stats		= [Tree: Stats	] .
+  Stat		= [Tree: Stat	] .
+  Actuals	= [Tree: Actuals] .
+  Expr		= [Tree: Expr	] .
+
+RULE			/* tree construction =				*/
+			/* mapping: concrete syntax -> abstract syntax	*/
+
+Prog	= { => treeRoot = new MiniLax (new Proc (new NoDecl (), Identifier:Ident,
+		Identifier:Position, new NoFormal (), (Decls) Decls:Tree.reverse (),
+		(Stats) Stats:Tree.reverse ()));				} .
+Decls1	= { Tree := {Decl:Tree.Next = new NoDecl (); Tree = Decl:Tree;};	} .
+Decls2	= { Tree := {Decl:Tree.Next = Decls:Tree; Tree = Decl:Tree;};		} .
+Var	= { Tree := new Var (null, Identifier:Ident, Identifier:Position, new Ref (Type:Tree));}.
+Proc0	= { Tree := new Proc (null, Identifier:Ident, Identifier:Position, new NoFormal (),
+		    (Decls) Decls:Tree.reverse (), (Stats) Stats:Tree.reverse ()); } .
+Proc	= { Tree := new Proc (null, Identifier:Ident, Identifier:Position,
+	   (Formals) Formals:Tree.reverse (), (Decls) Decls:Tree.reverse (),
+	   (Stats) Stats:Tree.reverse ());					} .
+Formals1= { Tree := {Formal:Tree.Next = new NoFormal ();
+		    Tree = Formal:Tree;};					} .
+Formals2= { Tree := {Formal:Tree.Next = Formals:Tree;
+		    Tree = Formal:Tree;};					} .
+Value	= { Tree := new Formal (null, Identifier:Ident, Identifier:Position,
+		    new Ref (Type:Tree));					} .
+Ref	= { Tree := new Formal (null, Identifier:Ident, Identifier:Position,
+		    new Ref (new Ref (Type:Tree)));				} .
+Int	= { Tree := nInteger;							} .
+Real	= { Tree := nReal;							} .
+Bool	= { Tree := nBoolean;							} .
+Array	= { Tree := new Array (Type:Tree, Lwb:Integer, Upb:Integer, Lwb:Position); } .
+Stats1	= { Tree := {Stat:Tree.Next = new NoStat (); Tree = Stat:Tree;};	} .
+Stats2	= { Tree := {Stat:Tree.Next = Stats:Tree; Tree = Stat:Tree;};		} .
+Assign	= { Tree := new Assign (null, (Adr) Adr:Tree, Expr:Tree, ':=':Position);	} .
+Call0	= { Tree := new Call (null, new NoActual (Identifier:Position), Identifier:Ident,
+		    Identifier:Position);					} .
+Call	= { Tree := new Call (null, (Actuals) Actuals:Tree.reverse (), Identifier:Ident,
+		    Identifier:Position);					} .
+If	= { Tree := new If (null, Expr:Tree, (Stats) Then:Tree.reverse (),
+		    (Stats) Else:Tree.reverse ());				} .
+While	= { Tree := new While (null, Expr:Tree, (Stats) Stats:Tree.reverse ());	} .
+Read	= { Tree := new Read (null, (Adr) Adr:Tree);				} .
+Write	= { Tree := new Write (null, Expr:Tree);				} .
+Expr1	= { Tree := new Actual (new NoActual (Expr:Tree.Pos), Expr:Tree);	} .
+Expr2	= { Tree := new Actual (Actuals:Tree, Expr:Tree);			} .
+Less	= { Tree := new Binary ('<':Position, Lop:Tree, Rop:Tree, \Tree.Less);	} .
+Plus	= { Tree := new Binary ('+':Position, Lop:Tree, Rop:Tree, \Tree.Plus);	} .
+Times	= { Tree := new Binary ('*':Position, Lop:Tree, Rop:Tree, \Tree.Times);	} .
+Not	= { Tree := new Unary (NOT:Position, Expr:Tree, \Tree.Not);		} .
+IConst	= { Tree := new IntConst (IntegerConst:Position, IntegerConst:Integer);	} .
+RConst	= { Tree := new RealConst (RealConst:Position, RealConst:Real);		} .
+False	= { Tree := new BoolConst (FALSE:Position, false);			} .
+True	= { Tree := new BoolConst (TRUE:Position, true);			} .
+Name	= { Tree := new Identifier (Identifier:Position, Identifier:Ident);	} .
+Index	= { Tree := new Index ('[':Position, (Adr) Adr:Tree, Expr:Tree);	} .
+
+END Tree

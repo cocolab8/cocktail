@@ -1,0 +1,73 @@
+EXPORT	{
+FROM StringM	IMPORT tStringRef;
+FROM Idents	IMPORT tIdent;
+FROM Position	IMPORT tPosition;
+
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+FROM SYSTEM	IMPORT ADR;
+FROM Errors	IMPORT Message, MessageI, Error;
+IMPORT Errors;
+FROM Strings	IMPORT tString, AssignEmpty, Concatenate, Append, Char;
+FROM StringM	IMPORT tStringRef, PutString;
+FROM Idents	IMPORT tIdent, MakeIdent, NoIdent;
+
+VAR Word: tString;
+
+INSERT ErrorAttribute
+}
+
+LOCAL	{ VAR String, S	: tString; }
+
+DEFAULT	{ GetWord (Word);
+	  MessageI ("illegal character", Error, Attribute.Position, Errors.String, ADR (Word)); }
+
+DEFINE
+   digit	  = {0-9}		.
+   extended_digit = digit | {A-F a-f}	.
+   letter	  = {a-z A-Z}		.
+   integer	  = digit (_? digit) *	.
+   based_integer  = extended_digit (_? extended_digit) * .
+
+START   STRING, QUOTE
+
+RULES
+
+NOT #STRING# integer ("." integer) ? ({Ee} {+\-} ? integer) ?
+			: {yyStart (STD); GetWord (Word);
+			   Attribute.integerliteral.String := PutString (Word);
+			   RETURN integerliteral;}
+
+NOT #STRING# integer "#" based_integer ("." based_integer) ? "#" ({Ee} {+\-} ? integer) ?
+			: {yyStart (STD); GetWord (Word);
+			   Attribute.integerliteral.String := PutString (Word);
+			   RETURN integerliteral;}
+
+    #STD# ' {\ -~} '	: {GetWord (String);
+			   Attribute.characterliteral.Char := Char (String, 2);
+			   RETURN characterliteral;}
+
+NOT #STRING# \"		:  {yyStart (STRING); AssignEmpty (String);}
+    #STRING# {\ !#-~} +	:- {GetWord (S); Concatenate (String, S);}
+    #STRING# \"\"	:- {Append (String, '"');}
+    #STRING# \"		:- {yyStart (STD);
+			    Attribute.stringliteral.String := PutString (String);
+			    RETURN stringliteral;}
+    #STRING# \t		:- {Append (String, 11C); yyTab;}
+    #STRING# \n		:- {Message ("unclosed string", Error, Attribute.Position);
+			    Attribute.stringliteral.String := PutString (String);
+			    yyEol (0); yyStart (STD); RETURN stringliteral;}
+
+NOT #STRING# "--" ANY *	:- {}
+
+    #QUOTE#  "'"	: {yyStart (STD)  ; RETURN "'"	;}
+NOT #STRING# ")"	: {yyStart (QUOTE); RETURN ')'	;}
+
+INSERT RULES CASE-INSENSITIVE NOT #STRING# {yyStart (STD);}
+
+NOT #STRING# letter (_? (letter | digit)+ )*
+			: {yyStart (QUOTE); GetLower (Word);
+			   Attribute.identifier.Ident := MakeIdent (Word);
+			   RETURN identifier;}

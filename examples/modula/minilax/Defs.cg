@@ -1,0 +1,125 @@
+TREE Defs
+
+IMPORT	{
+   FROM Idents	IMPORT tIdent;
+   FROM SYSTEM	IMPORT ADDRESS;
+}
+
+EXPORT	{
+CONST NoEnv	= NoDefs;
+
+PROCEDURE Identify	(Ident: tIdent; Env: tEnv): tObjects;
+			(* return the object associated with 'Ident' in	*)
+			(* the environment 'Env'			*)
+
+PROCEDURE IsDeclared	(Ident: tIdent; Objects: tObjects): BOOLEAN;
+			(* check whether an object having the name	*)
+			(* 'Ident' is element of the set of objects	*)
+			(* 'Objects' 					*)
+
+PROCEDURE mProc2	(Object: tObjects; Level, Label, ParSize, DataSize: INTEGER);
+			(* extend the description 'Object' of a		*)
+			(* procedure by the 4 given attributes		*)
+
+PROCEDURE mVar2		(Object: tObjects; Level, Offset: INTEGER);
+			(* extend the description 'Object' of a		*)
+			(* variable by the 2 given attributes		*)
+
+PROCEDURE IsObjectKind	(Object: tObjects; Kind: SHORTCARD): BOOLEAN;
+			(* returns TRUE if the kind of the 'Object'	*)
+			(* is equal to parameter 'Kind'			*)
+
+PROCEDURE GetFormals	(Object: tObjects): ADDRESS;
+			(* returns the list of formal parameters	*)
+			(* from the description 'Object' of a procedure	*)
+
+PROCEDURE GetType	(Object: tObjects): ADDRESS;
+			(* returns the type of the description 'Object'	*)
+			(* of a variable				*)
+}
+
+GLOBAL	{
+
+FROM Idents	IMPORT tIdent;
+FROM SYSTEM	IMPORT ADDRESS;
+FROM Tree	IMPORT mNoType, mNoFormal;
+
+VAR nNoObject	: tObjects;
+
+PROCEDURE IsDeclared	(Ident: tIdent; Objects: tObjects): BOOLEAN;
+   BEGIN
+      WHILE Objects^.Kind # NoObject DO
+	 IF Objects^.Object.Ident = Ident THEN
+	    RETURN TRUE;
+	 END;
+	 Objects := Objects^.Object.Next;
+      END;
+      RETURN FALSE;
+   END IsDeclared;
+
+PROCEDURE Identify	(Ident: tIdent; Env: tEnv): tObjects;
+   VAR Objects	: tObjects;
+   BEGIN
+      WHILE Env # NoEnv DO
+	 Objects := Env^.Env.Objects;
+	 WHILE Objects^.Kind # NoObject DO
+	    IF Objects^.Object.Ident = Ident THEN
+	       RETURN Objects;
+	    END;
+	    Objects := Objects^.Object.Next;
+	 END;
+	 Env := Env^.Env.Hidden;
+      END;
+      RETURN nNoObject;
+   END Identify;
+
+PROCEDURE mProc2	(Object: tObjects; Level, Label, ParSize, DataSize: INTEGER);
+   BEGIN
+      Object^.Proc.Level	:= Level;
+      Object^.Proc.Label	:= Label;
+      Object^.Proc.ParSize	:= ParSize;
+      Object^.Proc.DataSize	:= DataSize;
+   END mProc2;
+
+PROCEDURE mVar2		(Object: tObjects; Level, Offset: INTEGER);
+   BEGIN
+      Object^.Var.Level		:= Level;
+      Object^.Var.Offset	:= Offset;
+   END mVar2;
+
+PROCEDURE IsObjectKind	(Object: tObjects; Kind: SHORTCARD): BOOLEAN;
+   BEGIN
+      RETURN (Object^.Kind = Kind) OR (Object^.Kind = NoObject);
+   END IsObjectKind;
+
+PROCEDURE GetFormals	(Object: tObjects): ADDRESS;
+   BEGIN
+      IF Object^.Kind = Proc THEN
+	 RETURN Object^.Proc.Formals;
+      ELSE
+	 RETURN mNoFormal ();
+      END;
+   END GetFormals;
+
+PROCEDURE GetType	(Object: tObjects): ADDRESS;
+   BEGIN
+      IF Object^.Kind = Var THEN
+	 RETURN Object^.Var.Type;
+      ELSE
+	 RETURN mNoType ();
+      END;
+   END GetType;
+}
+
+BEGIN	{ nNoObject := mNoObject (); }
+
+RULE
+
+Env		= Objects Hidden: Env .
+Objects		= <
+   NoObject	= .
+   Object	= Next: Objects [Ident: tIdent] <
+      Proc	= [Formals: ADDRESS] -> [Level: SHORTINT] [Label] [ParSize] [DataSize] .
+      Var	= [Type: ADDRESS] -> [Level: SHORTINT] [Offset] .
+   > .
+> .

@@ -1,0 +1,39 @@
+!INCLUDE ..\..\config.mak
+
+REUSE	= C:/Programme/Cocktail/lib
+TCL_DIR	= C:/Programme/Tcl
+CFLAGS	= $(CFG_CFLAGS) /c /W2 /I. /I$(REUSE)/include /I$(TCL_DIR)/include
+TCL_LIB	= $(TCL_DIR)/lib/tcl84.lib $(TCL_DIR)/lib/tk84.lib
+LDFLAGS	= $(REUSE)/libreuse.lib $(TCL_LIB)
+OBJS	= Scanner.obj Parser.obj Drv.obj
+
+test1:	ParserDrv.exe
+	ParserDrv in1
+
+ParserDrv.exe:	$(OBJS)
+	$(CC) /nologo $(OBJS) $(LDFLAGS) /link /out:ParserDrv.exe
+
+Scanner.h Scanner.c: d.rex
+	rex -cd d.rex 
+
+Parser.h Parser.c ParserDrv.c: d.lrk
+	lark -cdips5 d.lrk 
+
+Drv.o:		Parser.h
+Parser.o:	Parser.h Scanner.h
+Scanner.o:	Scanner.h
+
+clean:
+	del Scanner.h
+	del Scanner.c
+	del Parser.h
+	del Parser.c
+	del *.obj
+	del ParserDrv.c
+	del ParserDrv.exe
+	del yyParser.*
+
+.SUFFIXES: .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) -c $*.c

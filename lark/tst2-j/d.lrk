@@ -1,0 +1,91 @@
+GLOBAL {
+# define YYDEBUG
+# define yyParsAttribute yyScanAttribute /*ParsAttribute*/
+}
+
+EXPORT {
+//  class ParsAttribute {
+//    Scanner.ScanAttribute scan;
+//  }
+
+  boolean isUpper (Ident ident) {
+    String name;
+
+    name = ident.toString ();
+    return ('A' <= name.charAt (0)) && (name.charAt (0) <= 'Z');
+  }
+
+  int [] stack;
+  int stack_ptr, from, r;
+  Scanner.ScanAttribute a;
+
+# define push(x)	stack [++ stack_ptr] = x
+# define pop(x)		x = stack [stack_ptr --]
+# define stack_is_empty	(stack_ptr == 0)
+}
+
+BEGIN {
+  stack = new int [11];
+  stack_ptr = 0; // GetLookahead (2)
+  yyDebug = true;
+}
+
+TOKEN
+   IDENTIFIER	= 1
+   '('		= 2
+   ')'		= 3
+   '++'		= 4
+   ';'		= 5
+   '['		= 6
+   ']'		= 7
+   '{'		= 8
+   '}'		= 9
+
+START compound_statement declaration_list
+
+RULE
+
+compound_statement	: '{'
+			     [ #S    r = bufferOn (false, false);
+			       #SBTR push (bufferPosition); ]
+			  declaration_list 
+			     [ pop (from);
+			       r = reParse (yydeclaration_list, from, bufferPosition, true, true);
+			       if (stack_is_empty) {
+			         r = bufferOff ();
+				 bufferClear ();
+				 errorMessages (true);
+				 semActions (true);
+				 a = getAttribute (2);
+				 r = getLookahead (2);
+			       } ]
+			  statement_list
+			  '}'
+			.
+declaration_list	:
+			| declaration_list declaration
+			.
+statement_list		:
+			| statement_list statement
+			.
+declaration		: ? declaration declaration_specifier declarator ';'
+			.
+declaration_specifier	: TYPEDEFname [ System.out.println ("trial action"); ]
+				      { System.out.println ("final action"); }
+			.
+declarator		: IDENTIFIER  [ System.out.println ("trial action"); ]
+				      { System.out.println ("final action"); }
+			| '(' declarator ')'
+			| declarator '[' ']'
+			| compound_statement
+			.
+statement		: expression ';'
+			.
+expression		: expression '++'
+			| TYPEDEFname '(' expression ')'	/* cast */
+			| IDENTIFIER  '(' expression ')'	/* call */
+			| IDENTIFIER
+			.
+TYPEDEFname		: IDENTIFIER$i ? { isUpper ($i.ident /*$i.scan.ident*/) }
+			| IDENTIFIER ? IDENTIFIER
+			.

@@ -1,0 +1,29 @@
+*************************************************************************
+*									*
+*  l2r									*
+*									*
+*  transforms LEX specifications to REX specifications			*
+*									*
+*  Copyright (C) 1994 by						*
+*									*
+*  Dr. Josef Grosch							*
+*  CoCoLab - Datenverarbeitung						*
+*  Hoehenweg 6								*
+*  D-77855 Achern							*
+*  Germany								*
+*									*
+*  Phone   : +49-7841-669144						*
+*  Fax	   : +49-7841-669145						*
+*  Email   : grosch@cocolab.de						*
+*  Internet: www.cocolab.de						*
+*									*
+*************************************************************************
+
+Direct requests, comments, questions, and error reports to the address above.
+
+
+Before compiling l2r the library reuse/c has to be compiled.
+
+To compile and install l2r use:
+
+   make install LIB=... BIN=...

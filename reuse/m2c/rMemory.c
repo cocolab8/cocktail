@@ -1,0 +1,286 @@
+#include "SYSTEM_.h"
+
+#ifndef DEFINITION_Pointers
+#include "Pointers.h"
+#endif
+
+#ifndef DEFINITION_General
+#include "General.h"
+#endif
+
+#ifndef DEFINITION_rSystem
+#include "rSystem.h"
+#endif
+
+#ifndef DEFINITION_IO
+#include "IO.h"
+#endif
+
+#ifndef DEFINITION_rMemory
+#include "rMemory.h"
+#endif
+
+LONGCARD ZDtgCFKU_0;
+
+typedef struct S_1 *Z132;
+#define Z134	127
+#define Z135	7
+#define Z136	32
+#define Z137	16384
+typedef struct S_1 {
+Z132 Y0;
+LONGINT Y1;
+} Z133;
+typedef LONGCARD Z140;
+typedef LONGCARD Z141;
+static Z140 Z142;
+static struct S_2 {
+ADDRESS A[Z134 + 1];
+} Z143;
+static struct S_3 {
+ADDRESS A[Z136 + 1];
+} Z144;
+static ADDRESS Z145;
+static ADDRESS Z146;
+static Z140 Z147;
+static Z141 Z148;
+static BOOLEAN Z163 ARGS ((ADDRESS Z164));
+
+ADDRESS ZDtgCFKU_1
+# ifdef HAVE_ARGS
+(LONGINT Z150)
+# else
+(Z150)
+LONGINT Z150;
+# endif
+{
+Z132 Z151, Z152, Z153, Z154, Z155;
+CARDINAL Z156;
+LONGINT Z157, Z158;
+Z141 Z148;
+ADDRESS Z159;
+
+Z150 = (LONGINT)((BITSET)(Z150 + ZdaDDAD7_1 - 1) & ZdaDDAD7_2);
+if (Z150 <= Z134) {
+if ((LONGCARD)Z150 < Z142) {
+Z150 = Z142;
+}
+if (Z143.A[Z150] != NIL) {
+Z151 = (Z132)Z143.A[Z150];
+Z143.A[Z150] = (ADDRESS)Z151->Y0;
+return (ADDRESS)Z151;
+} else {
+if (PTRDIFF(Z146, Z145) < Z150) {
+if (PTRDIFF(Z146, Z145) >= (LONGINT)Z142) {
+ZDtgCFKU_2(PTRDIFF(Z146, Z145), Z145);
+}
+Z145 = ZDtgCFKU_1((LONGINT)Z137);
+Z146 = Z145 + Z137;
+}
+Z159 = Z145;
+INC1(Z145, (CARDINAL)Z150);
+return Z159;
+}
+} else {
+Z156 = ZdaDDAD7_7((LONGCARD)Z150);
+Z152 = (Z132)Z144.A[Z156];
+Z153 = (Z132)ADR (Z144.A[Z156]);
+Z154 = NIL;
+Z158 = 1000000000;
+while (Z152 != NIL) {
+Z157 = Z152->Y1;
+if (Z157 >= Z150) {
+if (Z157 == Z150) {
+Z153->Y0 = Z152->Y0;
+return (ADDRESS)Z152;
+}
+if (Z157 < Z158) {
+Z154 = Z152;
+Z158 = Z157;
+Z155 = Z153;
+}
+}
+Z153 = Z152;
+Z152 = Z152->Y0;
+}
+if (Z154 != NIL) {
+Z155->Y0 = Z154->Y0;
+if ((LONGCARD)(Z158 - Z150) >= Z142) {
+ZDtgCFKU_2(Z158 - Z150, (ADDRESS)Z154 + (CARDINAL)Z150);
+}
+return (ADDRESS)Z154;
+}
+for (Z148 = Z156 + 1; Z148 <= Z136; Z148 += 1) {
+Z152 = (Z132)Z144.A[Z148];
+if (Z152 != NIL) {
+Z144.A[Z148] = (ADDRESS)Z152->Y0;
+if ((LONGCARD)(Z152->Y1 - Z150) >= Z142) {
+ZDtgCFKU_2(Z152->Y1 - Z150, (ADDRESS)Z152 + (CARDINAL)Z150);
+}
+return (ADDRESS)Z152;
+}
+}
+if (Z150 < Z137) {
+if (PTRDIFF(Z146, Z145) < Z150) {
+if (PTRDIFF(Z146, Z145) >= (LONGINT)Z142) {
+ZDtgCFKU_2(PTRDIFF(Z146, Z145), Z145);
+}
+Z145 = ZDtgCFKU_1((LONGINT)Z137);
+Z146 = Z145 + Z137;
+}
+Z159 = Z145;
+INC1(Z145, (CARDINAL)Z150);
+return Z159;
+} else {
+Z151 = (Z132)rAlloc(Z150);
+if (Z151 != NIL) {
+INC1(ZDtgCFKU_0, Z150);
+}
+return (ADDRESS)Z151;
+}
+}
+}
+
+void ZDtgCFKU_2
+# ifdef HAVE_ARGS
+(LONGINT Z150, ADDRESS Z162)
+# else
+(Z150, Z162)
+LONGINT Z150;
+ADDRESS Z162;
+# endif
+{
+Z132 Z151;
+Z141 Z156;
+
+Z150 = (LONGINT)((BITSET)(Z150 + ZdaDDAD7_1 - 1) & ZdaDDAD7_2);
+Z151 = (Z132)Z162;
+if (Z150 <= Z134) {
+if ((LONGCARD)Z150 < Z142) {
+Z150 = Z142;
+}
+Z151->Y0 = (Z132)Z143.A[Z150];
+Z143.A[Z150] = (ADDRESS)Z151;
+} else {
+Z156 = ZdaDDAD7_7((LONGCARD)Z150);
+Z151->Y0 = (Z132)Z144.A[Z156];
+Z151->Y1 = Z150;
+Z144.A[Z156] = (ADDRESS)Z151;
+}
+}
+
+static BOOLEAN Z163
+# ifdef HAVE_ARGS
+(ADDRESS Z164)
+# else
+(Z164)
+ADDRESS Z164;
+# endif
+{
+return PTRINT(Z164) % Z142 != 0;
+}
+
+void ZDtgCFKU_3
+ ARGS ((void))
+{
+Z132 Z151;
+INTEGER Z166;
+LONGCARD Z167;
+
+Z167 = PTRDIFF(Z146, Z145);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"PoolFreePtr, PoolEndPtr = ", 26L);
+ZfM_28((ZDz6VQCC_4)ZfM_1, PTRINT(Z145), 8L, 16L);
+ZfM_24((ZDz6VQCC_4)ZfM_1, ' ');
+ZfM_28((ZDz6VQCC_4)ZfM_1, PTRINT(Z146), 8L, 16L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"SmallChain:", 11L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+for (Z147 = Z142; Z147 <= Z134; Z147 += 1) {
+Z166 = 0;
+Z151 = (Z132)Z143.A[Z147];
+if (Z151 != NIL) {
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)Z147, 2L);
+ZfM_24((ZDz6VQCC_4)ZfM_1, ':');
+for (;;) {
+if (Z151 == NIL) {
+goto EXIT_1;
+}
+if (Z166 == 8) {
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"    ", 4L);
+Z166 = 0;
+}
+INC(Z166);
+ZfM_24((ZDz6VQCC_4)ZfM_1, ' ');
+ZfM_28((ZDz6VQCC_4)ZfM_1, PTRINT((ADDRESS)Z151), 8L, 16L);
+INC1(Z167, Z147);
+if (Z163((ADDRESS)Z151)) {
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)" <=", 3L);
+goto EXIT_1;
+}
+Z151 = Z151->Y0;
+} EXIT_1:;
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+}
+}
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"LargeChain:", 11L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+for (Z148 = Z135; Z148 <= Z136; Z148 += 1) {
+Z166 = 0;
+Z151 = (Z132)Z144.A[Z148];
+if (Z151 != NIL) {
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)Z148, 2L);
+ZfM_24((ZDz6VQCC_4)ZfM_1, ':');
+for (;;) {
+if (Z151 == NIL) {
+goto EXIT_2;
+}
+if (Z166 == 5) {
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"    ", 4L);
+Z166 = 0;
+}
+INC(Z166);
+ZfM_24((ZDz6VQCC_4)ZfM_1, ' ');
+ZfM_28((ZDz6VQCC_4)ZfM_1, PTRINT((ADDRESS)Z151), 8L, 16L);
+if (Z163((ADDRESS)Z151)) {
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)" <=", 3L);
+goto EXIT_2;
+}
+INC1(Z167, Z151->Y1);
+ZfM_25((ZDz6VQCC_4)ZfM_1, Z151->Y1, 7L);
+Z151 = Z151->Y0;
+} EXIT_2:;
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+}
+}
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_29((ZDz6VQCC_4)ZfM_1, (STRING)"MemoryFree = ", 13L);
+ZfM_25((ZDz6VQCC_4)ZfM_1, (LONGINT)Z167, 0L);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+ZfM_33((ZDz6VQCC_4)ZfM_1);
+}
+
+void BEGIN_rMemory ARGS ((void))
+{
+  static BOOLEAN has_been_called = FALSE;
+  if (has_been_called) return;
+  has_been_called = TRUE;
+BEGIN_Pointers ();
+BEGIN_General ();
+BEGIN_rSystem ();
+BEGIN_IO ();
+
+Z142 = ZdaDDAD7_4((LONGINT)sizeof (Z132), (LONGINT)ZdaDDAD7_1);
+for (Z147 = Z142; Z147 <= Z134; Z147 += 1) {
+Z143.A[Z147] = (ADDRESS)NIL;
+}
+for (Z148 = Z135; Z148 <= Z136; Z148 += 1) {
+Z144.A[Z148] = (ADDRESS)NIL;
+}
+Z145 = (ADDRESS)NIL;
+Z146 = (ADDRESS)NIL;
+ZDtgCFKU_0 = 0;
+}

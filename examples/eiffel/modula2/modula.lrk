@@ -1,0 +1,247 @@
+GLOBAL {# define SPELLING}
+
+TOKEN
+
+   Ident		= 74
+   IntConst		= 1
+   RealConst		= 5
+   CharConst		= 3
+   StringConst		= 6
+   '#'			= 7
+   '('			= 9
+   ')'			= 10
+   '*'			= 11
+   '+'			= 12
+   ','			= 13
+   '-'			= 14
+   '.'			= 15
+   '..'			= 16
+   '/'			= 17
+   ':'			= 18
+   ':='			= 19
+   ';'			= 20
+   '<'			= 21
+   '<='			= 22
+   '='			= 24
+   '>'			= 25
+   '>='			= 26
+   '['			= 27
+   ']'			= 28
+   '^'			= 29
+   '{'			= 30
+   '|'			= 31
+   '}'			= 32
+   AND			= 34
+   ARRAY		= 35
+   'BEGIN'		= 36
+   BY			= 37
+   CASE			= 38
+   CONST		= 39
+   DEFINITION		= 40
+   DIV			= 41
+   DO			= 42
+   ELSE			= 43
+   ELSIF		= 44
+   'END'		= 45
+   EXIT			= 46
+   'EXPORT'		= 47
+   'FOR'		= 48
+   FROM			= 49
+   IF			= 50
+   IMPLEMENTATION	= 51
+   'IMPORT'		= 52
+   'IN'			= 53
+   LOOP			= 54
+   MOD			= 55
+   'MODULE'		= 56
+   NOT			= 57
+   OF			= 58
+   OR			= 59
+   POINTER		= 60
+   PROCEDURE		= 61
+   QUALIFIED		= 62
+   RECORD		= 63
+   REPEAT		= 64
+   RETURN		= 65
+   SET			= 66
+   THEN			= 67
+   TO			= 68
+   TYPE			= 69
+   UNTIL		= 70
+   VAR			= 71
+   WHILE		= 72
+   WITH			= 73
+
+PREC
+
+LEFT  '=' '#' '<' '<=' '>' '>=' 'IN'
+LEFT  MONOP
+LEFT  '+' '-' OR
+LEFT  '*' '/' DIV MOD AND
+LEFT  NOT
+
+RULE
+
+compilation_unit : definition_module .
+compilation_unit : implementation_module .
+compilation_unit : program_module .
+qualident : Ident .
+qualident : qualident '.' Ident .
+ident_list : Ident .
+ident_list : ident_list ',' Ident .
+constant_declaration : Ident '=' expression .
+type_declaration : Ident '=' type .
+type : simple_type .
+type : ARRAY simple_type_list OF type .
+type : RECORD field_list_sequence 'END' .
+type : SET OF simple_type .
+type : POINTER TO type .
+type : PROCEDURE .
+type : PROCEDURE '(' ')' .
+type : PROCEDURE '(' ')' ':' qualident .
+type : PROCEDURE '(' formal_type_list ')' .
+type : PROCEDURE '(' formal_type_list ')' ':' qualident .
+simple_type_list : simple_type .
+simple_type_list : simple_type_list ',' simple_type .
+simple_type : qualident .
+simple_type : '(' ident_list ')' .
+simple_type : '[' expression '..' expression ']' .
+simple_type : qualident '[' expression '..' expression ']' .
+field_list_sequence : field_list .
+field_list_sequence : field_list_sequence ';' field_list .
+field_list : .
+field_list : ident_list ':' type .
+field_list : CASE ':' qualident OF variant_list else_option_1 'END' .
+field_list : CASE Ident ':' qualident OF variant_list else_option_1 'END' .
+else_option_1 : .
+else_option_1 : ELSE field_list_sequence .
+variant_list : variant .
+variant_list : variant_list '|' variant .
+variant : .
+variant : case_label_list ':' field_list_sequence .
+case_label_list : case_labels .
+case_label_list : case_label_list ',' case_labels .
+case_labels : expression .
+case_labels : expression '..' expression .
+formal_type_list : formal_type .
+formal_type_list : VAR formal_type .
+formal_type_list : formal_type_list ',' formal_type .
+formal_type_list : formal_type_list ',' VAR formal_type .
+variable_declaration : ident_list ':' type .
+designator : qualident .
+designator : qualident selector_list .
+selector_list : '[' exp_list ']' .
+selector_list : '^' .
+selector_list : selector_list '.' Ident .
+selector_list : selector_list '[' exp_list ']' .
+selector_list : selector_list '^' .
+exp_list : expression .
+exp_list : exp_list ',' expression .
+expression : expression '=' expression .
+expression : expression '#' expression .
+expression : expression '<' expression .
+expression : expression '<=' expression .
+expression : expression '>' expression .
+expression : expression '>=' expression .
+expression : expression 'IN' expression .
+expression : '+' expression PREC MONOP .
+expression : '-' expression PREC MONOP .
+expression : expression '+' expression .
+expression : expression '-' expression .
+expression : expression OR expression .
+expression : expression '*' expression .
+expression : expression '/' expression .
+expression : expression DIV expression .
+expression : expression MOD expression .
+expression : expression AND expression .
+expression : NOT expression .
+expression : IntConst .
+expression : RealConst .
+expression : CharConst .
+expression : StringConst .
+expression : procedure_call .
+expression : '(' expression ')' .
+expression : '{' '}' .
+expression : '{' element_list '}' .
+expression : qualident '{' '}' .
+expression : qualident '{' element_list '}' .
+element_list : element .
+element_list : element_list ',' element .
+element : expression .
+element : expression '..' expression .
+statement : .
+statement : designator ':=' expression .
+statement : procedure_call .
+statement : IF expression THEN statement_sequence elsif_list else_option_2 'END' .
+statement : CASE expression OF case_list else_option_2 'END' .
+statement : WHILE expression DO statement_sequence 'END' .
+statement : REPEAT statement_sequence UNTIL expression .
+statement : LOOP statement_sequence 'END' .
+statement : 'FOR' Ident ':=' expression TO expression DO statement_sequence 'END' .
+statement : 'FOR' Ident ':=' expression TO expression BY expression DO statement_sequence 'END' .
+statement : WITH designator DO statement_sequence 'END' .
+statement : EXIT .
+statement : RETURN .
+statement : RETURN expression .
+procedure_call : designator .
+procedure_call : designator '(' ')' .
+procedure_call : designator '(' exp_list ')' .
+statement_sequence : statement .
+statement_sequence : statement_sequence ';' statement .
+elsif_list : .
+elsif_list : elsif_list ELSIF expression THEN statement_sequence .
+else_option_2 : .
+else_option_2 : ELSE statement_sequence .
+case_list : case .
+case_list : case_list '|' case .
+case : .
+case : case_label_list ':' statement_sequence .
+procedure_declaration : procedure_heading ';' block Ident .
+procedure_heading : PROCEDURE Ident .
+procedure_heading : PROCEDURE Ident '(' ')' .
+procedure_heading : PROCEDURE Ident '(' ')' ':' qualident .
+procedure_heading : PROCEDURE Ident '(' f_p_section_list ')' .
+procedure_heading : PROCEDURE Ident '(' f_p_section_list ')' ':' qualident .
+block : declaration_list 'END' .
+block : declaration_list 'BEGIN' statement_sequence 'END' .
+declaration_list : .
+declaration_list : declaration_list declaration .
+declaration : CONST constant_declaration_list .
+declaration : TYPE type_declaration_list .
+declaration : VAR variable_declaration_list .
+declaration : procedure_declaration ';' .
+declaration : module_declaration ';' .
+constant_declaration_list : .
+constant_declaration_list : constant_declaration_list constant_declaration ';' .
+type_declaration_list : .
+type_declaration_list : type_declaration_list type_declaration ';' .
+variable_declaration_list : .
+variable_declaration_list : variable_declaration_list variable_declaration ';' .
+f_p_section_list : f_p_section .
+f_p_section_list : f_p_section_list ';' f_p_section .
+f_p_section : ident_list ':' formal_type .
+f_p_section : VAR ident_list ':' formal_type .
+formal_type : qualident .
+formal_type : ARRAY OF qualident .
+module_declaration : 'MODULE' Ident priority ';' import_list export block Ident .
+priority : .
+priority : '[' expression ']' .
+export : .
+export : 'EXPORT' ident_list ';' .
+export : 'EXPORT' QUALIFIED ident_list ';' .
+import_list : .
+import_list : import_list import .
+import : 'IMPORT' ident_list ';' .
+import : FROM Ident 'IMPORT' ident_list ';' .
+definition_module : DEFINITION 'MODULE' Ident ';' import_list definition_list 'END' Ident '.' .
+definition_list : .
+definition_list : definition_list definition .
+definition : CONST constant_declaration_list .
+definition : TYPE type_declaration_list_2 .
+definition : VAR variable_declaration_list .
+definition : procedure_heading ';' .
+type_declaration_list_2 : .
+type_declaration_list_2 : type_declaration_list_2 Ident ';' .
+type_declaration_list_2 : type_declaration_list_2 Ident '=' type ';' .
+program_module : 'MODULE' Ident priority ';' import_list block Ident '.' .
+implementation_module : IMPLEMENTATION 'MODULE' Ident priority ';' import_list block Ident '.' .

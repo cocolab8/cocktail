@@ -1,0 +1,16 @@
+/* hag */
+
+TREE trees.Tree
+
+PROPERTY RULE
+
+R	= F IN [n IN] [r OUT] { F:n := n; r := F:r; } .
+
+F	=      [n]    [r]     { r   := 1; } <
+
+   P1	= F                   { F   := n <= 1 ? (\F) new P2 () : new P1 ();
+		                F:n := n - 1;
+		                r   := F:r * n; } .
+
+   P2	= .
+> .

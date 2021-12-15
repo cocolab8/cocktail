@@ -1,0 +1,924 @@
+
+
+
+
+
+
+
+
+
+
+___________________________________________________________________
+
+
+                                   Automatische Generierung
+                                   effizienter Compiler
+
+                                   J. Grosch
+
+
+___________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+___________________________________________________________________
+
+                                   DR. JOSEF GROSCH
+
+                                   COCOLAB - DATENVERARBEITUNG
+
+                                   GERMANY
+
+___________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                   Cocktail
+
+
+                      Toolbox for Compiler Construction
+
+
+         ___________________________________________________________
+
+
+                Automatische Generierung effizienter Compiler
+
+
+                                 Josef Grosch
+
+
+                                Jan. 12, 1989
+
+
+         ___________________________________________________________
+
+
+                               Document No. 13
+
+
+                     Copyright (C) 1994 Dr. Josef Grosch
+
+
+                               Dr. Josef Grosch
+                         CoCoLab - Datenverarbeitung
+                              Breslauer Str. 64c
+                               76139 Karlsruhe
+                                   Germany
+                           Phone: +49-721-91537544
+                            Fax: +49-721-91537543
+                          Email: grosch@cocolab.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                             1
+
+
+                Automatische Generierung effizienter Compiler
+
+
+Zusammenfassung
+
+Das Projekt UWE (Uebersetzerbau-Werkzeuge) zielt auf die Erstellung von Gener-
+atorprogrammen, die es erlauben Compiler weitgehend automatisch  zu  erzeugen.
+Fuer  die  Analysephase von Compilern werden drei Generatoren vorgestellt: Rex
+ist ein Scanner-Generator auf der Basis regulaerer Ausdruecke. Der Parser-Gen-
+erator  Lalr  erzeugt aus LALR(1)-Grammatiken tabellengesteuerte Parser mit S-
+Attributierung und automatischer Fehlerbehandlung.  Der  Parser-Generator  Ell
+erzeugt  aus  LL(1)-Grammatiken  Parser  nach  dem  Verfahren  des  rekursiven
+Abstiegs mit einem Mechanismus zur L-Attributierung und  ebenfalls  automatis-
+cher  Fehlerbehandlung.   Alle  Generatoren  sind in Modula-2 programmiert und
+erzeugen Programme in C  oder  Modula-2.  Die  herausragende  Eigenschaft  der
+erzeugten  Programme  ist  ihre  Geschwindigkeit. Auf einem MC 68020 Prozessor
+erreichen die Scanner bis zu 200.000 und die Parser um die 400.000 Zeilen  pro
+Minute. Diese Geschwindigkeiten uebertreffen die UNIX Generatoren Lex und Yacc
+um die Faktoren 4 bzw. 2 bis 3.
+
+Abstract
+
+The project UWE (compiler construction tools) has the goal to implement a com-
+plete set of tools for the largely automatic construction of compilers.  Three
+tools for the analysis phase of compilers are presented: Rex is a scanner gen-
+erator  based on regular expressions.  The parser generator Lalr generates ta-
+ble-driven parsers for LALR(1) grammars that include a mechanism for  S-attri-
+bution and automatic error reporting, recovery, and repair.  The parser gener-
+ator Ell generates recursive descent parsers for LL(1) grammars with a  mecha-
+nism  for  L-attribution and an automatic error recovery similar to Lalr.  All
+the tools are implemented in Modula-2 and generate programs in C or  Modula-2.
+The  outstanding  property  of the generated programs is their speed.  On a MC
+68020 processor the scanners reach  up  to  200,000  and  the  parsers  around
+400,000  lines  per  minute.  These speeds represent in comparison to the UNIX
+tools Lex and Yacc a clear improvement by factors of 4 respectively 2 to 3.
+
+Projekt-Ueberblick
+
+     Das Projekt UWE (fuer  Uebersetzerbau-Werkzeuge)  befasst  sich  mit  der
+Technik  des  Uebersetzerbaus  (Compiler-Baus), der Systematisierung der dabei
+verwendeten Methoden und Verfahren  sowie  deren  Umsetzung  in  Generatorpro-
+gramme.  Dies  schliesst  die Entwicklung von Spezifikationstechniken fuer die
+verschiedenen Compiler-Teile ein. Das Ziel  ist  die  Erstellung  eines  voll-
+staendigen  Satzes  von  Werkzeugen  oder  Generatorprogrammen  zur weitgehend
+automatischen Konstruktion von Compilern.  Dabei wird  gegenueber  einer  Com-
+piler~-Ent~wick~lung von Hand angestrebt, den Konstruktionsaufwand deutlich zu
+re~du~zie~ren, die Fehlerfreiheit und Zuverlaessigkeit zu  steigern  und  eine
+vergleichbare Effizienz bzw.  Uebersetzungsgeschwindigkeit zu erreichen.
+
+     Die  Beschaeftigung  mit Uebersetzerbau-Werkzeugen geht auf den Lehrstuhl
+fuer Uebersetzerbau an der Universitaet Karlsruhe zurueck, aus dem heraus  die
+GMD  Forschungsstelle Karlsruhe entstanden ist. Dort wurden bereits das Parser
+
+
+
+
+
+
+
+
+
+
+
+                                                                             2
+
+
+Generating  System  PGS  (LALR(1)-Zerteiler-Generator),  der  Generator   fuer
+Attribut-Grammatiken GAG (semantische Analyse) und das Code Generator Synthese
+System CGSS (erzeugt Code-Generatoren aus Maschinenbeschreibungen) entwickelt.
+Diese  Werkzeuge wurden an der GMD For~schungs~stelle Karlsruhe weiterentwick-
+elt und inzwischen weltweit an ueber 100  Institutionen  weitergegeben.  Diese
+quasi  erste  Generation  von  Werkzeugen erfuellte bereits die Forderung nach
+Steigerung der Zuverlaessigkeit der erzeugten Compiler-Teile. Das kann man  am
+erfolgreichen  Einsatz fuer realistische Anwendungen sehen, wie etwa dem Karl-
+sruher Ada Compiler oder der Norm fuer PEARL. Die im  folgenden  vorgestellten
+Werkzeuge  der  zweiten  Generation  schliessen  die  Luecke  im  Bereich  der
+lexikalischen Analyse und erzeugen  fuer  die  Syntaxanalyse  komfortable  und
+effiziente Zerteiler.
+
+Der Scanner-Generator Rex
+
+     Der  Scanner-Generator  Rex  wurde mit dem Ziel entwickelt, die maechtige
+Spezifikationsmethode der regulaeren Ausdruecke mit der Generierung moeglichst
+effizienter Scanner zu kombinieren. Der Name Rex steht fuer regular expression
+tool und spiegelt die Spezifikationsmethode wider.  Eine Scanner-Spezifikation
+besteht  im  Prinzip  aus  einer  Menge regulaerer Ausdruecke wobei jedem eine
+semantische Aktion zugeordnet ist. Diese Aktionen sind beliebige  Anweisungen,
+die  in  einer  der Zielsprachen C oder Modula-2 programmiert sind. Immer wenn
+eine Zeichenkette, die durch einen regulaeren Ausdruck  beschrieben  wird,  in
+der Eingabe das Scanners erkannt wird, werden die Anweisungen der zugehoerigen
+Aktion ausgefuehrt. Um Zeichenketten auch in Abhaengigkeit vom Kontext  erken-
+nen zu koennen stehen sogenannte Startzustaende zur Behandlung von linkem Kon-
+text zur Verfuegung, und der rechte Kontext  kann  durch  einen  zusaetzlichen
+regulaeren  Ausdruck spezifiziert werden. Sollten mehrere regulaere Ausdruecke
+zu einer Eingabe  passen,  so  wird  derjenige  bevorzugt,  der  die  laengste
+Zeichenfolge  erkennt.  Falls immer noch mehrere Moeglichkeiten bestehen, wird
+davon der erste regulaere Ausdruck in der Spezifikation gewaehlt.
+
+     Mit Rex erzeugte Scanner stellen automatisch fuer jede erkannte  Zeichen-
+kette  die Zeilen- und Spalten-Position zur Verfuegung. Fuer Sprachen wie Pas-
+cal und Ada, wo Gross- und Kleinbuchstaben nicht unterschieden werden, gibt es
+eine Normalisierung auf Gross- oder Kleinbuchstaben. Vordefinierte Regeln ges-
+tatten das Ueberlesen unbedeutender Zeichen wie Leerzeichen, Tabulatoren  oder
+Zeilenwechsel.
+
+     Die  erzeugten  Scanner sind tabellengesteuerte deterministische endliche
+Automaten. Da die Tabellen duenn besetzte Matrizen sind, werden  sie  mit  der
+sogenannten  "Kammvektor-Technik"  komprimiert.  Diese  kombiniert grosse Spe-
+icherreduktion mit schnellem Tabellenzugriff. Der Generator Rex  ist  in  Mod-
+ula-2  programmiert  und  kann zur Zeit Scanner in den Sprachen C und Modula-2
+erzeugen.  Rex laeuft inzwischen auf den Rechnern  SUN/UNIX,  PCS  Cadmus/UNIX
+und VAX/BSD UNIX bzw. ULTRIX.
+
+     Die  herausragende  Eigenschaft  von  Rex  ist  die  Geschwindigkeit. Die
+erzeugten Scanner verarbeiten bis zu  200.000  ohne  und  150.000  Zeilen  pro
+Minute mit Anwendung eines Hash-Verfahrens fuer Bezeichner. Dies ist die vier-
+fache Geschwindigkeit gegenueber  Scannern,  die  mit  dem  UNIX-Werkzeug  Lex
+[Les75]  erzeugt wurden. In typischen Faellen haben die ge~ne~rier~ten Scanner
+
+
+
+
+
+
+
+
+
+
+
+                                                                             3
+
+
+nur ein Viertel der Groesse wie bei Lex (z. B. 11 KB fuer Modula-2).  Gewoehn-
+lich benoetigt Rex nur 1/10 der Zeit von Lex um einen Scanner zu erzeugen. Die
+genannten Zahlen wurden auf einem MC 68020 Prozessor gemessen.
+
+Scanner-Spezifikation mit Rechts-Kontext
+
+     Die folgenden kleinen Beispiele zeigen wie Spezifikationen fuer Rex [Gro]
+aussehen.  Abbildung  1 spezifiziert den Aufbau ganzer und reeller Zahlen fuer
+die Sprache Modula-2. Die erste Zeile besagt, dass eine ganze Zahl aus  Folgen
+von Zeichen aus der Menge 0 bis 9 besteht. In Modula-2 gibt es, wie in manchen
+anderen Sprachen auch,  eine  Stelle,  an  der  die  Strategie  der  laengsten
+Zeichenkette fehlschlaegt. So sollte etwa die Eingabe 1.. in die Zeichenketten
+"1" und "..", nicht aber in "1." und "." zerlegt werden, was alles legale Mod-
+ula-2-Symbole waeren.
+
+
+    {0-9} +             : { RETURN SymDecimal; }
+    {0-9} + / ".."      : { RETURN SymDecimal; }
+    {0-9} + "." {0-9} * (E {+\-} ? {0-9} +) ?
+                        : { RETURN SymReal   ; }
+    ".."                : { RETURN SymRange  ; }
+    "."                 : { RETURN SymDot    ; }
+
+    Abbildung 1: Scanner-Spezifikation mit Rechts-Kontext
+
+
+     Das Problem kann mit einem zusaetzlichen regulaeren Ausdruck geloest wer-
+den. Dieser beschreibt den rechten Kontext eines Symbols welches zu einer Aus-
+nahme  der  Strategie  der laengsten Zeichenkette fuehrt. In der zweiten Zeile
+trennt das Zeichen '/' zwei regulaere Ausdruecke  und  spezifiziert  so,  dass
+eine   Ziffernfolge  erkannt  werden  soll,  wenn  zwei  Punkte  folgen.   Die
+restlichen Zeilen in Abbildung 1 beschreiben  die  weiteren  Symbole,  die  an
+diesem Problem beteiligt sind.
+
+Scanner-Spezifikation mit Startzustaenden
+
+
+
+    GLOBAL  {VAR NestingLevel: CARDINAL;}
+    BEGIN   {NestingLevel := 0;}
+    EOF     {IF yyStartState = Comment THEN Error ("unclosed comment"); END;}
+    DEFINE  CmtCh   = - {*(\t\n}.
+    START   Comment
+    RULES
+               "(*" : {INC (NestingLevel); yyStart (Comment);}
+    #Comment#  "*)" : {DEC (NestingLevel);
+                       IF NestingLevel = 0 THEN yyStart (STD); END;}
+    #Comment#  "(" | "*" | CmtCh + : {}
+
+    Abbildung 2: Scanner Spezifikation fuer geschachtelte Kommentare
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                             4
+
+
+     Manche  Probleme lassen sich mit regulaeren Ausdruecken allein nicht loe-
+sen. So erfordert etwa die Erkennung  geschachtelter  Kommentare  in  Modula-2
+einen zusaetzlichen Zaehler und den Einsatz von Startzustaenden (Abbildung 2).
+Der Zaehler wird im Abschnitt GLOBAL de~kla~riert und im Abschnitt BEGIN  ini-
+tialisiert.  Der Abschnitt START vereinbart einen Startzustand namens Comment.
+Regeln, vor denen ein Startzustand steht, sind  nur  wirksam,  wenn  sich  der
+Scanner  in  diesem  Startzustand  befindet. Die erste Regel erkennt oeffnende
+Kommentarklammern,  erhoeht  den  Schachtelungszaehler  und  schaltet  in  den
+Startzustand  Comment  um.  In  letzterem sind alle 3 Regeln wirksam. Entweder
+werden Kommentarzeichen ueberlesen oder  bei  schliessenden  Kommentarklammern
+der Schachtelungszaehler erniedrigt. Erreicht dieser den Wert Null, so ist der
+Kommentar zu Ende, und es wird wieder in den vordefinierten  Startzustand  STD
+zurueckgekehrt.  Im  Abschnitt  EOF  stehen  Aktionen,  die beim Erreichen des
+Eingabeendes auszufuehren sind. Hier wird im Falle einer fehlenden Kommentark-
+lammer ein entsprechender Fehler gemeldet.
+
+Vergleich von Scanner-Generatoren
+
+     Die  Tabelle  1 vergleicht Rex mit dem UNIX Scanner-Generator Lex und dem
+Lex-Nachbau Flex (fuer fast Lex). Die Tabelle  vergleicht  die  Spezifikation-
+stechniken,  die  Werkzeuge  und  die generierten Scanner. Die spezifikations-
+abhaengigen Zahlen wie Ge~ne~rie~rungs~zeit und  Scanner-Groesse  gelten  fuer
+einen  Modula-2-Scanner.  Die  Zahlen  wurden  auf  einem  MC  68020 Prozessor
+gemessen.
+
+Der Parser-Generator Lalr
+
+     Wie Rex wurde der Parser-Generator Lalr  mit  dem  Ziel  entwickelt  eine
+maechtige  Spezifikationstechnik  fuer kontextfreie Grammatiken mit der Erzeu-
+gung effizienter Parser (Zerteiler) zu kombinieren. Der Name Lalr nimmt  Bezug
+auf  die  Klasse  der  LALR(1)-Grammatiken,  fuer die Zerteiler erzeugt werden
+koennen. Diese Grammatiken koennen in erweiterter BNF geschrieben  sein.  Jede
+Grammatikregel kann mit semantischen Aktionen versehen werden, welche wiederum
+aus  beliebigen  Anweisungen  der  Zielsprache  bestehen.  Wenn  der  erzeugte
+Zerteiler  eine  Grammatikregel  erkannt hat, werden die zugeordneten Aktionen
+ausgefuehrt. Es steht ein Mechanismus zur S-Attributierung zur Verfuegung,  d.
+h. abgeleitete Attribute koennen waehrend der Zerteilung berechnet werden.
+
+     Gehoert  eine Grammatik nicht zur LALR(1)-Klasse, so stellt der Generator
+LR-Konflikte fest. Das Problem dabei besteht darin, fuer einen  Konflikt  aus-
+sagekraeftige  Information  zu liefern, um das Problem in der Grammatik finden
+zu koennen und dann fuer Abhilfe zu sorgen. Waehrend andere Generatoren  meist
+nur  den  Konflikt in Begriffen von internen Zustaenden und Situationen melden
+gibt Lalr Ableitungsbaeume aus,  die  die  Konfliktbehebung  wesentlich  erle-
+ichtern.   Syntaxfehler  werden von den generierten Zerteilern vollautomatisch
+behandelt. Dies  schliesst  Fehlermeldung,  Wiederaufsetzen  der  Analyse  und
+Fehlerreparatur  ein.  (Die genannten Eigenschaften werden unten naeher ausge-
+fuehrt.)
+
+     Die erzeugten Parser sind tabellengesteuert, wobei die  Tabellen  wie  im
+Fall von Rex mittels Kammvektor-Technik komprimiert werden. Der Generator Lalr
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                             5
+
+
+
+               Tabelle 1: Vergleich einiger Scanner-Generatoren
+
+
++-------------------------------+-----------------------------------------------------------+
+|                               | Lex                 Flex                Rex               |
++-------------------------------+-----------------------------------------------------------+
+|Spezifikationsmethode          | regulaere           regulaere           regulaere         |
+|                               |   Ausdruecke          Ausdruecke          Ausdruecke      |
+|semantische Aktionen           | ja                  ja                  ja                |
+|Rechts-Kontext                 | ja                  ja                  ja                |
+|Links-Kontext (Startzustaende) | ja                  ja                  ja                |
++-------------------------------+-----------------------------------------------------------+
+|Konfliktloesung                | laengste Folge      laengste Folge      laengste Folge    |
+|                               | erste Regel         erste Regel         erste Regel       |
++-------------------------------+-----------------------------------------------------------+
+|Quellposition                  | Zeile               -                   Zeile + Spalte    |
+|Normalisierung                 | -                   ja                  ja                |
+|vordefinierte Regeln zum       | -                   -                   ja                |
+|   Ueberlesen                  |                                                           |
+|mehrere Loesungen (REJECT)     | ja                  ja                  -                 |
+|Anpassung interner             | von Hand            automatisch         automatisch       |
+|   Datenstrukturen             |                                                           |
++-------------------------------+-----------------------------------------------------------+
+|Scanneralgorithmus             | tabellengesteuert   tabellengesteuert   tabellengesteuert |
+|Tabellenkompression            | Kammvektor          Kammvektor          Kammvektor        |
++-------------------------------+-----------------------------------------------------------+
+|Implementierungssprache        | C                   C                   Modula-2          |
+|Zielsprachen                   | C                   C                   C, Modula-2       |
++-------------------------------+-----------------------------------------------------------+
+|Geschwindigkeit [Zeilen/Min.]  |                                                           |
+|   ohne Hashing                | 36.400              139.000             182.700           |
+|   mit Hashing                 | 34.700              118.000             141.400           |
++-------------------------------+-----------------------------------------------------------+
+|Tabellengroesse [Bytes]        | 39.200              57.300              4.400             |
+|Scanner-Groesse [Bytes]        | 43.800              64.100              11.200            |
++-------------------------------+-----------------------------------------------------------+
+|Generierungszeit [Sek.]        | 73,7                7,2                 4,9               |
++-------------------------------+-----------------------------------------------------------+
+
+ist in Modula-2 programmiert und kann zur Zeit Zerteiler  in  C  und  Modula-2
+erzeugen.  Wie  Rex laeuft Lalr inzwischen auf den Rechnern SUN/UNIX, PCS Cad-
+mus/UNIX und VAX/BSD UNIX bzw. ULTRIX.
+
+     Mit Lalr erzeugte Zerteiler sind 2 bis 3 Mal schneller als mit  dem  UNIX
+Werkzeug  Yacc  [Joh75] generierte. Sie erreichen eine Geschwindigkeit von bis
+zu 400.000 Zeilen pro Minute auf einem MC 68020 Prozessor, wobei die Zeit fuer
+den  Scanner nicht beruecksichtigt ist. Von der Groesse her sind die Zerteiler
+im Vergleich zu Yacc etwas groesser (z. B. 37 KB fuer Ada). Im folgenden  wer-
+den einige Eigenschaften von Lalr naeher vorgestellt.
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                             6
+
+
+S-Attributierung
+
+     Die  Spezifikation eines Zerteilers [GrV] folgt dem Stil einer Rex Spezi-
+fikation. Abbildung 3 zeigt ein einfaches Beispiel  fuer  einen  Tischrechner,
+welcher  arithmetische  Ausdruecke  akzeptiert, die aus den Operatoren + und *
+sowie Klammern und Zahlen aufgebaut sind.  Die in  den  geschweiften  Klammern
+stehenden  semantischen  Aktionen  sorgen  fuer die Berechnung der Ausdruecke.
+Dazu wird dem Nichtterminal expr und dem Terminal number  das  Attribut  value
+zugeordnet.  Mit  $i wird in den semantischen Aktionen auf die Attribute zuge-
+griffen. Dabei bedeuten $i das i-te Grammatiksymbol der rechten Seite  und  $$
+das Nichtterminal der linken Seite einer Regel.
+
+
+    expr : expr '+' expr { $$.value := $1.value + $3.value; } .
+    expr : expr '*' expr { $$.value := $1.value * $3.value; } .
+    expr : '(' expr ')'  { $$.value := $2.value; } .
+    expr : number        { $$.value := $1.value; } .
+
+    Abbildung 3: Grammatikregeln mit S-Attributierung
+
+
+Mehrdeutige Grammatiken
+
+     Die  Grammatik in Abbildung 3 und die Regeln in Abbildung 4 sind typische
+Beispiele fuer mehrdeutige Grammatiken. Wie bei Yacc lassen sich daraus resul-
+tierende LR-Konflikte durch die Angabe von Prioritaet und Assoziativitaet fuer
+Terminale (Operatoren) loesen.  Abbildung 5 zeigt  ein  Beispiel.  Die  Zeilen
+stellen zunehmende Prioritaeten dar. LEFT, RIGHT und NONE spezifizieren links-
+assoziative, rechts-assoziative bzw. Operatoren ohne Assoziativitaet.
+
+
+    stmt : 'IF' expr 'THEN' stmt               PREC LOW
+         | 'IF' expr 'THEN' stmt 'ELSE' stmt   PREC HIGH .
+
+    Abbildung 4: Mehrdeutige Grammatikregeln (Dangling Else Problem von Pascal)
+
+
+
+    OPER  LEFT '+'
+          LEFT '*'
+          NONE LOW
+          NONE HIGH
+
+    Abbildung 5: Loesen von LR-Konflikten mit Prioritaet und Assoziativitaet
+
+
+Beschreibung von LR-Konflikten
+
+     Zur leichteren Lokalisierung des Grundes fuer LR-Konflikte wurde eine von
+DeRemer  und  Pennello  [DeP82] vorgeschlagene Methode aufgegriffen. Neben der
+Art des Konflikts und den beteiligten Situationen wie bei  anderen  LR-Genera-
+toren  wird  zusaetzlich ein Ableitungsbaum ausgegeben.  Eine Situation (item)
+
+
+
+
+
+
+
+
+
+
+
+                                                                             7
+
+
+ist eine Grammatikregel mit einem zusaetzlichen Punkt in  der  rechten  Seite,
+welcher  angibt,  wie  weit diese Regel bereits analysiert wurde.  Abbildung 6
+zeigt ein Beispiel.
+
+     Der Baum zeigt wie die Situationen und die Vorschauzeichen  in  den  Kon-
+fliktzustand  gelangen. Im allgemeinen wird fuer jede beteiligte Situation ein
+eigener Baum ausgegeben. Sind die Baeume jedoch gleich, wie das in Abbildung 6
+der  Fall  ist,  so wird nur ein Baum ausgegeben.  Jeder Baum besteht aus drei
+Teilen: Ein Anfangsteil beginnt  mit  dem  Startsymbol.  An  einem  bestimmten
+Knoten  (Regel) erklaeren zwei weitere Teilbaeume die Entstehung der Situation
+und der Vorschau.
+
+     Jede Zeile enthaelt die rechte Seite einer Grammatikregel.  Normalerweise
+ist  diese  rechte  Seite so eingerueckt, dass sie unter dem Nichtterminal der
+linken Seite beginnt. Um zu lange Zeilen zu  vermeiden,  verweisen  punktierte
+Linienzuege  ebenfalls  zum  Nichtterminal der linken Seite und erlauben so am
+linken Rand fortzufahren. In Abbildung 6 besteht der  Anfangsteil  des  Baumes
+aus  5 Zeilen, wobei die punktierten Zeilen nicht gezaehlt wurden. Die Symbole
+'stmt' und 'ELSE' sind die  Wurzeln  der  beiden  weiteren  Teilbaeume.  Diese
+Stelle  ist mit einem "ueberfluessigen" Doppelpunkt gekennzeichnet. Nach einem
+Ableitungsschritt werden im linken Teilbaum die Konfliktsituationen  erreicht.
+Der  rechte Teilbaum besteht in diesem Fall nur aus dem Wurzelknoten (dem Sym-
+bol 'ELSE') und beschreibt das Vorschauzeichen. Im allgemeinen kann  hier  ein
+Baum  von  beliebiger Groesse stehen. Der LR-Konflikt kann in diesem Baumfrag-
+ment  leicht  abgelesen  werden.   Falls  bedingte  Anweisungen  wie   gezeigt
+geschachtelt werden liegt ein Lies-Reduziere-Konflikt vor.
+
+Fehlerbehandlung
+
+     Die  generierten  Zerteiler enthalten Information und Algorithmen um Syn-
+taxfehler voll~auto~matisch zu behandeln. Es wird die vollstaendige, rueckset-
+zungsfreie   Methode  von  Roehrich  [Roeh76,Roeh80,Roeh82]  verwendet.  Diese
+schliesst  Fehlermeldungen,  Wiederaufsetzen  und  Fehlerreparatur  ein.  Jede
+
+    State 266
+    read reduce conflict
+    program End-of-Tokens
+    'PROGRAM' identifier params ';' block '.'
+    ................................:
+    :
+    labels consts types vars procs 'BEGIN' stmts 'END'
+    .......................................:
+    :
+    stmt
+    'IF' expr 'THEN' stmt 'ELSE' stmt
+                     :
+    reduce   stmt -> 'IF' expr 'THEN' stmt.  {'ELSE'}  ?
+    read     stmt -> 'IF' expr 'THEN' stmt.'ELSE' stmt  ?
+
+    Abbildung 6: Ableitungsbaum fuer einen LR-Konflikt (Dangling Else Problem)
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                             8
+
+
+syntaktisch  fehlerhafte Eingabe wird gedachterweise in ein korrektes Programm
+transformiert. Dies bewirkt, dass nur korrekte Folgen von semantischen  Aktio-
+nen  ausgefuehrt  werden.  Dadurch  brauchen  spaetere Compiler-Phasen wie die
+semantische Analyse auf Syntaxfehler keine  Ruecksicht  nehmen.   Lalr  stellt
+einen  Modul  zur Sammlung oder Meldung von Fehlern zur Verfuegung, der leicht
+an Benutzerwuensche anpassbar ist. Ohne  Modifikation  werden  Fehlermeldungen
+wie  in  Abbildung  7  ausgegeben.  Die  Fehlerbehandlung  laeuft in folgenden
+Schritten ab:
+
+- Die Position des Syntaxfehlers wird gemeldet.
+
+- Alle Terminale, die eine korrekte Fortsetzung des Programms  waeren,  werden
+  berechnet und gemeldet.
+
+- Alle Terminale, die zum Wiederaufsetzen der Zerteilung geeignet sind, werden
+  berechnet. Eine minimale Folge von Terminalen  wird  ueberlesen,  bis  eines
+  dieser Symbole gefunden wird.
+
+- Die Position des Wiederaufsetzens wird gemeldet.
+
+- Die  Zerteilung  wird  im  sogenannten Reparaturmodus fortgesetzt. In diesem
+  Modus verhaelt sich der Zerteiler wie gewohnt ohne jedoch Terminale von  der
+  Eingabe zu lesen. Stattdessen wird eine minimale Folge von Terminalen gener-
+  iert, die gedachterweise die ueberlesenen Terminale  ersetzt.  Diese  gener-
+  ierten  Terminale werden gemeldet. Der Zerteiler bleibt in diesem Modus, bis
+  das Terminal  am  Aufsetzpunkt  akzeptiert  werden  kann.  Danach  wird  der
+  Reparaturmodus verlassen und die Zerteilung normal fortgesetzt.
+
+Der Parser-Generator Ell
+
+     Der Parser-Generator Ell erzeugt aus LL(1)-Grammatiken Zerteiler nach dem
+Verfahren des rekursiven Abstiegs. Die Grammatiken koennen in erweiterter  BNF
+geschrieben  sein  und  semantische Aktionen enthalten. Innerhalb der Aktionen
+ist es moeglich eine L-Attribut-Berechnung zu spezifizieren, die waehrend  der
+Zerteilung  ausgewertet wird. Es koennen sowohl erworbene als auch abgeleitete
+
+    Quellprogramm:
+    program test (output);
+    begin
+       if (a = b] write (a);
+    end.
+    Fehlermeldungen:
+    3, 13: Error       syntax error
+    3, 13: Information expected symbols: ')' '*' '+' '-' '/' '<' '<='
+                       '=' '<>' '>' '>=' 'AND' 'DIV' 'IN' 'MOD' 'OR'
+    3, 15: Information restart point
+    3, 15: Repair      symbol inserted : ')'
+    3, 15: Repair      symbol inserted : 'THEN'
+
+    Abbildung 7: Beispiel einer automatischen Fehlerbehandlung
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                             9
+
+
+Attribute benutzt werden, solange die Auswertung in einem  Links-Rechts-Durch-
+lauf  des  Ableitungsbaums moeglich ist. Syntaxfehler werden wie bei Lalr vol-
+lautomatisch  behandelt  mit  Fehlermeldungen,  Wiederaufsetzen  und   Fehler-
+reparatur.  Das  Werkzeug  ist  ebenfalls  in  Modula-2  programmiert und kann
+Zerteiler in C  und  Modula-2  erzeugen.  Die  Geschwindigkeit  der  erzeugten
+Zerteiler liegt im Augenblick bei 450.000 Zeilen pro Minute.  Zur Zeit wird an
+einigen Verbesserungen gearbeitet, wodurch dieser Wert noch steigen wird.  Der
+Speicherbedarf liegt in der Groessenordnung von tabellengesteuerten Zerteilern
+(z. B. 14 KB fuer Modula-2).
+
+     Abbildung 8 zeigt die Spezifikation eines einfachen Tischrechners  mit  4
+Grundrechenarten  fuer  Ell.  Die Spezifikation erfolgt durch eine LL(1)-Gram-
+matik in erweiterter BNF. Die in geschweifte Klammern eingeschlossenen  seman-
+tischen  Aktionen berechnen wiederum den Wert eines eingegebenen Ausdrucks und
+geben ihn aus. Der Zugriff auf Attribute erfolgt  hier  ueber  die  Namen  der
+Grammatiksymbole.  Da  mehrere  gleichnamige  Symbole in einer Regel vorkommen
+koennen werden zur Unterscheidung an die Namen Zahlen angehaengt. Die  Zahl  0
+bezeichnet  das  Nichtterminal  der linken Seite. Mit Zahlen groesser 0 werden
+gleichnamige Symbole der rechten Seite von links nach rechts durchgezaehlt.
+
+Vergleich von Parser-Generatoren
+
+     Abschliessend vergleicht die Tabelle 2 die  Parser-Generatoren  Lalr  und
+Ell  mit dem UNIX Werkzeug Yacc, mit dem Yacc-Nachbau Bison und mit PGS (siehe
+oben). Die Tabelle fasst die angesprochenen Eigenschaften zusammen und  sollte
+selbsterklaerend  sein.  Die  sprachabhaengigen  Zahlen sind ohne Laufzeit und
+Speicherbedarf fuer Scanner und beziehen sich auf Experimente mit einem Parser
+fuer Modula-2.
+
+
+    ExpList : ( Expr ';'    { Write (Expr1.value, 10);                      }
+              ) *
+            .
+    Expr    : ( ['+'] Term  { Expr0.value := Term1.value;                   }
+              | '-' Term    { Expr0.value := - Term2.value;                 }
+              )
+              ( '+' Term    { INC (Expr0.value, Term3.value);               }
+              | '-' Term    { DEC (Expr0.value, Term4.value);               }
+              ) *
+            .
+    Term    : Factor        { Term0.value := Factor1.value;                 }
+              ( '*' Factor  { Term0.value := Term0.value * Factor2.value;   }
+              | '/' Factor  { Term0.value := Term0.value DIV Factor3.value; }
+              ) *
+            .
+    Factor  : Number        { Factor0.value := Number1;                     }
+            | '(' Expr ')'  { Factor0.value := Expr1.value;                 }
+            .
+
+    Abbildung 8: LL(1)-Grammatik fuer einfachen Tischrechner
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                            10
+
+
+
+               Tabelle 2: Vergleich einiger Parser-Generatoren
+
+
++------------------------+-------------------------------------------------------------------------+
+|                        |Bison           Yacc            PGS          Lalr            Ell         |
++------------------------+-------------------------------------------------------------------------+
+|Spezifikationsmethode   |BNF             BNF             EBNF         EBNF            EBNF        |
+|Grammatikklasse         |LALR(1)         LALR(1)         LALR(1)      LALR(1)         LL(1)       |
+|                        |                                LR(1)                                    |
+|                        |                                SLR(1)                                   |
+|semantische Aktionen    |ja              ja              ja           ja              ja          |
+|S-Attributierung        |numerisch       numerisch       symbolisch   numerisch       -           |
+|L-Attributierung        |-               -               -            -               symbolisch  |
++------------------------+-------------------------------------------------------------------------+
+|Konfliktmeldung         |Zustand,        Zustand,        Zustand,     Ableitungs-     -           |
+|                        |Situation       Situation       Situation    baum                        |
+|Konfliktloesung         |Prioritaet      Prioritaet      Modifikation Prioritaet                  |
+|                        |Assoziativitaet Assoziativitaet              Assoziativitaet             |
+|Kettenregelelimination  |-               -               ja           -               -           |
+|Fehlerbehandlung        |von Hand        von Hand        automatisch  automatisch     automatisch |
+|Fehlerreparatur         |-               -               ja           ja              ja          |
++------------------------+-------------------------------------------------------------------------+
+|Zerteilungsverfahren    |tabellen-       tabellen-       tabellen-    tabellen-       rekursiver  |
+|                        |gesteuert       gesteuert       gesteuert    gesteuert       Abstieg     |
+|Tabellenkompression     |Kammvektor      Kammvektor      Kammvektor   Kammvektor      -           |
++------------------------+-------------------------------------------------------------------------+
+|Implementgs.-Sprache    |C               C               Pascal       Modula-2         Modula-2   |
+|Zielsprachen            |C               C               C            C               C           |
+|                        |                                Modula-2     Modula-2        Modula-2    |
+|                        |                                Pascal                                   |
+|                        |                                Ada                                      |
++------------------------+-------------------------------------------------------------------------+
+|Geschwindigkeit         |105.000         184.000         200.000      385.000         437.000     |
+|   [Zeilen/Min.]        |                                                                         |
++------------------------+-------------------------------------------------------------------------+
+|Tabellengroesse [Bytes] |8.004           10.364          11.268       11.795          -           |
+|Zerteilergroesse [Bytes]|11.136          12.548          17.616       17.416          14.344      |
++------------------------+-------------------------------------------------------------------------+
+|Generierungszeit [Sek.] |5,0             19,6            69,5         29,6            6,4         |
++------------------------+-------------------------------------------------------------------------+
+
+Zusammenfassung
+
+     Die  Uebersetzerbau-Werkzeuge  Rex, Lalr und Ell wurden mit dem Ziel ent-
+worfen, maechtige  Spezifikationstechniken  mit  der  automatischen  Erzeugung
+effizienter Compiler-Teile zu kombinieren.  Es koennen Scanner und Parser in C
+und Modula-2 erzeugt werden, die sich vor  allem  durch  ihre  Geschwindigkeit
+auszeichnen.  Die  Scanner  verarbeiten  bis  zu  200.000  und die Parser etwa
+400.000 Zeile pro Minute auf einem  MC  68020  Prozessor.  Zusammen  erreichen
+Scanner  und  Parser  mehr als 100.000 Zeilen pro Minute oder fast 2000 Zeilen
+pro Sekunde.
+
+
+
+
+
+
+
+
+
+
+
+                                                                            11
+
+
+     Da erfahrungsgemaess der Scanner einen Grossteil der  gesamten  Ueberset-
+zungszeit   verbraucht,   hoffen   wir   vollstaendige   Compiler   mit  einer
+Geschwindigkeit von 1000 Zeilen pro Sekunde automatisch erzeugen  zu  koennen.
+Im  Augenblick  wird  an der Vervollstaendigung des Werkzeugsatzes gearbeitet.
+Dies betrifft Werkzeuge fuer die semantische Analyse auf  der  Basis  attribu-
+tierter  Grammatiken, Werkzeuge fuer die Transformation wie etwa die Erzeugung
+einer Zwischensprache und Werkzeuge fuer die Codeerzeugung auf der  Basis  von
+Musterabgleich (pattern matching).
+
+     Der  Generator Lalr wurde von Bertram Vielsack programmiert, der auch die
+experimentellen Ergebnisse fuer den Vergleich der Parser-Generatoren  beitrug.
+Der Generator Ell wurde von Doris Kuske programmiert.
+
+
+Literatur
+
+[DeP82]
+     F.  DeRemer  and  T.  J. Pennello, Efficient Computation of LALR(1) Look-
+     Ahead Sets, ACM Trans. Prog. Lang. and Systems 4, 4 (Oct. 1982), 615-649.
+
+[Gro]
+     J. Grosch, Rex - A Scanner Generator, Cocktail Document  No.  5,  CoCoLab
+     Germany.
+
+[GrV]
+     J.  Grosch  and B. Vielsack, The Parser Generators Lalr and Ell, Cocktail
+     Document No. 8, CoCoLab Germany.
+
+[Joh75]
+     S. C. Johnson, Yacc --  Yet Another Compiler-Compiler,  Computer  Science
+     Technical  Report  32, Bell Telephone Laboratories, Murray Hill, NJ, July
+     1975.
+
+[Les75]
+     M. E. Lesk, LEX  --  A  Lexical  Analyzer  Generator,  Computing  Science
+     Technical Report 39, Bell Telephone Laboratories, Murray Hill, NJ, 1975.
+
+[Roeh76]
+     J.   Roehrich,   Syntax-Error  Recovery  in  LR-Parsers,  in  Informatik-
+     Fachberichte, vol. 1, H.-J. Schneider and M. Nagl (ed.), Springer Verlag,
+     Berlin, 1976, 175-184.
+
+[Roeh80]
+     J.  Roehrich,  Methods for the Automatic Construction of Error Correcting
+     Parsers, Acta Inf. 13, 2 (1980), 115-139.
+
+[Roeh82]
+     J. Roehrich, Behandlung syntaktischer Fehler, Informatik  Spektrum  5,  3
+     (1982), 171-184.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Inhalt
+
+        Zusammenfassung .................................................    1
+        Abstract ........................................................    1
+        Projekt-Ueberblick ..............................................    1
+        Der Scanner-Generator Rex .......................................    2
+        Scanner-Spezifikation mit Rechts-Kontext ........................    3
+        Scanner-Spezifikation mit Startzustaenden .......................    3
+        Vergleich von Scanner-Generatoren ...............................    4
+        Der Parser-Generator Lalr .......................................    4
+        S-Attributierung ................................................    6
+        Mehrdeutige Grammatiken .........................................    6
+        Beschreibung von LR-Konflikten ..................................    6
+        Fehlerbehandlung ................................................    7
+        Der Parser-Generator Ell ........................................    8
+        Vergleich von Parser-Generatoren ................................    9
+        Zusammenfassung .................................................   10
+        Literatur .......................................................   11
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

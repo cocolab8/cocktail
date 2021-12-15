@@ -1,0 +1,32 @@
+Tree.check: parent = Vertex
+index            = 2
+level            = 1
+left             = NoTree
+right            = NoTree
+
+selector: left, child = NoTree
+
+Tree.check: parent = Vertex
+index            = 2
+level            = 1
+left             = NoTree
+right            = NoTree
+
+selector: right, child = NoTree
+
+Tree.check: parent = Vertex
+index            = 3
+level            = 1
+left             = NoTree
+right            = NoTree
+
+selector: left, child = NoTree
+
+Tree.check: parent = Vertex
+index            = 3
+level            = 1
+left             = NoTree
+right            = NoTree
+
+selector: right, child = NoTree
+

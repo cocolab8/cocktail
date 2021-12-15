@@ -1,0 +1,89 @@
+lpp -+xzj minilax.pars;
+minilax.pars:  16,  1: Information copy rule insertions synthesized: 1
+minilax.pars:  16,  1: Information grammar is in normal form
+minilax.pars:  16,  1: Information grammar is SAG
+lark -+di Parser.lalr;
+          Information shift reduce conflict explicitly repaired at state: 62
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 86
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 87
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 88
+                      on lookahead: < + * 
+          Information grammar is LALR(1) after explicit repair
+
+ conflict repair   explicit implicit  LALR(2)  dynamic unsolved    total
+------------------------------------------------------------------------
+ shift-reduce             4        0        0        0        0        4
+------------------------------------------------------------------------
+ total                    4        0        0        0        0        4
+rpp < minilax.scan > minilax.rex;
+rex -+d minilax.rex;
+Warning: in start state STD the default action may be triggered by:
+ \0 \1 \2 \3 \4 \5 \6 \7 \8 \11 \12 \13 \14 \15 \16 \17
+ \18 \19 \20 \21 \22 \23 \24 \25 \26 \27 \28 \29 \30 \31 '!' '"'
+ '#' '$' '%' '&' ''' '-' '/' '=' '>' '?' '@' '\' '^' '_' '`' '{'
+ '|' '}' '~'
+ast -+dimRDI0 minilax.cg;
+minilax.cg:  27,  1: Information copy rule insertions inherited: 63
+minilax.cg:  27,  1: Information copy rule insertions synthesized: 2
+minilax.cg:  27,  1: Information copy rule insertions threaded: 18
+minilax.cg:  27,  1: Information grammar is not in normal form
+minilax.cg:  27,  1: Information grammar is OAG
+ast -+dim4 Definitions.cg;
+echo SELECT AbstractSyntax Output | cat - minilax.cg | cg -+4
+puma -+dipk Types.puma;
+ 134,  4: Warning     unreachable code
+ 139,  4: Warning     unreachable code
+ 144,  4: Warning     unreachable code
+ 149,  4: Warning     unreachable code
+ 149,  4: Warning     unreachable code
+puma -+di ICode.puma;
+  19, 33: Warning     user-type required
+  36, 34: Warning     user-type required
+ 113, 25: Warning     user-type required
+gcc -g -I/home/grosch/libcpp/include -c minilax.cxx
+gcc -g -I/home/grosch/libcpp/include -c Scanner.cxx
+gcc -g -I/home/grosch/libcpp/include -c Parser.cxx
+gcc -g -I/home/grosch/libcpp/include -c Tree.cxx
+gcc -g -I/home/grosch/libcpp/include -c Definitions.cxx
+gcc -g -I/home/grosch/libcpp/include -c Types.cxx
+gcc -g -I/home/grosch/libcpp/include -c Semantics.cxx
+gcc -g -I/home/grosch/libcpp/include -c ICode.cxx
+gcc -g -I/home/grosch/libcpp/include -c ICodeInter.cxx
+gcc -g -I/home/grosch/libcpp/include -o minilax minilax.o Scanner.o Parser.o Tree.o  Definitions.o Types.o Semantics.o ICode.o ICodeInter.o -lm /home/grosch/libcpp/libreuse.a
+time minilax < in1
+Memory   94368  Tree   20484  Defs   20484
+Memory   94368  Tree   20484  Defs   20484
+    3.14000E+00
+    4.14000E+00
+    5.14000E+00
+    2.14000E+00
+    1.14000E+00
+    1.14000E+00
+    4.14000E+00
+    5.14000E+00
+    2.14000E+00
+    3.14000E+00
+    1.14000E+00
+    2.14000E+00
+    5.14000E+00
+    4.14000E+00
+    3.14000E+00
+    1.14000E+00
+    2.14000E+00
+    3.14000E+00
+    4.14000E+00
+    5.14000E+00
+    1.14000E+00
+    2.14000E+00
+    3.14000E+00
+    4.14000E+00
+    5.14000E+00
+    1
+        0.1 real         0.0 user         0.0 sys  
+if test -f in5; then time minilax < in5; fi
+Memory  709008  Tree  635004  Defs   20484
+Memory  913888  Tree  798876  Defs   61452
+        2.5 real         1.7 user         0.2 sys  

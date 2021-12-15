@@ -1,0 +1,9 @@
+Transformation Tool based on Pattern Matching Puma
+==================================================
+
+Puma makes use of a library of reusable Modula-2 modules (MLIB=reuse).
+This library must be compiled before Puma itself.
+
+To generate Puma use:
+
+   make install BIN=... LIB=... OPT=...

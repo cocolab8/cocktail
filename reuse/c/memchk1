@@ -1,0 +1,23 @@
+awk '
+/Alloc/	{ line ++; size = $2; sum += size; alloc ++;
+	  if (cnt [size] == 0) sizes [++ n] = size;
+	  cnt [size] ++;
+	  next;
+	}
+/Free/	{ line ++; size = $2; sum -= size; free ++;
+	  if (cnt [size] == 0)
+	    print line ": not allocated", size, "at", $3;
+	  else cnt [$2] --;
+	  next;
+	}
+	{ line ++; next;
+	}
+END	{ print "Total:", sum, alloc, free;
+	  for (i = 1; i <= n; i ++) {
+	    size = sizes [i];
+	    if (cnt [size] != 0) {
+	      print "not freed: size", size, "count", cnt [size];
+	    }
+	  }
+	}
+'

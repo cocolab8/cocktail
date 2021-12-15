@@ -1,0 +1,799 @@
+<?xml version="1.0"?>
+<SPEC>
+<FILE NAME="Java" TYPE="puma" FILE="mainJava"/>
+<FILE NAME="C" TYPE="puma" FILE="mainC"/>
+<FILE NAME="Java" TYPE="tree" FILE="treeJava"/>
+<FILE NAME="C" TYPE="tree" FILE="treeC"/>
+<FILE NAME="Java" TYPE="defs" FILE="defsJava"/>
+<FILE NAME="C" TYPE="defs" FILE="defsC"/>
+
+<CODE NAME="trafo"><Java>trafos.</Java>Main</CODE>
+<CODE NAME="tree">Tree Defs</CODE>
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Simple patterns" RUN="y">
+<CODE NAME="tree_rules">
+Ts1	= .
+Ts2	= .
+</CODE>
+
+<CODE NAME="defs_rules">
+Ds1	= .
+Ds2	= .
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE Match1 (int)
+	3 :- "int 3"; NL.
+	4 :- "int 4"; NL.
+	... :- "int other"; NL.
+
+PROCEDURE  Match2 ({int})
+	3 :- "{int} 3"; NL.
+	4 :- "{int} 4"; NL.
+	... :- "{int} other"; NL.
+
+PROCEDURE Trivial (Tree, Defs)
+	Ts1 (...), Ds1 (...) :- "Simple 1-1"; NL.
+	Ts2 (...), Ds1 (...) :- "Simple 2-1"; NL.
+	... :- "Simple default"; NL.
+</CODE>
+
+<CODE NAME="calls">
+//Test Simple patterns
+<MACRO>
+<CALL NAME="Match1"><ARG>3</ARG></CALL>
+<CALL NAME="Match1"><ARG>4</ARG></CALL>
+<CALL NAME="Match1"><ARG>5</ARG></CALL>
+<CALL NAME="Match2"><ARG>3</ARG></CALL>
+<CALL NAME="Match2"><ARG>4</ARG></CALL>
+<CALL NAME="Match2"><ARG>5</ARG></CALL>
+<CALL NAME="Trivial"><ARG><NEW NAME="Ts1"/></ARG><ARG><NEW NAME="Ds1"/></ARG></CALL>
+<CALL NAME="Trivial"><ARG><NEW NAME="Ts2"/></ARG><ARG><NEW NAME="Ds1"/></ARG></CALL>
+<CALL NAME="Trivial"><ARG><NEW NAME="Ts1"/></ARG><ARG><NEW NAME="Ds2"/></ARG></CALL>
+<CALL NAME="Trivial"><ARG><NEW NAME="Ts2"/></ARG><ARG><NEW NAME="Ds2"/></ARG></CALL>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Simple patterns-->
+
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Casts" RUN="y">
+<CODE NAME="tree_rules">
+T1	=  A .
+T2	=  Aa .
+
+A	=  &lt;
+ Aa	= [ b: <Java>trees.Defs</Java><C>tDefs</C> ] .
+ Ab	= [ b: <Java>trees.Defs.D3</Java><C>tDefs</C> ] .
+&gt;.
+</CODE>
+
+<CODE NAME="defs_rules">
+D2	= .
+D3	=  &lt;
+ D3a	= D2 .
+&gt;.
+</CODE>
+
+<CODE NAME="procs">
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE Casts (Tree)
+	T1 (Aa (D2 (...))) :- "C 1"; NL.
+			// Needs a cast A -&gt; Aa
+
+	T2 (Aa (D2 (...))) :- "C 2"; NL.
+			// Needs no cast Aa = Aa
+
+	T1 (Ab (D3a (D2 (...)))) :- "C 3"; NL.
+			// Needs a cast A -&gt; Aa
+
+	...		:- "C 99"; NL.
+
+</CODE>
+
+<CODE NAME="calls">
+//Test Casts
+<MACRO>
+<CALL NAME="Casts"><ARG><NEW NAME="A"/></ARG></CALL>
+<CALL NAME="Casts"><ARG><NEW NAME="T2"><ARG><NEW NAME="Aa"><ARG><NEW NAME="D2"/></ARG></NEW></ARG></NEW></ARG></CALL>
+<CALL NAME="Casts"><ARG><NEW NAME="T1"><ARG><NEW NAME="Aa"><ARG><NEW NAME="D2"/></ARG></NEW></ARG></NEW></ARG></CALL>
+<CALL NAME="Casts"><ARG><NEW NAME="T1"><ARG><NEW NAME="A"/></ARG></NEW></ARG></CALL>
+<CALL NAME="Casts"><ARG><NEW NAME="T1"><ARG><NEW NAME="Ab"><ARG><NEW NAME="D3a"><ARG><NEW NAME="D2"/></ARG></NEW></ARG></NEW></ARG></NEW></ARG></CALL>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Casts -->
+
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Patterns" RUN="y">
+<CODE NAME="tree_rules">
+P1	= [c: P1] &lt;
+  P2	= .
+  P3	= [d: P1] .
+&gt;.
+P4	= [ x: int ] .
+P5	= l:P4 r:P4.
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE Pattern1 (t: Tree)
+   NIL		:- "P1 NIL"; NL.
+   P2(...)	:- "P1 P2"; NL; REJECT.
+   P1(...)	:- "P1 P1"; NL;.
+</CODE>
+
+<CODE NAME="calls">
+//Test Patterns
+<MACRO>
+<CALL NAME="Pattern1">
+	<ARG><NULL/></ARG>
+</CALL>
+<CALL NAME="Pattern1">
+	<ARG><NEW NAME="P2"><ARG><NULL/></ARG></NEW></ARG>
+</CALL>
+<CALL NAME="Pattern1">
+	<ARG><NEW NAME="P1"><ARG><NULL/></ARG></NEW></ARG>
+</CALL>
+</MACRO>
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE Pattern2 (t: Tree)
+   P3(x:P2 (NIL), x)	:- "P2 match"; NL.
+   P3(x, x)	:- "P2 match2"; NL.
+   P5(P4 (x), P4 (x))		:- "P2 match 3"; IF x != 8 THEN NL; RETURN; END; " 8s"; NL.
+   _	:- "P2 no match"; NL.
+</CODE>
+
+<CODE NAME="calls">
+//Test Patterns
+<MACRO>
+<CALL NAME="Pattern2"><ARG><NEW NAME="P3">
+		<ARG><NEW NAME="P1"><ARG><NULL/></ARG></NEW></ARG>
+		<ARG><NEW NAME="P1"><ARG><NULL/></ARG></NEW></ARG>
+</NEW></ARG></CALL>
+<CALL NAME="Pattern2"><ARG><NEW NAME="P3">
+		<ARG><NEW NAME="P2"><ARG><NULL/></ARG></NEW></ARG>
+		<ARG><NEW NAME="P2"><ARG><NULL/></ARG></NEW></ARG>
+</NEW></ARG></CALL>
+<CALL NAME="Pattern2"><ARG><NEW NAME="P3">
+		<ARG><NEW NAME="P2"><ARG><NULL/></ARG></NEW></ARG>
+		<ARG><NEW NAME="P1"><ARG><NULL/></ARG></NEW></ARG>
+</NEW></ARG></CALL>
+<CALL NAME="Pattern2">
+<ARG><NEW NAME="P5">
+   <ARG><NEW NAME="P4"><ARG>3</ARG></NEW></ARG>
+   <ARG><NEW NAME="P4"><ARG>4</ARG></NEW></ARG>
+</NEW></ARG>
+</CALL>
+<CALL NAME="Pattern2">
+<ARG><NEW NAME="P5">
+   <ARG><NEW NAME="P4"><ARG>6</ARG></NEW></ARG>
+   <ARG><NEW NAME="P4"><ARG>6</ARG></NEW></ARG>
+</NEW></ARG>
+</CALL>
+<CALL NAME="Pattern2">
+<ARG><NEW NAME="P5">
+   <ARG><NEW NAME="P4"><ARG>8</ARG></NEW></ARG>
+   <ARG><NEW NAME="P4"><ARG>8</ARG></NEW></ARG>
+</NEW></ARG>
+</CALL>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Patterns -->
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Functions and node creation" RUN="y">
+<CODE NAME="tree_rules">
+FN	= &lt;
+  FNa	= [ i: int ].
+  FNb1	= a: FN .
+  FNb2	= l: FNa  r: FN .
+  FNc	= a: FN &lt;
+    FNc1	= [d] .
+  &gt;.
+&gt;.
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE FNprint (Tree)
+   NIL		:- "NIL";.
+   FNa(i)	:- "FNa("; <WriteI>i</WriteI>; ")";.
+   FNb1 (a)	:- "FNb1("; FNprint(GUARD a); ")";.
+   FNb2 (l,r)	:- "FNb2("; FNprint(l); ","; FNprint(r); ")";.
+   FNc1 (a,d)	:- "FNc1("; FNprint(a); ","; <WriteI>d</WriteI>; ")";.
+   FNc (a)	:- "FNc("; FNprint(a); ")";.
+   FN (...)	:- "FN";.
+   ...		:- "??"; .
+</CODE>
+
+<CODE NAME="calls">
+//Test Functions and node creation
+<MACRO>
+<CALL NAME="FNprint">
+   <ARG><NEW NAME="FNb2">
+        <ARG><NEW NAME="FNa"><ARG>1</ARG></NEW></ARG>
+        <ARG><NEW NAME="FNb1"><ARG><NULL/></ARG></NEW></ARG>
+   </NEW></ARG>
+</CALL><NL/>
+</MACRO>
+</CODE>
+
+
+<CODE NAME="procs">
+FUNCTION FN1 (int) Tree
+   1		RETURN FNa (-1) :- .
+   2		RETURN FNb1 (NIL) :- .
+   3		RETURN FNb2 (FNa (6), ...) :- .
+   4		RETURN FN1 (2) :- .
+   5		RETURN FNb1 (_) :- .
+</CODE>
+
+<CODE NAME="calls">
+//Test Functions and node creation
+<MACRO>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN1"><ARG>1</ARG></CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN1"><ARG>2</ARG></CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN1"><ARG>3</ARG></CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN1"><ARG>4</ARG></CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN1"><ARG>5</ARG></CALL></ARG>
+</CALL><NL/>
+</MACRO>
+</CODE>
+
+<CODE NAME="procs">
+// Expression syntax
+FUNCTION FN2 (i: int, t: Tree) Tree
+   i:=1		RETURN result :-
+			result: FNb1;
+			"Guard 1:-?"; NL;
+			result := GUARD t; 
+			"Guard 1:-OK"; NL;
+.
+   i:=1, t:=FNb2 (FNa (x), r:=z:FNb1 (...))
+		RETURN result :-
+			result: FNb1;
+			IF x == 3 THEN
+				RETURN FNb2 (FNa (x), z::a);
+			ELSIF x == 4 THEN
+				result := <Java>(FNb1)</Java><C>GUARD</C> z::a;
+			ELSIF x == 5 THEN
+				RETURN FNb2 (GUARD z::a, NIL);
+			ELSE
+				"Guard 2:-?"; NL;
+				result := GUARD z::a;
+				"Guard 2:-OK"; NL;
+			END;
+.
+   i:=2		RETURN result :-
+			result: FNc;
+			tcopy: Tree := GUARD {t};
+			"Guard 3:-?"; NL;
+			result := GUARD tcopy; 
+			"Guard 3:-OK"; NL;
+.
+   ...		RETURN NIL :- .
+</CODE>
+
+<CODE NAME="calls">
+//Test Functions and node creation
+<MACRO>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>1</ARG><ARG><NEW NAME="FNb1"><ARG><NULL/></ARG></NEW></ARG></CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>1</ARG>
+       <ARG><NEW NAME="FNb2">
+           <ARG><NEW NAME="FNa"><ARG>3</ARG></NEW></ARG>
+           <ARG><NEW NAME="FNb1"><ARG><NEW NAME="FN"></NEW></ARG></NEW></ARG>
+       </NEW></ARG>
+    </CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>1</ARG>
+       <ARG><NEW NAME="FNb2">
+           <ARG><NEW NAME="FNa"><ARG>4</ARG></NEW></ARG>
+           <ARG><NEW NAME="FNb1"><ARG><NEW NAME="FNb1"><ARG><NULL/></ARG></NEW></ARG></NEW></ARG>
+       </NEW></ARG>
+    </CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>1</ARG>
+       <ARG><NEW NAME="FNb2">
+           <ARG><NEW NAME="FNa"><ARG>5</ARG></NEW></ARG>
+           <ARG><NEW NAME="FNb1"><ARG><NEW NAME="FNa"><ARG>56</ARG></NEW></ARG></NEW></ARG>
+       </NEW></ARG>
+    </CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>1</ARG>
+       <ARG><NEW NAME="FNb2">
+           <ARG><NEW NAME="FNa"><ARG>999</ARG></NEW></ARG>
+           <ARG><NEW NAME="FNb1"><ARG><NEW NAME="FNb1"><ARG><NULL/></ARG></NEW></ARG></NEW></ARG>
+       </NEW></ARG>
+    </CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>1</ARG>
+       <ARG><NEW NAME="FNb2">
+           <ARG><NEW NAME="FNa"><ARG>999</ARG></NEW></ARG>
+           <ARG><NEW NAME="FNb1"><ARG><NEW NAME="FNa"><ARG>99</ARG></NEW></ARG></NEW></ARG>
+       </NEW></ARG>
+    </CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>2</ARG>
+       <ARG><NEW NAME="FNc"><ARG><NULL/></ARG></NEW></ARG>
+   </CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>2</ARG>
+       <ARG><NEW NAME="FNc1"><ARG><NULL/></ARG><ARG>97</ARG></NEW></ARG>
+   </CALL></ARG>
+</CALL><NL/>
+<CALL NAME="FNprint">
+   <ARG><CALL NAME="FN2"><ARG>2</ARG>
+       <ARG><NEW NAME="FNb1"><ARG><NULL/></ARG></NEW></ARG>
+   </CALL></ARG>
+</CALL><NL/>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Functions and node creation -->
+
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Statements" RUN="y">
+<CODE NAME="tree_rules">
+Slist	= &lt;
+Sempty	= .
+Sitem	= Next: Slist &lt;
+Snest	= Slist .
+Snumber	= [n].
+  &gt;.
+&gt;.
+Snotused	=. // so we get a yyabort at the end of Sprint.
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE Sprint (Tree)
+Snumber (Next, n)	:- "n("; <WriteI>n</WriteI>; ")"; Sprint (Next); .
+Snest (Next, Slist)	:- "&lt;"; NL; indent++; <Spaces n="indent"/>; Sprint (Slist);
+		   NL; indent--; <Spaces n="indent"/>; "&gt;"; Sprint (Next);.
+Sitem (Next)	:- "()"; Sprint (Next);.
+Sempty (...)	:- .
+Slist (...)	:- "S"; .
+
+FUNCTION makeN (n: int) Slist
+LOCAL {<Java>Slist</Java> <C>tTree</C> list2;}
+  ... RETURN Sempty () :- n == 0; .
+  ... RETURN list :-
+       list: Slist := Sempty ();
+       i: int;
+       FOR i := 0; i &lt; n; i++; DO
+          list2 = list;
+          IF i > 5 THEN list ?= Snumber (n:=4); END;
+          list := Snumber (list, i);
+       END;
+  .
+  ... RETURN Snest (Sempty (), list2) :- .
+</CODE>
+
+<CODE NAME="calls">
+//Test Statements
+<MACRO>
+<CALL NAME="Sprint">
+   <ARG><NEW NAME="Snumber"><ARG><NEW NAME="Sempty"></NEW></ARG><ARG>99</ARG></NEW></ARG>
+</CALL><NL/>
+<CALL NAME="Sprint">
+   <ARG><LIST nil="Sempty">
+          <ITEM name="Snumber"><ARG>1</ARG></ITEM>
+          <ITEM name="Snest">
+              <ARG><LIST nil="Sempty"><ITEM name="Snumber"><ARG>9</ARG></ITEM></LIST></ARG>
+          </ITEM>
+          <ITEM name="Snumber"><ARG>2</ARG></ITEM>
+   </LIST></ARG>
+</CALL><NL/>
+<CALL NAME="Sprint">
+   <ARG><CALL NAME="makeN"><ARG>0</ARG></CALL></ARG>
+</CALL><NL/>
+<CALL NAME="Sprint">
+   <ARG><CALL NAME="makeN"><ARG>5</ARG></CALL></ARG>
+</CALL><NL/>
+<CALL NAME="Sprint">
+   <ARG><CALL NAME="makeN"><ARG>10</ARG></CALL></ARG>
+</CALL><NL/>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Statements -->
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Variable defns" RUN="y">
+<CODE NAME="tree_rules">
+V1	= [a] [b].
+V2	= V1 &lt;
+  V2a	= .
+&gt;.
+V3	= [a: String] [b: String].
+V4	= [r: <Java>int[]</Java><C>array</C>].
+</CODE>
+
+<CODE NAME="defs_rules">
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE vdef1 (a: int, b: int)
+   x, x :- "equal"; NL.
+   ...  :- "unequal"; NL. 
+PROCEDURE vdef2 (t:Tree)
+   V2(...) :- t ?= V2(NIL); "nil"; NL.
+   V2(v) :- vdef2 (v);.
+   ... :- t ?= V1(10, 10); "tens"; NL.
+   ... :- t ?= V3("10", "10"); "strings "; <WriteS>"10"</WriteS>; NL.
+   ... :- t ?= V1(x, x); "equal"; NL.
+   V4(a) :- a[3] == 3; "3"; NL.
+   ...  :- "unequal"; NL.
+PROCEDURE vdef3 (t1:Tree, t2:Tree)
+   V4(a), V4(a)	:- "v4 equal"; NL.
+   ...		:- "v4 unequal"; NL.
+</CODE>
+
+<CODE NAME="calls">
+//Test Variable defns
+<MACRO>
+<CALL NAME="vdef1"><ARG>1</ARG><ARG>2</ARG></CALL>
+<CALL NAME="vdef1"><ARG>4</ARG><ARG>4</ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V1"><ARG>1</ARG><ARG>2</ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V1"><ARG>9</ARG><ARG>9</ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V1"><ARG>10</ARG><ARG>10</ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V3"><ARG>"10"</ARG><ARG>"10"</ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V3"><ARG>"9"</ARG><ARG>"6"</ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V2"><ARG><NULL/></ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V2a"><ARG><NULL/></ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V2"><ARG><NEW NAME="V1"><ARG>1</ARG><ARG>2</ARG></NEW></ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V4"><ARG><Java>Tree.</Java>a3</ARG></NEW></ARG></CALL>
+<CALL NAME="vdef2"><ARG><NEW NAME="V4"><ARG><Java>Tree.</Java>anot3</ARG></NEW></ARG></CALL>
+<CALL NAME="vdef3">
+       <ARG><NEW NAME="V4"><ARG><Java>Tree.</Java>a3</ARG></NEW></ARG>
+       <ARG><NEW NAME="V4"><ARG><Java>Tree.</Java>anot3</ARG></NEW></ARG></CALL>
+<CALL NAME="vdef3">
+       <ARG><NEW NAME="V4"><ARG><Java>Tree.</Java>a3</ARG></NEW></ARG>
+       <ARG><NEW NAME="V4"><ARG><Java>Tree.</Java>a3</ARG></NEW></ARG></CALL>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Variable defns -->
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Predicates" RUN="y">
+This test is vaguely based on XML and XPath expressions.
+Tree is an XML document, Defs is an XPath expression (relative to
+the root of the XML document).
+<CODE NAME="tree_rules">
+Xe	= [name: String]  attr: Xas  children: Xes .
+Xas	= &lt;
+  NoXa	= .
+  Xa	= Next: Xas REVERSE   [name: String]  [value: String].
+&gt;.
+Xes	= &lt;
+  NoXe	= .
+  AnXe	= Next: Xes  Xe.
+&gt;.
+</CODE>
+
+<CODE NAME="defs_rules">
+Xp	= &lt;
+  Xend	= .
+  Xstep	= Next: Xp &lt;
+    Xroot	= .
+    Xchild	= .
+    Xname	= [ name: String ].
+    Xatt	= [ name: String ].
+  &gt;.
+&gt;.
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE Xprint (Tree, pos: int)
+  Xe(n, a, c),_	:-	<Spaces n="indent"/>; "&lt;"; <WriteS>n</WriteS>;
+			Xprint (a, 1);
+			IF !NoChildren (c) THEN
+				"&gt;"; NL; indent++; Xprint (c, 1); indent--;
+				<Spaces n="indent"/>; "&lt;/"; <WriteS>n</WriteS>; "&gt;";
+			ELSE
+				"/&gt;";
+			END;
+			NL;
+		.
+  AnXe(next, e),_	:- Xprint (e, pos); Xprint (next, pos+1);
+			.
+  Xa(next, n, v),_	:-	" "; <WriteS>n</WriteS>; "="; <WriteS>v</WriteS>;
+				Xprint (next, pos+1);
+			.
+  NoXa(...),_; NoXe(...),_	:-.
+PREDICATE NoChildren (Xes)
+  NoXe (...)	:-.
+PREDICATE HasAttr (t: Xas, a_name: String)
+  t:=Xa (name:=a_name)		:-.
+  t:=Xa (Next:=Next:Xas(...))	:- HasAttr (Next, a_name);.
+FUNCTION Xpath (doc: Xe, context: Tree, expr: Defs) Tree
+  expr:=Xroot(next)
+			RETURN Xpath (doc, doc, next)	:-.
+  expr:=Xchild(next),
+  context:=Xe(children:=nodes)
+			RETURN Xpath (doc, nodes, next)	:-.
+  expr:=Xname(next, name),
+  context:=AnXe (nextdoc, e:Xe(name,...))
+			RETURN AnXe (
+				GUARD Xpath (doc, nextdoc, expr),
+				GUARD Xpath (doc, e, next)
+			) :- .
+  expr:=Xatt(next, name),
+  context:=e:Xe(ename, attrs, c)
+			RETURN e :- HasAttr (attrs, name);.
+  expr:=Xatt(next, name)
+			RETURN NoXe() :-.
+  context:=NoXe()
+			RETURN context :-.
+  expr:=Xname(next, _),
+  context:=AnXe (nextdoc, ...)
+			RETURN Xpath (doc, nextdoc, expr) :- .
+  ...			RETURN NIL :- "Fail:-"; Xprint (context, 0);.
+</CODE>
+
+<CODE NAME="calls">
+//Test Predicates
+<MACRO>
+<CALL NAME="Xprint"><ARG><NEW NAME="Xe"><ARG>"document"</ARG>
+	<ARG><NEW NAME="NoXa"></NEW></ARG>
+	<ARG><LIST nil="NoXe">
+		<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+			<ARG>"empty-element"</ARG>
+			<ARG><NEW NAME="NoXa"></NEW></ARG>
+			<ARG><LIST nil="NoXe">
+			</LIST></ARG>
+		</NEW></ARG></ITEM>
+		<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+			<ARG>"empty-with-attr"</ARG>
+			<ARG><LIST nil="NoXa">
+				<ITEM name="Xa"><ARG>"at1"</ARG><ARG>"v1"</ARG></ITEM>
+				<ITEM name="Xa"><ARG>"at2"</ARG><ARG>"v2"</ARG></ITEM>
+			</LIST></ARG>
+			<ARG><LIST nil="NoXe">
+			</LIST></ARG>
+		</NEW></ARG></ITEM>
+		<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+			<ARG>"with-attr"</ARG>
+			<ARG><LIST nil="NoXa">
+				<ITEM name="Xa"><ARG>"at1"</ARG><ARG>"v1"</ARG></ITEM>
+				<ITEM name="Xa"><ARG>"at2"</ARG><ARG>"v2"</ARG></ITEM>
+			</LIST></ARG>
+			<ARG><LIST nil="NoXe">
+				<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+					<ARG>"inner"</ARG>
+					<ARG><LIST nil="NoXa"></LIST></ARG>
+					<ARG><LIST nil="NoXe"></LIST></ARG>
+				</NEW></ARG></ITEM>
+			</LIST></ARG>
+		</NEW></ARG></ITEM>
+	</LIST></ARG>
+</NEW></ARG><ARG>0</ARG></CALL>
+<CALL NAME="Xprint"><ARG>
+   <CALL NAME="Xpath">
+<ARG><NEW NAME="Xe"><ARG>"document"</ARG>
+	<ARG><NEW NAME="NoXa"></NEW></ARG>
+	<ARG><LIST nil="NoXe">
+		<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+			<ARG>"x"</ARG>
+			<ARG><LIST nil="NoXa"/></ARG>
+			<ARG><LIST nil="NoXe"/></ARG>
+		</NEW></ARG></ITEM>
+		<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+			<ARG>"x"</ARG>
+			<ARG><LIST nil="NoXa">
+				<ITEM name="Xa"><ARG>"a"</ARG><ARG>"v1"</ARG></ITEM>
+				<ITEM name="Xa"><ARG>"b"</ARG><ARG>"v2"</ARG></ITEM>
+			</LIST></ARG>
+			<ARG><LIST nil="NoXe">
+			</LIST></ARG>
+		</NEW></ARG></ITEM>
+		<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+			<ARG>"y"</ARG>
+			<ARG><LIST nil="NoXa">
+				<ITEM name="Xa"><ARG>"a"</ARG><ARG>"v1"</ARG></ITEM>
+			</LIST></ARG>
+			<ARG><LIST nil="NoXe">
+			</LIST></ARG>
+		</NEW></ARG></ITEM>
+		<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+			<ARG>"y"</ARG>
+			<ARG><LIST nil="NoXa">
+				<ITEM name="Xa"><ARG>"a"</ARG><ARG>"v1"</ARG></ITEM>
+			</LIST></ARG>
+			<ARG><LIST nil="NoXe">
+			</LIST></ARG>
+		</NEW></ARG></ITEM>
+		<ITEM name="AnXe"><ARG><NEW NAME="Xe">
+			<ARG>"x"</ARG>
+			<ARG><LIST nil="NoXa">
+				<ITEM name="Xa"><ARG>"a"</ARG><ARG>"v1"</ARG></ITEM>
+			</LIST></ARG>
+			<ARG><LIST nil="NoXe">
+			</LIST></ARG>
+		</NEW></ARG></ITEM>
+	</LIST></ARG>
+</NEW></ARG>
+<ARG><NULL/></ARG>
+<ARG><LIST nil="Xend">
+   <ITEM name="Xroot"/>
+   <ITEM name="Xchild"/>
+   <ITEM name="Xname"><ARG>"x"</ARG></ITEM>
+   <ITEM name="Xatt"><ARG>"a"</ARG></ITEM>
+</LIST></ARG>
+</CALL>
+</ARG><ARG>0</ARG></CALL>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Predicates -->
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Recursion" RUN="y">
+<CODE NAME="procs">
+PROCEDURE pr1 (a: int, b: int)
+  1,_	:-
+		"1,";
+		<WriteI>b</WriteI>; NL;
+		IF b==1 THEN FAIL; END;
+		IF b==2 THEN REJECT; END;
+		IF b==3 THEN RETURN; END;
+		"1 default"; NL.
+  1,_	:-
+		"1 rejected"; NL.
+  _,_	:-
+		"Other"; NL.
+</CODE>
+
+<CODE NAME="calls">
+//Test Recursion
+<MACRO>
+<CALL NAME="pr1"><ARG>1</ARG><ARG>4</ARG></CALL>
+<CALL NAME="pr1"><ARG>1</ARG><ARG>3</ARG></CALL>
+<CALL NAME="pr1"><ARG>1</ARG><ARG>2</ARG></CALL>
+<CALL NAME="pr1"><ARG>1</ARG><ARG>1</ARG></CALL>
+</MACRO>
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE pr2 (a: int, b: int)
+  1,_	:-
+		"1,";
+		<WriteI>b</WriteI>; NL;
+		IF b==1 THEN FAIL; END;
+		IF b==2 THEN REJECT; END;
+		IF b==3 THEN RETURN; END;
+		"1 default"; NL.
+  1,_	:-
+		"1 rejected"; NL.
+  2,_	:-
+		"tail recurse"; NL;
+		pr2 (a-1, b);.
+  3,_	:-
+		pr2 (a-2, b);
+		"post recurse"; NL.
+  _,_	:-
+		"Other"; NL.
+</CODE>
+
+<CODE NAME="calls">
+//Test Recursion
+<MACRO>
+<CALL NAME="pr2"><ARG>3</ARG><ARG>4</ARG></CALL>
+<CALL NAME="pr2"><ARG>2</ARG><ARG>3</ARG></CALL>
+<CALL NAME="pr2"><ARG>3</ARG><ARG>2</ARG></CALL>
+<CALL NAME="pr2"><ARG>2</ARG><ARG>1</ARG></CALL>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Recursion -->
+
+<!--  ****************************************************** -->
+
+<TEST NAME="Types" RUN="y">
+<CODE NAME="tree_rules">
+T1A	= &lt;
+ T1B	= &lt;
+  T1C	= .
+ &gt;.
+&gt;.
+T2A	= &lt;
+ T2B	= &lt;
+  T2C	= .
+ &gt;.
+&gt;.
+T3A	= &lt;
+ T3B	= &lt;
+  T3C	= .
+ &gt;.
+&gt;.
+</CODE>
+
+<CODE NAME="procs">
+PROCEDURE Tc1 (t1: [T1A, T2A], t2: [T2A, T3A])
+   t,t	:- "same type"; NL.
+   T1A(...), T3A(...)	:-
+				tb: [T1B, T2B, T3B];
+				tc: [T1C, T2C, T3C];
+				"t rule 1"; NL;
+				tb := GUARD t1;
+				"t rule 1b"; NL;
+				tc := GUARD t2;
+				"t rule 1c"; NL.
+   ...	:- "t no match"; NL.
+</CODE>
+
+<CODE NAME="calls">
+//Test Types
+<MACRO>
+<CALL NAME="Tc1"><ARG><NEW NAME="T1A"></NEW></ARG><ARG><NEW NAME="T2A"></NEW></ARG></CALL>
+<CALL NAME="Tc1"><ARG><NEW NAME="T1A"></NEW></ARG><ARG><NEW NAME="T1A"></NEW></ARG></CALL>
+<CALL NAME="Tc1"><ARG><NEW NAME="T1A"></NEW></ARG><ARG><NEW NAME="T3A"></NEW></ARG></CALL>
+<CALL NAME="Tc1"><ARG><NEW NAME="T1B"></NEW></ARG><ARG><NEW NAME="T3B"></NEW></ARG></CALL>
+<CALL NAME="Tc1"><ARG><NEW NAME="T1B"></NEW></ARG><ARG><NEW NAME="T3C"></NEW></ARG></CALL>
+</MACRO>
+</CODE>
+
+</TEST> <!-- Types -->
+
+<!--  ****************************************************** -->
+
+<!-- Template for making a new test.  Replace ???? by the name of the test,
+     and change RUN from "n" to "y".
+  -->
+
+<TEST NAME="????" RUN="n">
+<CODE NAME="tree_rules">
+</CODE>
+
+<CODE NAME="defs_rules">
+</CODE>
+
+<CODE NAME="procs">
+</CODE>
+
+<CODE NAME="calls">
+//Test ?????
+<MACRO>
+</MACRO>
+</CODE>
+
+</TEST> <!-- ???? -->
+
+<!--  ****************************************************** -->
+
+</SPEC>
+

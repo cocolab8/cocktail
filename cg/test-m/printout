@@ -1,0 +1,25 @@
+ast -a g.ast; 
+echo p Main | mc -d ../../reuse/src
+Mocka 9301
+>> .. Compiling Definition of Tree
+.. Compiling Implementation of Tree
+.. Compiling Program Module Main
+.. Linking Main
+>> 
+Main
++ cmp a aa 
++ cmp b bb 
++ cmp a aaa 
+WriteOpen (a)
+ReadOpen (a)
+WriteOpen (b)
+ReadOpen (b)
+WriteOpen (aa)
+WriteOpen (bb)
+WriteOpen (aaa)
+should print:
+1 2 5 3 4 5 4 3 2 1 
+1 2 5 3 4 5 4 3 2 1 
+should print:
+1 5 4 3 2 
+1 5 4 3 2 

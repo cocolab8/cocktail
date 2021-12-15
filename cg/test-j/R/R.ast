@@ -1,0 +1,5 @@
+RULE
+Vertices	= <
+  Vertex	= [index:int] next:Vertices REV .
+  NoVertex	= .
+>.

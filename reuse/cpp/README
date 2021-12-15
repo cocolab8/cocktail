@@ -1,0 +1,54 @@
+A Library of Reusable C++ Modules
+=================================
+
+1. Control Files
+----------------
+
+File            Type            Output          Compiler / Operating System
+
+Makefile        makefile        static library  Unix
+Makefile.v15    makefile        static library  Microsoft Visual C++ 1.52
+Makefile.mvc    makefile        static library  Microsoft Visual C++ 5.0/6.0
+
+LIBREUSE.MAK    project file    static library  Microsoft Visual C++ 1.52
+LIBREUSE.DSP    project file    static library  Microsoft Visual C++ 5.0/6.0
+LIBREUSE.DSW    proj. workspace static library  Microsoft Visual C++ 5.0/6.0
+
+LIBRUDLL.MAK    project file    DLL library     Microsoft Visual C++ 1.52
+LIBRUDLL.DEF    def file        DLL library     Microsoft Visual C++ 1.52
+LIBRUDLL.DSP    project file    DLL library     Microsoft Visual C++ 5.0/6.0
+LIBRUDLL.DSW    proj. workspace DLL library     Microsoft Visual C++ 5.0/6.0
+
+2. Configuration
+----------------
+
+Provide a configuration file config.h:
+
+File            Compiler / Operating System
+
+config.linux    Linux
+config.mvc      Microsoft Visual C++ 5.0 or later
+config.v15      Microsoft Visual C++ 1.52
+
+3. Unix
+-------
+
+Generate a configuration with:
+
+   make OPT=...
+
+Install it with:
+
+   make install LIB=...
+
+4. MS-DOS or Windows 3.x
+------------------------
+
+   msvcvars
+   nmake -f Makefile.v15
+
+5. Windows
+----------
+
+   vcvars32
+   nmake -f Makefile.mvc

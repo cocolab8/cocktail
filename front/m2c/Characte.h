@@ -1,0 +1,6 @@
+#define DEFINITION_Characte
+
+extern BOOLEAN Zgg3DDyAC_0 ARGS ((CHAR Z116[], LONGCARD , CHAR Z117[], LONGCARD ));
+extern CARDINAL Zgg3DDyAC_1 ARGS ((CHAR Z119[], LONGCARD ));
+extern void Zgg3DDyAC_2 ARGS ((CHAR Z121[], LONGCARD , CHAR Z122[], LONGCARD ));
+extern void BEGIN_Characte ARGS ((void));

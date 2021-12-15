@@ -1,0 +1,1873 @@
+#include "SYSTEM_.h"
+
+#ifndef DEFINITION_Checks
+#include "Checks.h"
+#endif
+
+#ifndef DEFINITION_rSystem
+#include "rSystem.h"
+#endif
+
+#ifndef DEFINITION_General
+#include "General.h"
+#endif
+
+#ifndef DEFINITION_Pack
+#include "Pack.h"
+#endif
+
+#ifndef DEFINITION_Position
+#include "Position.h"
+#endif
+
+#ifndef DEFINITION_IO
+#include "IO.h"
+#endif
+
+#ifndef DEFINITION_DynArray
+#include "DynArray.h"
+#endif
+
+#ifndef DEFINITION_Strings
+#include "Strings.h"
+#endif
+
+#ifndef DEFINITION_Source
+#include "Source.h"
+#endif
+
+#ifndef DEFINITION_Position
+#include "Position.h"
+#endif
+
+#ifndef DEFINITION_Strings
+#include "Strings.h"
+#endif
+
+#ifndef DEFINITION_Idents
+#include "Idents.h"
+#endif
+
+#ifndef DEFINITION_StringM
+#include "StringM.h"
+#endif
+
+#ifndef DEFINITION_Errors
+#include "Errors.h"
+#endif
+
+#ifndef DEFINITION_ArgCheck
+#include "ArgCheck.h"
+#endif
+
+#ifndef DEFINITION_Scanner
+#include "Scanner.h"
+#endif
+
+Zfb3DLQ_0 Zpky9FDA_2;
+Zfb3DLQ_0 Zpky9FDA_3;
+Zfb3DLQ_0 Zpky9FDA_4;
+Zp1PEAFi_1 Zpky9FDA_5;
+INTEGER Zpky9FDA_8;
+INTEGER Zpky9FDA_9;
+Zpky9FDA_0 Zpky9FDA_10;
+PROC Zpky9FDA_11;
+
+#define Z150	1
+#define Z151	2
+#define Z152	3
+#define Z153	4
+#define Z154	5
+#define Z155	6
+#define Z156	7
+#define Z157	8
+#define Z158	9
+#define Z159	10
+#define Z160	11
+#define Z161	12
+#define Z162	13
+#define Z163	14
+#define Z164	15
+#define Z165	16
+#define Z166	17
+#define Z167	18
+#define Z168	19
+#define Z169	20
+#define Z170	21
+#define Z171	22
+#define Z172	23
+#define Z173	24
+#define Z174	25
+#define Z175	26
+#define Z176	27
+#define Z177	28
+#define Z178	29
+#define Z179	30
+#define Z180	31
+static INTEGER Z181;
+static Zp1PEAFD_2 Z182, Z183;
+static ZmtLFGGBG_0 Z184;
+struct S_1_MakeDirective;
+static void Z196 ARGS ((Zp1PEAFD_2 *Z197, CARDINAL Z198, Zfb3DLQ_0 Z199));
+static void Z200 ARGS ((struct S_1_MakeDirective *link, Zp1PEAFD_2 *Z197, CHAR Z201[], LONGCARD O_1));
+static void Z202 ARGS ((struct S_1_MakeDirective *link, Zp1PEAFD_2 *Z197, INTEGER Z201));
+static void Z203 ARGS ((struct S_1_MakeDirective *link, Zp1PEAFD_2 *Z197, Zfb3DLQ_0 Z201));
+static void Z204 ARGS ((struct S_1_MakeDirective *link, Zp1PEAFD_2 *Z197, Zfb3DLQ_0 Z205));
+struct S_1_MakeDirective {
+Zp1PEAFD_2 *Z183;
+};
+#define Z209	8
+#define Z210	0
+#define Z211	16
+#define Z212	(1024 * 8 + 256)
+#define Z213	'\0'
+#define Z214	((CHAR)'\377')
+#define Z215	'\n'
+#define Z216	((CHAR)'\177')
+#define Z217	178
+#define Z218	4058
+#define Z219	67
+#define Z220	68
+#define Z221	0
+#define Z222	1
+#define Z223	3
+#define Z224	5
+#define Z225	7
+#define Z226	9
+#define Z227	11
+#define Z228	13
+#define Z229	15
+#define Z230	17
+typedef SHORTCARD Z231;
+typedef Z231 Z232;
+typedef Z231 Z233;
+typedef struct S_1 {
+Z232 Y0, Y1;
+} Z234;
+typedef Z234 *Z237;
+typedef struct S_12 {
+CHAR A[1000000 + 1];
+} *Z238;
+typedef CHAR Z239;
+static struct S_2 {
+ADDRESS A[Z217 + 1];
+} Z240;
+static struct S_3 {
+Z232 A[Z217 + 1];
+} Z241;
+static struct S_4 {
+Z234 A[Z218 + 1];
+} Z242;
+static struct S_5 {
+Z232 A[Z217 + 1];
+} Z243;
+static struct S_6 {
+CHAR A[Z214 + 1];
+} Z244, Z245;
+static struct S_7 {
+Z232 A[1000000 + 1];
+} *Z246;
+static LONGINT Z247;
+static Z232 Z248;
+static Z232 Z249;
+static CHAR Z250;
+static BOOLEAN Z251;
+static ZDz6VQCC_4 Z252;
+static BOOLEAN Z254;
+static Z238 Z255;
+static INTEGER Z256;
+static LONGINT Z257;
+static INTEGER Z258;
+static INTEGER Z259;
+static INTEGER Z260;
+static CARDINAL Z261;
+static INTEGER Z262;
+static SHORTCARD Z263;
+static struct S_8 {
+struct S_9 {
+ZDz6VQCC_4 Y0;
+BOOLEAN Y1;
+Z238 Y2;
+INTEGER Y3;
+LONGINT Y4;
+INTEGER Y5;
+INTEGER Y6;
+INTEGER Y7;
+CARDINAL Y8;
+INTEGER Y9;
+} A[Z211 - 1 + 1];
+} Z264;
+#define Z275	16
+static LONGINT Z276;
+static struct S_10 {
+Z232 A[100000 + 1];
+} *Z277;
+static LONGINT Z278;
+static void Z279 ARGS ((Z232 Z280));
+static void Z283 ARGS ((void));
+static void Z312 ARGS ((void));
+static void Z282 ARGS ((Z232 Z323));
+static void Z300 ARGS ((void));
+static void Z324 ARGS ((void));
+static void Z325 ARGS ((INTEGER Z326));
+static void Z301 ARGS ((void));
+static void Z327 ARGS ((INTEGER Z328));
+static void Z329 ARGS ((INTEGER Z328, INTEGER Z330));
+static void Z299 ARGS ((INTEGER Z297));
+static void Z331 ARGS ((CHAR Z332));
+static void Z333 ARGS ((CHAR Z332));
+static CHAR Z334 ARGS ((void));
+static CARDINAL Z339;
+static void Z340 ARGS ((LONGCARD Z190));
+static void Z341 ARGS ((LONGCARD Z190));
+static void Z342 ARGS ((LONGCARD Z190));
+static void Z343 ARGS ((LONGCARD Z190));
+static void Z344 ARGS ((void));
+static void Z284 ARGS ((SHORTCARD Z348));
+static void Z354 ARGS ((void));
+
+void Zpky9FDA_6
+# ifdef HAVE_ARGS
+(INTEGER Z186, Zpky9FDA_0 *Z187)
+# else
+(Z186, Z187)
+INTEGER Z186;
+Zpky9FDA_0 *Z187;
+# endif
+{
+Z187->Y0 = Zpky9FDA_10.Y0;
+switch (Z186) {
+case Z173:;
+Z187->U_1.V_1.Y1 = Zpky9FDA_1;
+break;
+case Z174:;
+case Z175:;
+Z187->U_1.V_3.Y3 = Zpky9FDA_5;
+break;
+case Z176:;
+case Z177:;
+Z187->U_1.V_2.Y2 = Zpky9FDA_4;
+break;
+default:
+break;
+}
+}
+
+static void Z200
+# ifdef HAVE_ARGS
+(struct S_1_MakeDirective *link, Zp1PEAFD_2 *Z197, CHAR Z201[], LONGCARD O_1)
+# else
+(link, Z197, Z201, O_1)
+struct S_1_MakeDirective *link;
+Zp1PEAFD_2 *Z197;
+CHAR Z201[];
+LONGCARD O_1;
+# endif
+{
+Zp1PEAFD_13(Z201, O_1, link->Z183);
+Zp1PEAFD_5(Z197, link->Z183);
+}
+
+static void Z202
+# ifdef HAVE_ARGS
+(struct S_1_MakeDirective *link, Zp1PEAFD_2 *Z197, INTEGER Z201)
+# else
+(link, Z197, Z201)
+struct S_1_MakeDirective *link;
+Zp1PEAFD_2 *Z197;
+INTEGER Z201;
+# endif
+{
+Zp1PEAFD_18(Z201, link->Z183);
+Zp1PEAFD_5(Z197, link->Z183);
+}
+
+static void Z203
+# ifdef HAVE_ARGS
+(struct S_1_MakeDirective *link, Zp1PEAFD_2 *Z197, Zfb3DLQ_0 Z201)
+# else
+(link, Z197, Z201)
+struct S_1_MakeDirective *link;
+Zp1PEAFD_2 *Z197;
+Zfb3DLQ_0 Z201;
+# endif
+{
+Zfb3DLQ_3(Z201, link->Z183);
+Zp1PEAFD_5(Z197, link->Z183);
+}
+
+static void Z204
+# ifdef HAVE_ARGS
+(struct S_1_MakeDirective *link, Zp1PEAFD_2 *Z197, Zfb3DLQ_0 Z205)
+# else
+(link, Z197, Z205)
+struct S_1_MakeDirective *link;
+Zp1PEAFD_2 *Z197;
+Zfb3DLQ_0 Z205;
+# endif
+{
+CARDINAL Z206;
+CHAR Z207;
+
+Zfb3DLQ_3(Z205, link->Z183);
+{
+LONGCARD B_1 = 1, B_2 = Zp1PEAFD_7(link->Z183);
+
+if (B_1 <= B_2)
+for (Z206 = B_1;; Z206 += 1) {
+Z207 = Zp1PEAFD_12(link->Z183, (Zp1PEAFD_1)Z206);
+if (Z207 == '\\') {
+Zp1PEAFD_6(Z197, Z207);
+}
+Zp1PEAFD_6(Z197, Z207);
+if (Z206 >= B_2) break;
+}
+}
+}
+
+static void Z196
+# ifdef HAVE_ARGS
+(Zp1PEAFD_2 *Z197, CARDINAL Z198, Zfb3DLQ_0 Z199)
+# else
+(Z197, Z198, Z199)
+Zp1PEAFD_2 *Z197;
+CARDINAL Z198;
+Zfb3DLQ_0 Z199;
+# endif
+{
+Zp1PEAFD_2 Z183;
+struct S_1_MakeDirective frame;
+
+frame.Z183 = &Z183;
+Zp1PEAFD_4(Z197);
+if (ZehCfg728_7 == ZehCfg728_12) {
+if (ZehCfg728_4) {
+Z200(&frame, Z197, (STRING)"# line ", 7L);
+Z202(&frame, Z197, (LONGINT)Z198);
+Z200(&frame, Z197, (STRING)" \"", 2L);
+Z204(&frame, Z197, Z199);
+Zp1PEAFD_6(Z197, '"');
+} else {
+Z200(&frame, Z197, (STRING)"/* line ", 8L);
+Z202(&frame, Z197, (LONGINT)Z198);
+Z200(&frame, Z197, (STRING)" \"", 2L);
+Z203(&frame, Z197, Z199);
+Z200(&frame, Z197, (STRING)"\" */", 4L);
+}
+} else {
+Z200(&frame, Z197, (STRING)"(* line ", 8L);
+Z202(&frame, Z197, (LONGINT)Z198);
+Z200(&frame, Z197, (STRING)" \"", 2L);
+Z203(&frame, Z197, Z199);
+Z200(&frame, Z197, (STRING)"\" *)", 4L);
+}
+}
+
+static void Z279
+# ifdef HAVE_ARGS
+(Z232 Z280)
+# else
+(Z280)
+Z232 Z280;
+# endif
+{
+if (Z278 == Z276) {
+ZarQdhNDD_2((ADDRESS *)&Z277, &Z276, (LONGINT)sizeof (Z232));
+}
+Z277->A[Z278] = Z248;
+INC(Z278);
+Z282(Z280);
+}
+
+static void Z283
+ ARGS ((void))
+{
+Z249 = Z248;
+if (Z278 > 0) {
+DEC(Z278);
+Z248 = Z277->A[Z278];
+} else {
+Z284(6);
+}
+}
+
+INTEGER Zpky9FDA_14
+ ARGS ((void))
+{
+Z232 Z280;
+Z237 Z286;
+BOOLEAN Z287;
+INTEGER Z288, Z289, Z290, Z291;
+Zp1PEAFD_2 Z292, Z293;
+CHAR Z207;
+LONGCARD Z294;
+
+for (;;) {
+Z280 = Z248;
+Zpky9FDA_8 = 0;
+Zpky9FDA_9 = Z258;
+if (Z255->A[Z258 - 1] == Z215) {
+INC(Z280);
+}
+for (;;) {
+for (;;) {
+Z286 = (Z237)(Z240.A[Z280] + ORD(Z255->A[Z258]) * sizeof (Z234));
+if (Z286->Y0 != Z280) {
+Z280 = Z241.A[Z280];
+if (Z280 == Z210) {
+goto EXIT_3;
+}
+} else {
+Z280 = Z286->Y1;
+INC(Zpky9FDA_8);
+Z246->A[Zpky9FDA_8] = Z280;
+INC(Z258);
+}
+} EXIT_3:;
+for (;;) {
+switch (Z246->A[Zpky9FDA_8]) {
+case 178:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z150;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 177:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z151;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 176:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z152;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 175:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z180;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 171:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z153;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 174:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z154;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 173:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z155;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 172:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z156;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 98:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z157;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 170:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z158;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 169:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z159;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 168:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z160;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 167:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z164;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 162:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z165;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 157:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z161;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 151:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z162;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 145:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z169;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 142:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z163;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 137:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z168;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 133:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z167;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 129:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z179;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 124:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z172;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 120:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z170;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 116:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z171;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 112:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z178;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 105:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+return Z166;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 36:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Zpky9FDA_15(&Z293);
+Zpky9FDA_10.U_1.V_1.Y1 = Zp1PEAFD_15(&Z293);
+return Z173;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 39:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_11(&Z293, 2, (Zp1PEAFD_1)Zp1PEAFD_7(&Z293), &Z292);
+Zpky9FDA_10.U_1.V_2.Y2 = Zfb3DLQ_2(&Z292);
+return Z176;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 37:;
+case 101:;
+case 102:;
+case 103:;
+case 104:;
+case 106:;
+case 107:;
+case 108:;
+case 109:;
+case 110:;
+case 111:;
+case 113:;
+case 114:;
+case 115:;
+case 117:;
+case 118:;
+case 119:;
+case 121:;
+case 122:;
+case 123:;
+case 125:;
+case 126:;
+case 127:;
+case 128:;
+case 130:;
+case 131:;
+case 132:;
+case 134:;
+case 135:;
+case 136:;
+case 138:;
+case 139:;
+case 140:;
+case 141:;
+case 143:;
+case 144:;
+case 146:;
+case 147:;
+case 148:;
+case 149:;
+case 150:;
+case 152:;
+case 153:;
+case 154:;
+case 155:;
+case 156:;
+case 158:;
+case 159:;
+case 160:;
+case 161:;
+case 163:;
+case 164:;
+case 165:;
+case 166:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Zpky9FDA_15(&Z293);
+Zpky9FDA_10.U_1.V_2.Y2 = Zfb3DLQ_2(&Z293);
+return Z176;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 38:;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 100:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Z181 = 0;
+Z282(Z223);
+Zp1PEAFD_4(&Z182);
+Z184 = Zpky9FDA_10.Y0;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 99:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Z181 = 0;
+Z282(Z228);
+Z184 = Zpky9FDA_10.Y0;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 25:;
+case 80:;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 96:;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 94:;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 97:;
+INC(Z181);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 95:;
+if (Z181 == 0) {
+Z282(Z222);
+} else {
+DEC(Z181);
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 93:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Z282(Z229);
+Z184 = Zpky9FDA_10.Y0;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 24:;
+case 81:;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 91:;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 92:;
+Z282(Z222);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 40:;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 35:;
+case 51:;
+case 58:;
+case 59:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Zpky9FDA_15(&Z293);
+Z207 = Zp1PEAFD_12(&Z293, 1);
+if (Z207 <= ' ') {
+ZblNKKO_46((STRING)"illegal character", 17L, (LONGCARD)ZblNKKO_16, Zpky9FDA_10.Y0);
+} else {
+ZblNKKO_47((STRING)"illegal character", 17L, (LONGCARD)ZblNKKO_16, Zpky9FDA_10.Y0, (LONGCARD)ZblNKKO_28, ADR (Z207));
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 90:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Zpky9FDA_15(&Z292);
+if (ZehCfg728_7 == ZehCfg728_12) {
+Z282(Z226);
+} else {
+Z282(Z224);
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 89:;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Zpky9FDA_15(&Z292);
+if (ZehCfg728_7 == ZehCfg728_12) {
+Z282(Z227);
+} else {
+Z282(Z225);
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 31:;
+case 48:;
+case 76:;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z292, &Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 30:;
+case 47:;
+case 77:;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z292, &Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 29:;
+case 45:;
+case 46:;
+case 56:;
+case 78:;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z292, &Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 26:;
+case 43:;
+case 44:;
+case 55:;
+case 79:;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z292, &Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 28:;
+Zp1PEAFD_6(&Z292, '\\');
+Zp1PEAFD_6(&Z292, '\n');
+Z299(0L);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 87:;
+case 88:;
+Zp1PEAFD_6(&Z292, Zp1PEAFD_12(&Z292, 1));
+Z300();
+if (Z248 == Z223) {
+Zp1PEAFD_5(&Z182, &Z292);
+} else {
+Zpky9FDA_10.U_1.V_2.Y2 = Zfb3DLQ_2(&Z292);
+return Z177;
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 61:;
+case 86:;
+Zp1PEAFD_6(&Z292, Zp1PEAFD_12(&Z292, 1));
+Z300();
+if (Z248 == Z223) {
+Zp1PEAFD_5(&Z182, &Z292);
+} else {
+Zpky9FDA_10.U_1.V_2.Y2 = Zfb3DLQ_2(&Z292);
+return Z177;
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 85:;
+Zp1PEAFD_6(&Z292, '\t');
+Z301();
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 27:;
+case 71:;
+ZblNKKO_46((STRING)"string exceeds line", 19L, (LONGCARD)ZblNKKO_16, Zpky9FDA_10.Y0);
+Zp1PEAFD_6(&Z292, '\n');
+Z299(0L);
+Z300();
+if (Z248 == Z223) {
+Zp1PEAFD_5(&Z182, &Z292);
+} else {
+Zpky9FDA_10.U_1.V_2.Y2 = Zfb3DLQ_2(&Z292);
+return Z177;
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 53:;
+Zp1PEAFD_6(&Z292, '\r');
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 32:;
+case 49:;
+case 50:;
+case 57:;
+case 75:;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z182, &Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 33:;
+case 70:;
+Zp1PEAFD_6(&Z182, '\n');
+Zpky9FDA_10.U_1.V_3.Y3 = Zp1PEAFi_2(&Z182);
+Zp1PEAFD_4(&Z182);
+Z299(0L);
+return Z174;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 84:;
+Z301();
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z182, &Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 34:;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_6(&Z182, Zp1PEAFD_12(&Z293, 2));
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 21:;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z182, &Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 83:;
+INC(Z181);
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z182, &Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 82:;
+if (Z181 == 0) {
+Zpky9FDA_10.U_1.V_3.Y3 = Zp1PEAFi_2(&Z182);
+Z282(Z222);
+return Z175;
+} else {
+DEC(Z181);
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_5(&Z182, &Z293);
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 22:;
+Z279(Z230);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 19:;
+Zpky9FDA_15(&Z293);
+Z294 = Zp1PEAFD_15(&Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 23:;
+Zpky9FDA_15(&Z293);
+Zp1PEAFD_11(&Z293, 2, (Zp1PEAFD_1)(Zp1PEAFD_7(&Z293) - 1), &Z293);
+Z261 = Z294 - 1;
+Zpky9FDA_10.Y0.Y2 = Zfb3DLQ_2(&Z293);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 20:;
+case 72:;
+Z283();
+Z299(0L);
+switch (Z248) {
+case Z223:;
+Z196(&Z182, Z261, Zpky9FDA_10.Y0.Y2);
+Zp1PEAFD_6(&Z182, '\n');
+Zpky9FDA_10.U_1.V_3.Y3 = Zp1PEAFi_2(&Z182);
+Zp1PEAFD_4(&Z182);
+return Z174;
+break;
+default:
+break;
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 74:;
+while (Z255->A[Z258] == ' ') {
+INC(Z258);
+}
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 73:;
+Z301();
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 69:;
+Z299(0L);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 1:;
+case 2:;
+case 3:;
+case 4:;
+case 5:;
+case 6:;
+case 7:;
+case 8:;
+case 9:;
+case 10:;
+case 11:;
+case 12:;
+case 13:;
+case 14:;
+case 15:;
+case 16:;
+case 17:;
+case 18:;
+case 41:;
+case 42:;
+case 52:;
+case 54:;
+case 60:;
+case 62:;
+case 63:;
+case 64:;
+case 65:;
+case 66:;
+DEC(Z258);
+DEC(Zpky9FDA_8);
+break;
+case 68:;
+INC(Z258);
+Zpky9FDA_8 = 1;
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+ZfM_24((ZDz6VQCC_4)ZfM_1, Z255->A[Z258 - 1]);
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case Z210:;
+Z287 = FALSE;
+goto EXIT_4;
+break;
+case 67:;
+DEC(Z258);
+DEC(Zpky9FDA_8);
+if (Zpky9FDA_8 == 0) {
+Z280 = Z248;
+if (Z255->A[Z258 - 1] == Z215) {
+INC(Z280);
+}
+} else {
+Z280 = Z246->A[Zpky9FDA_8];
+}
+if (Z258 != Z256 + Z259) {
+Z280 = Z243.A[Z280];
+if (Z280 != Z210) {
+INC(Z258);
+INC(Zpky9FDA_8);
+Z246->A[Zpky9FDA_8] = Z280;
+Z287 = TRUE;
+goto EXIT_4;
+}
+} else {
+if (!Z254) {
+Z289 = Z258 - Zpky9FDA_8 - 1;
+Z290 = ZdaDDAD7_1 - Zpky9FDA_8 % ZdaDDAD7_1 - 1;
+if (Z289 > Z290) {
+{
+LONGINT B_3 = 0, B_4 = Zpky9FDA_8;
+
+if (B_3 <= B_4)
+for (Z288 = B_3;; Z288 += 1) {
+Z255->A[Z290 + Z288] = Z255->A[Z289 + Z288];
+if (Z288 >= B_4) break;
+}
+}
+DEC1(Z262, Z289 - Z290);
+DEC1(Zpky9FDA_9, Z289 - Z290);
+Z256 = Z290 + Zpky9FDA_8 + 1;
+} else {
+Z256 = Z258;
+}
+Z291 = ZdaDDAD7_8(ZdaDDAD7_7((LONGCARD)(Z257 - 4 - ZdaDDAD7_1 - Zpky9FDA_8)));
+if (Z291 < Z257 / 8) {
+ZarQdhNDD_2((ADDRESS *)&Z255, &Z257, (LONGINT)sizeof (CHAR));
+if (Z255 == NIL) {
+Z284(1);
+}
+Z291 = ZdaDDAD7_8(ZdaDDAD7_7((LONGCARD)(Z257 - 4 - ZdaDDAD7_1 - Zpky9FDA_8)));
+if (Z247 < Z257) {
+ZarQdhNDD_2((ADDRESS *)&Z246, &Z247, (LONGINT)sizeof (Z232));
+if (Z246 == NIL) {
+Z284(1);
+}
+}
+}
+Z258 = Z256;
+INC1(Z260, Z259);
+Z259 = ZpwNQF2_1(Z252, ADR (Z255->A[Z258]), (LONGCARD)Z291);
+if (Z259 <= 0) {
+Z259 = 0;
+Z254 = TRUE;
+}
+Z255->A[Z256 + Z259] = Z216;
+Z255->A[Z256 + Z259 + 1] = '\0';
+Z287 = TRUE;
+goto EXIT_4;
+}
+if (Zpky9FDA_8 == 0) {
+Zpky9FDA_10.Y0.Y0 = Z261;
+Zpky9FDA_10.Y0.Y1 = Z258 - Z262 - Zpky9FDA_8;
+Zpky9FDA_18();
+if (Z263 == 0) {
+switch (Z248) {
+case Z226:;
+case Z227:;
+case Z224:;
+case Z225:;
+ZblNKKO_46((STRING)"unterminated string", 19L, (LONGCARD)ZblNKKO_16, Zpky9FDA_10.Y0);
+break;
+case Z228:;
+case Z229:;
+ZblNKKO_46((STRING)"unterminated comment", 20L, (LONGCARD)ZblNKKO_16, Z184);
+break;
+case Z223:;
+ZblNKKO_46((STRING)"unterminated action", 19L, (LONGCARD)ZblNKKO_16, Z184);
+break;
+default:
+break;
+}
+}
+if (Z263 == 0) {
+return Zpky9FDA_7;
+}
+Z287 = FALSE;
+goto EXIT_4;
+}
+}
+break;
+default:
+Z284(0);
+break;
+}
+} EXIT_4:;
+if (Z287) {
+} else {
+goto EXIT_2;
+}
+} EXIT_2:;
+} EXIT_1:;
+}
+
+void Zpky9FDA_13
+# ifdef HAVE_ARGS
+(CHAR Z311[], LONGCARD O_2)
+# else
+(Z311, O_2)
+CHAR Z311[];
+LONGCARD O_2;
+# endif
+{
+OPEN_ARRAY_LOCALS
+
+ALLOC_OPEN_ARRAYS (O_2 * sizeof (CHAR), 1)
+COPY_OPEN_ARRAY (Z311, O_2, CHAR)
+if (Z251 && Z259 == 0) {
+Z263 = 0;
+Z251 = FALSE;
+}
+Z312();
+if (ORD(Z311[0]) == 0) {
+Z252 = ZDz6VQCC_1;
+} else {
+Z252 = ZpwNQF2_0(Z311, O_2);
+}
+if (Z252 < 0) {
+Z284(5);
+}
+FREE_OPEN_ARRAYS
+}
+
+static void Z312
+ ARGS ((void))
+{
+if (Z263 >= Z211) {
+Z284(3);
+}
+INC(Z263);
+{
+register struct S_9 *W_1 = &Z264.A[Z263 - 1];
+
+W_1->Y0 = Z252;
+W_1->Y1 = Z254;
+W_1->Y2 = Z255;
+W_1->Y3 = Z256;
+W_1->Y4 = Z257;
+W_1->Y5 = Z258;
+W_1->Y6 = Z259;
+W_1->Y7 = Z260;
+W_1->Y8 = Z261;
+W_1->Y9 = Z262;
+}
+Z257 = Z212;
+ZarQdhNDD_0((ADDRESS *)&Z255, &Z257, (LONGINT)sizeof (CHAR));
+if (Z255 == NIL) {
+Z284(1);
+}
+Z256 = ZdaDDAD7_1;
+Z255->A[Z256 - 1] = Z215;
+Z255->A[Z256] = Z216;
+Z255->A[Z256 + 1] = '\0';
+Z258 = Z256;
+Z254 = FALSE;
+Z259 = 0;
+Z260 = 0;
+Z261 = 1;
+Z262 = Z256 - 1;
+}
+
+void Zpky9FDA_18
+ ARGS ((void))
+{
+if (Z263 == 0) {
+Z284(4);
+}
+ZpwNQF2_2(Z252);
+ZarQdhNDD_3((ADDRESS *)&Z255, &Z257, (LONGINT)sizeof (CHAR));
+{
+register struct S_9 *W_2 = &Z264.A[Z263 - 1];
+
+Z252 = W_2->Y0;
+Z254 = W_2->Y1;
+Z255 = W_2->Y2;
+Z256 = W_2->Y3;
+Z257 = W_2->Y4;
+Z258 = W_2->Y5;
+Z259 = W_2->Y6;
+Z260 = W_2->Y7;
+Z261 = W_2->Y8;
+Z262 = W_2->Y9;
+}
+DEC(Z263);
+Z251 = FALSE;
+}
+
+void Zpky9FDA_15
+# ifdef HAVE_ARGS
+(Zp1PEAFD_2 *Z293)
+# else
+(Z293)
+Zp1PEAFD_2 *Z293;
+# endif
+{
+CARDINAL Z206, Z317;
+
+Z317 = Z258 - Zpky9FDA_8 - 1;
+Z293->Y1 = ZdaDDAD7_3(Zpky9FDA_8, (LONGINT)Zp1PEAFD_0);
+{
+LONGCARD B_5 = 1, B_6 = Z293->Y1;
+
+if (B_5 <= B_6)
+for (Z206 = B_5;; Z206 += 1) {
+Z293->Y0.A[Z206] = Z255->A[Z317 + Z206];
+if (Z206 >= B_6) break;
+}
+}
+}
+
+void Zpky9FDA_16
+# ifdef HAVE_ARGS
+(Zp1PEAFD_2 *Z293)
+# else
+(Z293)
+Zp1PEAFD_2 *Z293;
+# endif
+{
+CARDINAL Z206, Z317;
+
+Z317 = Z258 - Zpky9FDA_8 - 1;
+Z293->Y1 = ZdaDDAD7_3(Zpky9FDA_8, (LONGINT)Zp1PEAFD_0);
+{
+LONGCARD B_7 = 1, B_8 = Z293->Y1;
+
+if (B_7 <= B_8)
+for (Z206 = B_7;; Z206 += 1) {
+Z293->Y0.A[Z206] = Z244.A[Z255->A[Z317 + Z206]];
+if (Z206 >= B_8) break;
+}
+}
+}
+
+void Zpky9FDA_17
+# ifdef HAVE_ARGS
+(Zp1PEAFD_2 *Z293)
+# else
+(Z293)
+Zp1PEAFD_2 *Z293;
+# endif
+{
+CARDINAL Z206, Z317;
+
+Z317 = Z258 - Zpky9FDA_8 - 1;
+Z293->Y1 = ZdaDDAD7_3(Zpky9FDA_8, (LONGINT)Zp1PEAFD_0);
+{
+LONGCARD B_9 = 1, B_10 = Z293->Y1;
+
+if (B_9 <= B_10)
+for (Z206 = B_9;; Z206 += 1) {
+Z293->Y0.A[Z206] = Z245.A[Z255->A[Z317 + Z206]];
+if (Z206 >= B_10) break;
+}
+}
+}
+
+static void Z282
+# ifdef HAVE_ARGS
+(Z232 Z323)
+# else
+(Z323)
+Z232 Z323;
+# endif
+{
+Z249 = Z248;
+Z248 = Z323;
+}
+
+static void Z300
+ ARGS ((void))
+{
+Z232 Z183;
+
+Z183 = Z248;
+Z248 = Z249;
+Z249 = Z183;
+}
+
+static void Z324
+ ARGS ((void))
+{
+INTEGER Z206;
+
+{
+LONGINT B_11 = Z258 - Zpky9FDA_8, B_12 = Z258 - 1;
+
+if (B_11 <= B_12)
+for (Z206 = B_11;; Z206 += 1) {
+ZfM_24((ZDz6VQCC_4)ZfM_1, Z255->A[Z206]);
+if (Z206 >= B_12) break;
+}
+}
+}
+
+static void Z325
+# ifdef HAVE_ARGS
+(INTEGER Z326)
+# else
+(Z326)
+INTEGER Z326;
+# endif
+{
+DEC1(Z258, Zpky9FDA_8 - Z326);
+Zpky9FDA_8 = Z326;
+}
+
+static void Z301
+ ARGS ((void))
+{
+DEC1(Z262, Z209 - 1 - (Z258 - Z262 - 2) % Z209);
+}
+
+static void Z327
+# ifdef HAVE_ARGS
+(INTEGER Z328)
+# else
+(Z328)
+INTEGER Z328;
+# endif
+{
+DEC1(Z262, Z209 - 1 - (Z258 - Z262 - Zpky9FDA_8 + Z328 - 1) % Z209);
+}
+
+static void Z329
+# ifdef HAVE_ARGS
+(INTEGER Z328, INTEGER Z330)
+# else
+(Z328, Z330)
+INTEGER Z328, Z330;
+# endif
+{
+DEC1(Z262, Z209 - 1 - (Z258 - Z262 - Zpky9FDA_8 + Z328 - 1) % Z209);
+}
+
+static void Z299
+# ifdef HAVE_ARGS
+(INTEGER Z297)
+# else
+(Z297)
+INTEGER Z297;
+# endif
+{
+INC(Z261);
+Z262 = Z258 - 1 - Z297;
+}
+
+static void Z331
+# ifdef HAVE_ARGS
+(CHAR Z332)
+# else
+(Z332)
+CHAR Z332;
+# endif
+{
+ZfM_24((ZDz6VQCC_4)ZfM_1, Z332);
+}
+
+static void Z333
+# ifdef HAVE_ARGS
+(CHAR Z332)
+# else
+(Z332)
+CHAR Z332;
+# endif
+{
+DEC(Z258);
+Z255->A[Z258] = Z332;
+}
+
+static CHAR Z334
+ ARGS ((void))
+{
+if (Z258 == Z256 + Z259) {
+if (!Z254) {
+DEC1(Z262, Z259);
+Z256 = ZdaDDAD7_1;
+Z258 = Z256;
+INC1(Z260, Z259);
+Z259 = ZpwNQF2_1(Z252, (ADDRESS)Z255, ZdaDDAD7_8(ZdaDDAD7_7((LONGCARD)Z257)));
+if (Z259 <= 0) {
+Z259 = 0;
+Z254 = TRUE;
+}
+Z255->A[Z259] = Z216;
+Z255->A[Z259 + 1] = '\0';
+}
+}
+if (Z258 == Z256 + Z259) {
+return '\0';
+} else {
+INC(Z258);
+return Z255->A[Z258 - 1];
+}
+}
+
+void Zpky9FDA_12
+ ARGS ((void))
+{
+Zp1PEAFD_13((STRING)"_Epsilon", 8L, &Z183);
+Zpky9FDA_2 = Zfb3DLQ_2(&Z183);
+Zp1PEAFD_13((STRING)"_EOF_", 5L, &Z183);
+Zpky9FDA_3 = Zfb3DLQ_2(&Z183);
+Zp1PEAFD_13((STRING)"_ErrorId", 8L, &Z183);
+Zpky9FDA_4 = Zfb3DLQ_2(&Z183);
+Zp1PEAFD_13((STRING)"_ErrorStr", 9L, &Z183);
+Zpky9FDA_5 = Zp1PEAFi_2(&Z183);
+}
+
+void Zpky9FDA_19
+ ARGS ((void))
+{
+}
+
+static void Z340
+# ifdef HAVE_ARGS
+(LONGCARD Z190)
+# else
+(Z190)
+LONGCARD Z190;
+# endif
+{
+Z240.A[Z339] = ADR (Z242.A[Z190]);
+INC(Z339);
+}
+
+static void Z341
+# ifdef HAVE_ARGS
+(LONGCARD Z190)
+# else
+(Z190)
+LONGCARD Z190;
+# endif
+{
+Z241.A[Z339] = Z190;
+INC(Z339);
+}
+
+static void Z342
+# ifdef HAVE_ARGS
+(LONGCARD Z190)
+# else
+(Z190)
+LONGCARD Z190;
+# endif
+{
+Z243.A[Z339] = Z190;
+INC(Z339);
+}
+
+static void Z343
+# ifdef HAVE_ARGS
+(LONGCARD Z190)
+# else
+(Z190)
+LONGCARD Z190;
+# endif
+{
+if (!ODD(Z339)) {
+Z242.A[Z339 / 2].Y0 = Z190;
+} else {
+Z242.A[Z339 / 2].Y1 = Z190;
+}
+INC(Z339);
+}
+
+static void Z344
+ ARGS ((void))
+{
+Zmfy8_1 Z345;
+
+Z345 = Z340;
+Z339 = 1;
+Zmfy8_9(Z345, (STRING)"+I[/LVM+a3+g.+g0+V@+VB+g6Nf>+i9++o=uA{E++VWI]8V]McT++Vb:", 56L, 35L);
+Zmfy8_9(Z345, (STRING)"fSVd1+g3Vg.g2Vm2+Vs6+Vy:WU>fAW[B+f+fEgEg/gI++V:+VcKg2+eF", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"f.eTeD++++++++++++++++++++++++gA++gH+gH+gI++fOfTg1fS+g5", 55L, 43L);
+Zmfy8_9(Z345, (STRING)"g8g,g-g7g++:g2g:+g9g9g.+;g>gA+g3g3gBg6+g9gFgE+j?mLn,+3nN", 56L, 33L);
+Zmfy8_9(Z345, (STRING)"pQsR+t/t?+tIvGz6z8z0+z9{Q|KVUTVUS+VV4VVKVWRVY/+V\\;V\\:V\\;", 56L, 26L);
+Zmfy8_9(Z345, (STRING)"V\\P++++V]P+++++++", 17L, 13L);
+Z345 = Z341;
+Z339 = 1;
+Zmfy8_9(Z345, (STRING)"P,>.J0>2H4E6D8C:><?+?++????+?????+???+N?VCVC+V8+V8VCVCVC", 56L, 49L);
+Zmfy8_9(Z345, (STRING)"+VCVCVCV+VCV8V4VCVCVCVCV4VCVCVC++++LF?VC+V2JV0HEDC++VJVJ", 56L, 36L);
+Zmfy8_9(Z345, (STRING)"+V5+++VC++VC+VC+V<+V<PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP", 55L, 49L);
+Zmfy8_9(Z345, (STRING)"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPV<V<V<V<+V<V<V<V<V<V<", 54L, 44L);
+Z345 = Z342;
+Z339 = 1;
+Zmfy8_9(Z345, (STRING)"V<V<V2V2JJV0V0HHEEDDCC++++M++CDE++H+J++++++++S+V7+V,+V.", 55L, 46L);
+Zmfy8_9(Z345, (STRING)"V0+V2++++V7++++++++++++++++++++V2JV0HEDC+++++++++++++++", 55L, 50L);
+Zmfy8_9(Z345, (STRING)"+++++++++++++++++++++++++++++++++++++++++++++++++++++++", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"+++++++++++++++++++++++++++", 27L, 27L);
+Z345 = Z343;
+Z339 = 0;
+Zmfy8_9(Z345, (STRING)",V<,V<,V<,V<,V<,V<,V<,V<,V<,VJ,VF,V<,Q,Q,V<,V<,V<,V<,V<", 55L, 38L);
+Zmfy8_9(Z345, (STRING)",V<,V<,V<,V<,V<,V<,V<,Q,V<,V<,V<,V<,V<,VK,V<,W0,V<,V<,V<", 56L, 38L);
+Zmfy8_9(Z345, (STRING)",V<,W1,W9,Y-,Y1,Y0,Y2,V<,Y3,V;,O,O,O,O,O,O,O,O,O,O,Y4,V<", 56L, 44L);
+Zmfy8_9(Z345, (STRING)",V<,Y5,V<,V<,V<-V4,XP,XK/V:,XE=V?,X?8VJ8VF:VJ:VF,X7X7X<", 55L, 36L);
+Zmfy8_9(Z345, (STRING)",X3,X/,WPWPWT,WH,WA,W<0W,0VHX7X8WHWL0V6++,Y,,N,Y+,V<8VQ", 55L, 36L);
+Zmfy8_9(Z345, (STRING)",V<:VRWPWQV;W4WHWI++++8W7V;S8W5++:W20VM++++++++++++0W.+", 55L, 41L);
+Zmfy8_9(Z345, (STRING)"+++++++++++++,W;,Y.,V<,V<?VD,V<,V<,V<,V<,V<,V<,V<,V<,V<", 55L, 41L);
+Zmfy8_9(Z345, (STRING)",V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<", 56L, 37L);
+Zmfy8_9(Z345, (STRING)",V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<", 56L, 37L);
+Zmfy8_9(Z345, (STRING)",V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<,V<", 56L, 37L);
+Zmfy8_9(Z345, (STRING)",V<,V<,V<,V<,V<,V<,V<,V<.V2.V2.V2.V2.V2.V2.V2.V2.V2.W+.", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"VG.V2.V2.K.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2", 55L, 37L);
+Zmfy8_9(Z345, (STRING)".V2.V2.V2.VL.V2.W0.V3.V2.V2.V2.W1.V2.V2.V2.V2.V2.V2.V2.", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2", 56L, 37L);
+Zmfy8_9(Z345, (STRING)".V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V2.V2.V2.V2.V2.V2.V2.V2.@.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2", 55L, 37L);
+Zmfy8_9(Z345, (STRING)".V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V2.V2.VT.V2.VS.V2II.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2", 55L, 37L);
+Zmfy8_9(Z345, (STRING)".V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2", 56L, 37L);
+Zmfy8_9(Z345, (STRING)".V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2", 56L, 37L);
+Zmfy8_9(Z345, (STRING)".V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2.V2", 56L, 37L);
+Zmfy8_9(Z345, (STRING)".V2.V2.V2.V2.V22V02V02V02V02V02V02V02V02V02W,2VH2V02V02", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V62V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V0", 56L, 37L);
+Zmfy8_9(Z345, (STRING)"2VN2V02V>2V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V0", 56L, 37L);
+Zmfy8_9(Z345, (STRING)"2V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V0", 56L, 37L);
+Zmfy8_9(Z345, (STRING)"2V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V02V02V0KL2V02V02V02V02V02V02V02V02V02V02V02V02V02V02V0", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"2V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V0", 56L, 37L);
+Zmfy8_9(Z345, (STRING)"2V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V0", 56L, 37L);
+Zmfy8_9(Z345, (STRING)"2V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02", 55L, 37L);
+Zmfy8_9(Z345, (STRING)"V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V02V0", 56L, 37L);
+Zmfy8_9(Z345, (STRING)"2V02V04W,4VH6W,6VH4V6T?6V6V1V5<VJ<VIV4V=V5V1<T>>>>>>>>>", 55L, 39L);
+Zmfy8_9(Z345, (STRING)">>>>>>>>>>>4VOV6F6VPV7B6W-V8GV>I4W/<VKV@A<V+OOOOOOOOOOO", 55L, 44L);
+Zmfy8_9(Z345, (STRING)"OOOOOOOOORRRRRRRRRRRRRRRRRRRRVAVBVBV@VCVDW2W3W5W6W7W8W9", 55L, 42L);
+Zmfy8_9(Z345, (STRING)"W:W<W=W=W>W>W?W?W@WAWBWBWCWCWDWDWEWEWFWFWGWIWJWJWKWLWMWM", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"WNWNWOWQWRWRWSWTX+X+X,X,X-X-X.X/X04V/X0X16V-@M@M@M@M@M@", 55L, 34L);
+Zmfy8_9(Z345, (STRING)"M@M@M@M@MX1X2@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"M@M@M@M@M@M@M@M@M@M@M@M@MX3X4@M@M@M@M@M@M@M@M@M@M@M@M@M", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M@M", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"@M@M@M@M@MCCCCCCCCCCCCCCCCCCX4X5X5X6CCCCCCCCCCCCCCCCCCC", 55L, 51L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCX8X9CCCCCCCC", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCX9X:C", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDDDX:", 55L, 54L);
+Zmfy8_9(Z345, (STRING)"X;X<X=DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 52L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDDDX=X>DDX?X@DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 51L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDDDDDDDDDDDDDDDDX@XADDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"DDDDDDDEEEEEEEEEEEEEEEEEEXAXBXBXCEEEEXCXDEEEEEEEEEEEEEE", 55L, 49L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEXEXFEEEEEEEEEEEEEEEEEEEEEEEEE", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEXFXGEEEEEEEEEEEEEEEEE", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEXGXH", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEHHHHHHHHHHHHHHHHHHXH", 56L, 55L);
+Zmfy8_9(Z345, (STRING)"XIXIXJHHHHXKXLHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 50L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHHHXLXMHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHXMXNHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHHHHHHHHHHHHHHHHHHXNXOHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"HHHHHHHHHJJJJJJJJJJJJJJJJJJXPXQXQXRJJJJXRXSJJJJJJJJJJJJ", 55L, 49L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJXSXTJJJJJJJJJJJJJ", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJY.Y/", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJNRNRNRNRNRNRNRNRNRN", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"RNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRV=V=++++++NR++NRNRNRNR", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"NRNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRNRPPPPPPPPPPP", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"PPPPPPPPP++++++++++++++PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"PPPPPPPPPPPPPPPPPPPP++V=VA++++PP++PPPPPPPPPPPPPPPPPPPPP", 55L, 53L);
+Zmfy8_9(Z345, (STRING)"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSSSSSSSSSSSSSSSSSSSS++SS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSS++SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", 55L, 55L);
+Zmfy8_9(Z345, (STRING)"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSV+V7V+V7", 56L, 52L);
+Zmfy8_9(Z345, (STRING)"V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7++V+V7V+V7V+V7V+V7V+V7V+", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7++V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7++V+V7V+", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+V7V+", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V7V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,++V-V,V-V,V-V8", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V-V,++V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-V,V-", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V,V-V,V-V,V-V,V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.+", 55L, 28L);
+Zmfy8_9(Z345, (STRING)"+V/V.V/V.V/V9V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/", 55L, 28L);
+Zmfy8_9(Z345, (STRING)"V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V.V/V.V/V.V/V.V/V.++V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.V/V.", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V/V.V/V.V/V.V/V.V/V.V/V.V/V.V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0++++V0V0V0V0++V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 31L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0++V0V0V0V0", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0++V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V0V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2++++V2V2V2V2++V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 31L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2+++", 55L, 29L);
+Zmfy8_9(Z345, (STRING)"+V2V2V2V2V2V2++V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 55L, 29L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"++V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 29L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2++V2V2++V2V2++V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 31L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 56L, 28L);
+Zmfy8_9(Z345, (STRING)"V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2V2", 32L, 16L);
+}
+
+static void Z284
+# ifdef HAVE_ARGS
+(SHORTCARD Z348)
+# else
+(Z348)
+SHORTCARD Z348;
+# endif
+{
+ZmtLFGGBG_3((ZDz6VQCC_4)ZfM_2, Zpky9FDA_10.Y0);
+switch (Z348) {
+case 0:;
+ZfM_29((ZDz6VQCC_4)ZfM_2, (STRING)": Scanner: internal error", 25L);
+break;
+case 1:;
+ZfM_29((ZDz6VQCC_4)ZfM_2, (STRING)": Scanner: out of memory", 24L);
+break;
+case 3:;
+ZfM_29((ZDz6VQCC_4)ZfM_2, (STRING)": Scanner: too many nested include files", 40L);
+break;
+case 4:;
+ZfM_29((ZDz6VQCC_4)ZfM_2, (STRING)": Scanner: file stack underflow (too many calls of CloseFile)", 61L);
+break;
+case 5:;
+ZfM_29((ZDz6VQCC_4)ZfM_2, (STRING)": Scanner: cannot open input file", 33L);
+break;
+case 6:;
+ZfM_29((ZDz6VQCC_4)ZfM_2, (STRING)": Scanner: start stack underflow (too many calls of yyPop)", 58L);
+break;
+}
+ZfM_33((ZDz6VQCC_4)ZfM_2);
+(*Zpky9FDA_11)();
+}
+
+static void Z354
+ ARGS ((void))
+{
+ZfM_34();
+rExit(1L);
+}
+
+void BEGIN_Scanner ARGS ((void))
+{
+  static BOOLEAN has_been_called = FALSE;
+  if (has_been_called) return;
+  has_been_called = TRUE;
+BEGIN_Strings ();
+BEGIN_Idents ();
+BEGIN_StringM ();
+BEGIN_Position ();
+BEGIN_Checks ();
+BEGIN_rSystem ();
+BEGIN_General ();
+BEGIN_Pack ();
+BEGIN_Position ();
+BEGIN_IO ();
+BEGIN_DynArray ();
+BEGIN_Strings ();
+BEGIN_Source ();
+BEGIN_Position ();
+BEGIN_Strings ();
+BEGIN_Idents ();
+BEGIN_StringM ();
+BEGIN_Errors ();
+BEGIN_ArgCheck ();
+
+Zpky9FDA_11 = Z354;
+Z251 = TRUE;
+Z263 = 0;
+Z312();
+Z252 = ZDz6VQCC_1;
+Z248 = Z222;
+Z249 = Z222;
+Z247 = Z212;
+ZarQdhNDD_0((ADDRESS *)&Z246, &Z247, (LONGINT)sizeof (Z232));
+Z246->A[0] = Z220;
+Z276 = Z275;
+ZarQdhNDD_0((ADDRESS *)&Z277, &Z276, (LONGINT)sizeof (Z232));
+Z278 = 0;
+Z344();
+{
+CHAR B_13 = Z213, B_14 = Z214;
+
+if (B_13 <= B_14)
+for (Z250 = B_13;; Z250 += 1) {
+Z244.A[Z250] = Z250;
+if (Z250 >= B_14) break;
+}
+}
+Z245 = Z244;
+for (Z250 = 'A'; Z250 <= 'Z'; Z250 += 1) {
+Z244.A[Z250] = CHR(ORD(Z250) - ORD('A') + ORD('a'));
+}
+for (Z250 = 'a'; Z250 <= 'z'; Z250 += 1) {
+Z245.A[Z250] = CHR(ORD(Z250) - ORD('a') + ORD('A'));
+}
+}

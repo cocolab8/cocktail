@@ -1,0 +1,77 @@
+GLOBAL {
+FROM StdIO	IMPORT WriteS, WriteNl;
+FROM Strings	IMPORT tString, Char;
+FROM Idents	IMPORT tIdent, GetString;
+
+TYPE tParsAttribute = RECORD Scan: Scanner.tScanAttribute; END;
+
+PROCEDURE IsUpper (Ident: tIdent): BOOLEAN;
+   VAR Name	: tString;
+   BEGIN
+      GetString (Ident, Name);
+      RETURN ('A' <= Char (Name, 1)) AND (Char (Name, 1) <= 'Z');
+   END IsUpper;
+
+# define YYDEBUG
+
+VAR stack: ARRAY [0..10] OF INTEGER; stack_ptr, from, r: INTEGER; a: Scanner.tScanAttribute;
+
+# define Push(x)	INC (stack_ptr); stack [stack_ptr] := x
+# define Pop(x)		x := stack [stack_ptr]; DEC (stack_ptr)
+# define stack_is_empty	stack_ptr = 0
+}
+
+BEGIN { stack_ptr := 0; (* GetLookahead (2) *) yyDebug := TRUE; }
+
+TOKEN
+   IDENTIFIER	= 1
+   '('		= 2
+   ')'		= 3
+   '++'		= 4
+   ';'		= 5
+   '['		= 6
+   ']'		= 7
+   '{'		= 8
+   '}'		= 9
+
+START compound_statement declaration_list
+
+RULE
+
+compound_statement	: '{'
+			     [ #S    r := BufferOn (FALSE, FALSE);
+			       #SBTR Push (BufferPosition); ]
+			  declaration_list 
+			     [ Pop (from);
+			       r := ReParse (yydeclaration_list, from, BufferPosition, TRUE, TRUE);
+			       IF stack_is_empty THEN r := BufferOff (); BufferClear (); ErrorMessages (TRUE); SemActions (TRUE); GetAttribute (2, a); r := GetLookahead (2); END; ]
+			  statement_list
+			  '}'
+			.
+declaration_list	:
+			| declaration_list declaration
+			.
+statement_list		:
+			| statement_list statement
+			.
+declaration		: ? declaration declaration_specifier declarator ';'
+			.
+declaration_specifier	: TYPEDEFname [ WriteS ("trial action"); WriteNl; ]
+				      { WriteS ("final action"); WriteNl; }
+			.
+declarator		: IDENTIFIER  [ WriteS ("trial action"); WriteNl; ]
+				      { WriteS ("final action"); WriteNl; }
+			| '(' declarator ')'
+			| declarator '[' ']'
+			| compound_statement
+			.
+statement		: expression ';'
+			.
+expression		: expression '++'
+			| TYPEDEFname '(' expression ')'	/* cast */
+			| IDENTIFIER  '(' expression ')'	/* call */
+			| IDENTIFIER
+			.
+TYPEDEFname		: IDENTIFIER$i ? { IsUpper ($i.Scan.Ident) }
+			| IDENTIFIER ? IDENTIFIER
+			.

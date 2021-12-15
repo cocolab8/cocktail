@@ -1,0 +1,522 @@
+make[1]: Entering directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- ---------------------------------------------------------
+time rex -csdi  -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings    218
+Table Entries     1098
+Table Size        1347
+Memory used     324112
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.01user 0.00system 0:00.01elapsed 120%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+739minor)pagefaults 0swaps
+wc Scanner.c
+ 1838 10503 62756 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+   9815	   8272	     80	  18167	   46f7	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-r
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -r ---------------------------------------------------------
+time rex -csdi -r -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings    218
+Table Entries     1098
+Table Size        1347
+Memory used     324112
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.00user 0.00system 0:00.01elapsed 80%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+740minor)pagefaults 0swaps
+wc Scanner.c
+ 1724 10460 62822 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+   8711	   8752	     80	  17543	   4487	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-o
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -o ---------------------------------------------------------
+time rex -csdi -o -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings    218
+Table Entries     1098
+Table Size        1347
+Memory used     324112
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.00user 0.00system 0:00.00elapsed 88%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+739minor)pagefaults 0swaps
+wc Scanner.c
+ 1838 10503 62756 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+   9815	   8272	     80	  18167	   46f7	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-n
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -n ---------------------------------------------------------
+time rex -csdi -n -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings      0
+Table Entries     1823
+Table Size        2134
+Memory used     324112
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.01user 0.00system 0:00.01elapsed 120%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+743minor)pagefaults 0swaps
+wc Scanner.c
+ 1995 12870 73958 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+   9815	  11408	     80	  21303	   5337	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-g
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -g ---------------------------------------------------------
+time rex -csdi -g -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings    218
+Table Entries     1098
+Table Size        1347
+Memory used     324112
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.00user 0.00system 0:00.01elapsed 120%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+739minor)pagefaults 0swaps
+wc Scanner.c
+ 1838 10334 62080 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+   9815	   8272	     80	  18167	   46f7	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-b
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -b ---------------------------------------------------------
+time rex -csdi -b -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              0
+LastClass          255
+Transitions       3305
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings    723
+Table Entries     1100
+Table Size        1351
+Memory used     356880
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\255
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\255
+0.01user 0.00system 0:00.01elapsed 92%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+745minor)pagefaults 0swaps
+wc Scanner.c
+ 1839 10513 62814 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+   9815	   8272	     80	  18167	   46f7	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-z
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -z ---------------------------------------------------------
+time rex -csdi -z -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings    218
+Table Entries      412
+Table Size         456
+Memory used     258576
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.00user 0.00system 0:00.00elapsed 133%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+724minor)pagefaults 0swaps
+wc Scanner.c
+ 1686  8136 51898 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+   9828	   5264	     80	  15172	   3b44	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-k2
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -k2 ---------------------------------------------------------
+time rex -csdi -k2 -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings    218
+Table Entries      412
+Table Size         456
+Memory used     324112
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.00user 0.00system 0:00.01elapsed 100%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+740minor)pagefaults 0swaps
+wc Scanner.c
+  3302  24272 166537 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+  10758	  37568	     88	  48414	   bd1e	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-k4
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -k4 ---------------------------------------------------------
+time rex -csdi -k4 -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings    218
+Table Entries      412
+Table Size         456
+Memory used     324112
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.00user 0.00system 0:00.01elapsed 123%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+741minor)pagefaults 0swaps
+wc Scanner.c
+  3302  24272 166537 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+  10758	  37568	     88	  48414	   bd1e	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make option_C FILE=modula.c OPTIONS=-rongz1000k4
+make[2]: Entering directory `/home/grosch/tools/rex/test/modula'
+rm -rf Debug Release *.opt *.ncb *.plg *.OPT *.NCB *.PLG
+rm -rf core* check? Scan* Source* scan* source* *.class \
+		[abprs]*.e eansi.h eif2bin etrace *.err \
+		ScannerDrv.p ScannerDrv.pdb ScannerDrv.op ScannerDrv.rc? \
+		C?Drv.o C?Drv Cpp?Drv.o Cpp?Drv
+--- -rongz1000k4 ---------------------------------------------------------
+time rex -csdi -rongz1000k4 -1 modula.c
+
+Start States         4
+Incl Start State     4
+Definitions          6
+Rules               83
+Patterns            84
+Classes              3
+LastClass           54
+Transitions        811
+Leafs               33
+NFA States          33
+Minimize Savings     9
+Ambiguous States    23
+Nodes              500
+DFA States         224
+Sentinel Savings    32
+Default Savings      0
+Table Entries      630
+Table Size         670
+Memory used     258576
+Warning: in start state STD the default action may be triggered by:
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+Warning: in start state STD the default action may be triggered by (left justified):
+ \0-\8 \11-\31 '!'-'"' '$'-'%' ''' '?'-'@'
+ '\' '_'-'`' \127-\uFFFFFFFF
+0.00user 0.00system 0:00.00elapsed 88%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (0major+723minor)pagefaults 0swaps
+wc Scanner.c
+ 1692  9318 59695 Scanner.c
+make ScannerDrv run
+make[3]: Entering directory `/home/grosch/tools/rex/test/modula'
+cc -g  -I/home/grosch/lib/include -c ScannerDrv.c
+cc -g  -I/home/grosch/lib/include -c Scanner.c
+cc -g  -I/home/grosch/lib/include -c Source.c
+cc -g  ScannerDrv.o Scanner.o Source.o -o ScannerDrv /home/grosch/lib/libreuse.a
+./ScannerDrv < in
+3017
+make[3]: Leaving directory `/home/grosch/tools/rex/test/modula'
+size Scanner.o
+   text	   data	    bss	    dec	    hex	filename
+   9654	   8128	     88	  17870	   45ce	Scanner.o
+make[2]: Leaving directory `/home/grosch/tools/rex/test/modula'
+make[1]: Leaving directory `/home/grosch/tools/rex/test/modula'

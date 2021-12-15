@@ -1,0 +1,31 @@
+TREE IMPORT {
+FROM Idents	IMPORT tIdent;
+TYPE MyInt = INTEGER;
+VAR  selector: BOOLEAN;
+
+# define SUPPORT_TVA
+}
+
+GLOBAL {
+FROM Idents	IMPORT tIdent;
+FROM StdIO	IMPORT WriteI, WriteC;
+# define closeINTEGER(a)	WriteI (a, 0); WriteC (' ');
+
+(* compaction on demand *)
+# define readSELECTOR()		IF selector THEN yySkip; END;
+# define writeSELECTOR(a)	IF selector THEN yyIndentSelector (a); END;
+
+# define SUPPORT_TVA
+}
+
+BEGIN {
+   selector := TRUE;
+}
+
+RULE
+
+Node	= [Mark] [Ident: tIdent] [Hex: MyInt] <
+  Node0	= .
+  Node1	= Child1: Node .
+  Node2	= Child1: Node REV Child2: Node [Child3: tTree] .
+> .

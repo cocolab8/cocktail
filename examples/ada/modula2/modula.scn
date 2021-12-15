@@ -1,0 +1,91 @@
+IMPORT	{
+with StringM, Strings, Idents, Position, Errors;
+use  StringM, Strings, Idents, Position, Errors;
+}
+
+EXPORT	{
+INSERT tScanAttribute
+}
+
+GLOBAL	{
+package Int_Io is new Text_Io.Integer_IO (Integer); use Int_Io;
+
+Word		: tString;
+NestingLevel	: Integer := 0;
+
+INSERT ErrorAttribute
+}
+
+LOCAL	{ Str, S	: tString; }
+
+DEFAULT	{ GetWord (Word); MessageI ("illegal character", Error, Attribute.Position, Errors.cString, Word'Address); }
+
+EOF	{ if yyStartState = Comment then Message ("unclosed comment", Error, Attribute.Position); end if; }
+   
+DEFINE
+   digit	= {0-9}		.
+   letter	= {a-z A-Z}	.
+   CmtCh	= - {*(\t\n}	.
+   StrCh1	= - {'\t\n}	.
+   StrCh2	= - {"\t\n}	.
+
+START	Comment, Str1, Str2
+
+RULES
+
+#STD, Comment# "(*" 	:- {NestingLevel := NestingLevel + 1; yyStart (Comment);}
+#Comment#  "*)"		:- {NestingLevel := NestingLevel - 1; if NestingLevel = 0 then yyStart (STD); end if;}
+#Comment#  "(" | "*" | CmtCh + :- {}
+
+#STD# digit +		,
+#STD# digit + / ".."	,
+#STD# digit + / BY	: {GetWord (Word);
+			   -- Attribute.IntConst.Value := StringToInt (Word);
+			   return IntConst;}
+#STD# {0-7} + B		: {GetWord (Word);
+			   -- SubString (Word, 1, Length (Word) - 1, Str);
+			   -- Attribute.IntConst.Value := StringToNumber (Str, 8);
+			   return IntConst;}
+#STD# {0-7} + C		: {GetWord (Word);
+			   -- SubString (Word, 1, Length (Word) - 1, Str);
+			   -- Attribute.CharConst.Value := CHR (StringToNumber (Str, 8));
+			   return CharConst;}
+#STD# digit {0-9 A-F} * H : {
+			   GetWord (Word);
+			   -- SubString (Word, 1, Length (Word) - 1, Str);
+			   -- Attribute.IntConst.Value := StringToNumber (Str, 16);
+			   return IntConst;}
+#STD# digit + "." digit * (E {+\-} ? digit +) ? : {
+			   GetWord (Word);
+			   -- Attribute.RealConst.Value := StringToReal (Word);
+			   return RealConst;}
+
+#STD#	'		:  {-- AssignEmpty (Str);
+			    yyStart (Str1);}
+#Str1#	StrCh1 +	:- {GetWord (S); -- Concatenate (Str, S);}
+#Str1#	'		:- {-- Attribute.StringConst.Value := PutString (Str);
+			    yyStart (STD); return StringConst;}
+
+#STD#	\"		:  {-- AssignEmpty (Str);
+			    yyStart (Str2);}
+#Str2#	StrCh2 +	:- {GetWord (S); -- Concatenate (Str, S);}
+#Str2#	\"		:- {-- Attribute.StringConst.Value := PutString (Str);
+			    yyStart (STD); return StringConst;}
+
+#Str1, Str2# \t		:- {-- Append (Str, 11C); yyTab;}
+#Str1, Str2# \n		:- {Message ("unclosed string", Error, Attribute.Position);
+			    -- Attribute.StringConst.Value := PutString (Str);
+			    yyEol (0); yyStart (STD); return StringConst;}
+
+#STD# "&"		: {return AND;}
+#STD# "<>"		: {return '#';}
+#STD# "~"		: {return NOT;}
+
+INSERT RULES #STD# 
+
+#STD# letter (letter | digit) * : {
+			   GetWord (Word);
+			   Attribute := (Token => YYCODE (Ident),
+			   		Position => Attribute.Position,
+					Ident => (Ident => MakeIdent (Word)));
+			   return Ident;}

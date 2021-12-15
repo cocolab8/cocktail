@@ -1,0 +1,111 @@
+echo 5 4 3 2 0 | Main
+R                e F:n                      = 5
+R                v F 1
+P1               e F                        = 08058d48 +
+P1               e F:n                      = 4
+P1               v F 1
+P1               e F                        = 08058d38 +
+P1               e F:n                      = 3
+P1               v F 1
+P1               e F                        = 08058d28 +
+P1               e F:n                      = 2
+P1               v F 1
+P1               e F                        = 08058d18 +
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 08058d0c +
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+P1               e r                        = 6
+P1               v parent
+P1               e r                        = 24
+P1               v parent
+P1               e r                        = 120
+P1               v parent
+R                e r                        = 120
+R                v parent
+120
+R                e F:n                      = 4
+R                v F 1
+P1               e F                        = 08058cdc +
+P1               e F:n                      = 3
+P1               v F 1
+P1               e F                        = 08058ccc +
+P1               e F:n                      = 2
+P1               v F 1
+P1               e F                        = 08058cbc +
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 08058cb0 +
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+P1               e r                        = 6
+P1               v parent
+P1               e r                        = 24
+P1               v parent
+R                e r                        = 24
+R                v parent
+24
+R                e F:n                      = 3
+R                v F 1
+P1               e F                        = 08058c80 +
+P1               e F:n                      = 2
+P1               v F 1
+P1               e F                        = 08058c70 +
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 08058c64 +
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+P1               e r                        = 6
+P1               v parent
+R                e r                        = 6
+R                v parent
+6
+R                e F:n                      = 2
+R                v F 1
+P1               e F                        = 08058c34 +
+P1               e F:n                      = 1
+P1               v F 1
+P1               e F                        = 08058c28 +
+P1               e F:n                      = 0
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 1
+P1               v parent
+P1               e r                        = 2
+P1               v parent
+R                e r                        = 2
+R                v parent
+2
+R                e F:n                      = 0
+R                v F 1
+P1               e F                        = 08058bfc +
+P1               e F:n                      = -1
+P1               v F 1
+P2               e r                        = 1
+P2               v parent
+P1               e r                        = 0
+P1               v parent
+R                e r                        = 0
+R                v parent
+0

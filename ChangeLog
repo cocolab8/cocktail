@@ -1,0 +1,1528 @@
+Change Log
+----------
+
+Version 2110:
+=============
+
+made the Cocktail Toolbox open source under the Apache License, Version 2.0
+added building of the Cocktail Toolbox on Windows
+
+
+Version 1907:
+=============
+
+Cg
+--
+
+copied fix regarding cpp comments from gcpp to gcppt
+
+All Tools
+---------
+
+added clickable outline (bookmarks) to all PDF documents
+
+
+Version 1610:
+=============
+
+Lark
+----
+
+Parser.cg: changed length of filenames from 256 to 1024
+
+
+Version 1607:
+=============
+
+Ell
+---
+
+fixed bug at sizes of sets
+
+Ast
+---
+
+fixed generation of function DrawTREE wrt. handling of pointers on 64-bit Windows
+
+Y2l
+---
+
+added handling of directives %code and %destructor
+allow optional string after nonterminal 'nmno' (opt_string)
+
+
+Version 1301:
+=============
+
+Rex
+---
+
+allow generation of large scanners in Java
+
+Lark
+----
+
+allow generation of large parsers in Java
+fixed overflow in routine CompressTTable
+
+Puma
+----
+
+added option -T: specify directories to be searched for .TS files
+
+Y2l
+---
+
+added handling of directive %pure_parser
+
+
+Version 1007:
+=============
+
+Lpp
+---
+
+added mechanism for common attributes (for parsing with Lark)
+
+Lark
+----
+
+added support for building of concrete syntax trees
+
+Puma
+----
+
+fixed bug in Java code generation related to elimination of tail recursion
+
+
+Version 0910:
+=============
+
+Rex
+---
+
+replaced type unsigned long by ptrdiff_t in C and C++ skeletons
+fixed range check error in Ada skeleton
+
+Lark
+----
+
+replaced type unsigned long by ptrdiff_t in C and C++ skeletons
+
+Puma
+----
+
+added missing code at semantic analysis of IF ... ?= ... (IfMatch)
+
+
+Version 0810:
+=============
+
+Cocktail
+--------
+
+made it work if installed in a directory with blanks in its name (Windows)
+added handling of line directives to all tools: #@ line <line_number> "filename"
+
+Reuse
+-----
+
+added file rIntType.h defining fixed size integer data types
+revised type mapping of 'mtc': INTEGERs are represented by 32 bits
+cared for pointer operations on 64 bit platforms: introduced module Pointers
+
+Lark
+----
+
+fixed bug in memory management on 64 bit platforms
+
+Ell
+---
+
+added option for treating undeclared symbols as terminal symbols (option -j)
+added generation of named constants for all terminal symbols (option -f)
+added specification of external representation for terminal symbols
+made the generated parsers work on 64 bit platforms (in 64 bit mode)
+revised error handling using module reuse/Errors
+
+Ast
+---
+
+added type specific operations for XML output: writeXML<type_name>
+
+Ag
+--
+
+fixed problem of inherited attributes at root node in combination with
+  optimization of attribute storage (added diagnostic)
+
+Puma
+----
+
+added new kinds of loops for iteration over the elements of lists of tree nodes:
+  FOR Ident IN Expr DO ... END
+  FOR Ident : Type IN Expr DO ... END
+extended pattern matching in IF statements by optional conditions:
+  IF Condition && Expr ?= Pattern THEN ...
+  IF Condition1 && Expr1 ?= Pattern1 ; Cond2 && Expr2 ?= Pattern2 ... THEN ...
+
+
+Update 0611-2:
+==============
+
+Rpp
+---
+
+treat \a as escape sequence
+
+Ast
+---
+
+fixed some bugs in XML output of trees
+revised format of XML output of trees
+added support for XML output of embedded trees (SQL and CICS)
+
+
+Update 0611-1:
+==============
+
+Reuse
+-----
+
+Source.c: changed type long to int in order to accommodate 64 bit platforms
+rSystem.c: removed dependency on file windows.h for Microsoft VC++ 2005
+
+All Tools
+---------
+
+updated scripts gcpp.bat and gcppt.bat for Microsoft VC++ 2005
+
+Rpp
+---
+
+fixed bug at 'case t_return: case'
+
+Rex
+---
+
+fixed error message caused by overflow of variable NodeCount
+
+Lark
+----
+
+fixed bug in error recovery related to continuation at dynamic decisions
+fixed bug in error recovery related to continuation of parsing
+
+Ast
+---
+
+added predefined wide character types tWIdent, tWStringRef, etc.
+
+Puma
+----
+
+fixed bugs in support for automatic prefixing of node types
+added predefined wide character types tWIdent, tWStringRef, etc.
+
+Examples
+--------
+
+made makefiles work with Microsoft VC++ 2005
+
+
+Version 0611:
+=============
+
+Summary of the Changes:
+-----------------------
+
+The Cocktail Toolbox is working on 64 bit machines (in 64 bit mode).
+Keywords are not reserved any more in scanner and parser specifications,
+  at least in most practical cases (Rex and Lpp).
+The scanner generator Rex provides so-called exclusive start states.
+The tool Puma provides new language constructs such as e. g. pattern matching
+  in IF statements and a statement for import of external routine declarations.
+The source code of Cocktail can be compiled with Microsoft Visual C++ 2005.
+Several bugs have been fixed.
+
+Library Reuse
+-------------
+
+DynArray.c: made code working on 64 bit machines
+Errors.c: added mechanism for notification about (error) messages
+Errors.c: the return code to be returned by a program (parser) can be set
+Source.c: extended size of source stack to 256
+Source.c: added support for MVS and z/OS
+rSystem.c: fixed problem on AIX 5.1 with system call write (1, p, 0)
+
+Lpp
+---
+
+keywords are not reserved anymore:
+  keywords can be used as identifiers in most practical cases
+added handling of IMPORT section
+
+Rpp
+---
+
+increased limitation of number of terminal symbols from 1024 to 2048
+fixed bug at 'return;'
+
+Rex
+---
+
+allow comments in CHARACTER_SET definition
+provide exclusive start states like flex, e. g.: START i1 i2 - e1 e2
+  i1 and i2 are inclusive start states, e1 and e2 are exclusive start states
+provide new syntax for all (inclusive and exclusive) start states: #*#
+provide alternative syntax for complement of set of start states: - #...#
+NOT is not a reserved keyword anymore
+introduced separate name spaces for names of start states and definitions
+fixed bug in generated routine 'input' leading to incorrect Column values
+added recognition of \a
+allow calls of GetToken after EOF has been reached: return EofToken
+fixed bug: overflow in internal data structure (PredCount)
+
+Lark
+----
+
+fixed bug in elimination of LR(0) reductions (OptimizeLR0)
+fixed problem with computation order at LATreePtr^ [GetLATree (lItem)]
+  where GetLATree calls ExtendArray and changes the value of LATreePtr
+Parser.cg: changed types of BufferOn/Off from int to long
+added options for better selection of explanation of conflicts
+fixed bug (limitation) in LALR (2) analysis
+
+Ell
+---
+
+fixed bug in error recovery (in generated C function xxIsElement)
+removed options -e and -s (simple error handler and simple scanner)
+
+Ast
+---
+
+fixed bug in automatic prefixing of node types
+
+Ag
+--
+
+improved error messages
+
+Puma
+----
+
+fixed bug in code-generation for declaration statements with several variables
+allow 'variable::attribute' for GLOBAL variables in target code
+fixed bug in code-generator for C and C++ regarding keyword register
+fixed bug: crash in optimizer at erroneous input
+moved declaration of GLOBAL variables in front of GLOBAL section
+allow 'variable::attribute' for GLOBAL variables
+allow statements after RETURN statement
+added new statement for import of external routine declarations:
+   IMPORT "spec.puma";
+allow pattern matching in IF statements:
+   IF Expr ?= Pattern THEN ...
+Several matching conditions can be combined:
+   IF Expr1 ?= Pattern1 ; Expr2 ?= Pattern2 ... THEN ...
+This is equivalent to the following:
+   IF    Expr1 ?= Pattern1 THEN ...
+   ELSIF Expr2 ?= Pattern2 THEN ...
+A FOR loop can declare its loop variable:
+   FOR Var: int := Expr; ...
+added new scopes and changed scoping rules:
+   THEN and ELSE parts of the IF statement and the FOR and WHILE loops
+added option -I for specification of directories to be searched for IMPORT files
+allow the initial clauses of a specification to be given in any order
+
+
+Update 0210-4:
+==============
+
+Reuse
+-----
+
+DynArray.c: made code working on 64 bit machines
+Errors.c: added mechanism for notification about (error) messages
+Errors.c: the return code to be returned by a program (parser) can be set
+Source.c: extended size of source stack to 256
+Source.c: added support for MVS and z/OS
+
+Lpp
+---
+
+added handling of IMPORT section
+
+Rex
+---
+
+fixed bug in generated routine 'input' leading to incorrect Column values
+
+Lark
+----
+
+fixed bug in elimination of LR(0) reductions (OptimizeLR0)
+fixed problem with computation order at LATreePtr^ [GetLATree (lItem)]
+  where GetLATree calls ExtendArray and changes the value of LATreePtr
+Parser.cg: changed types of BufferOn/Off from int to long
+
+Ell
+---
+
+fixed bug in error recovery (in generated C function xxIsElement)
+removed options -e and -s (simple error handler and simple scanner)
+
+Puma
+----
+
+fixed bug in code-generation for declaration statements with several variables
+
+
+Update 0210-3:
+==============
+
+Reuse
+-----
+
+rSystem.c: fixed problem on AIX 5.1 with system call write (1, p, 0)
+
+Rex
+---
+
+added recognition of \a
+
+Lark
+----
+
+added options for better selection of explanation of conflicts
+fixed bug (limitation) in LALR (2) analysis
+
+Puma
+----
+
+allow 'variable::attribute' for GLOBAL variables in target code
+
+
+Update 0210-2:
+==============
+
+Rpp
+---
+
+increased limitation of number of terminal symbols from 1024 to 2048
+
+
+Update 0210-1:
+==============
+
+fixed bug in configuration (config[ure]) regarding Modula-2 compiler MC (Mocka)
+
+Rex
+---
+
+allow calls of GetToken after EOF has been reached: return EofToken
+fixed bug: overflow in internal data structure (PredCount)
+
+Ast
+---
+
+fixed bug in automatic prefixing of node types
+
+Ag
+--
+
+improved error messages
+
+Puma
+----
+
+fixed bug in code-generator for C and C++ regarding keyword register
+fixed bug: crash in optimizer at erroneous input
+moved declaration of GLOBAL variables in front of GLOBAL section
+allow 'variable::attribute' for GLOBAL variables
+allow statements after RETURN statement
+added new statement for import of external routine declarations:
+   IMPORT "spec.puma";
+allow pattern matching in IF statements:
+   IF Expr ?= Pattern THEN ...
+Several matching conditions can be combined:
+   IF Expr1 ?= Pattern1 ; Expr2 ?= Pattern2 ... THEN ...
+This is equivalent to the following:
+   IF    Expr1 ?= Pattern1 THEN ...
+   ELSIF Expr2 ?= Pattern2 THEN ...
+A FOR loop can declare its loop variable:
+   FOR Var: int := Expr; ...
+added new scopes and changed scoping rules:
+   THEN and ELSE parts of the IF statement and the FOR and WHILE loops
+added option -I for specification of directories to be searched for IMPORT files
+allow the initial clauses of a specification to be given in any order
+
+Rpp
+---
+
+fixed bug at 'return;'
+
+
+Version 0210:
+=============
+
+Possible incompatibilities with previous versions:
+--------------------------------------------------
+
+The new version of the error handler in the files reuse/c/Errors.h,
+reuse/cpp/Errors.h, reuse/src/Errors.md etc. defines two new constants, e. g.:
+   # define xxDrawTreeyyNode            43
+   # define xxConfigureUnknownParam     44
+These constants are needed by the tree modules generated by the tool ast.
+If a project uses copies of the above files then these header files need to be
+updated along with the corresponding implementation files.
+
+Summary of the Changes:
+-----------------------
+
+added generation and handling of trees using C++ classes to ast, ag, and puma.
+added generation of Java source code to the tools ag and puma.
+added and revised support for #line directives in rex, lark, rpp, and lpp.
+fixed use of option -s in Makefiles by introducing macro LDFLAGS.
+fixed all makefiles for compilation with Microsoft Visual C++ 6.0 (/O2 -> /O).
+
+Library Reuse
+-------------
+
+added creation of shared library for Linux
+
+Position
+   made function WritePosition more robust in case FileName is undefined
+
+Errors
+   made ErrorTable a flexible array so any number of messages can be stored
+   added suppression of output of duplicate messages to function WriteMessages
+
+StringM
+   made function StGetString work for null bytes again
+   fixed bug in function PutWString
+
+Idents
+   fixed bug: NoWIdent has to remain in WHashTable during Rehash
+
+Lpp
+---
+
+allow missing attribute computations in unused rules
+
+Lark
+----
+
+extended strategy for repair of LR conflicts: when explicit repair using
+   precedence and associativity fails try dynamic repair, if applicable.
+added generation of named constants for all tokens (option -f)
+added missing check for stack overflow during error repair in parser skeletons
+made ERROR trick work during trial parsing
+made option -0 the default (old default behaviour is achieved with options -01)
+fixed bug: added missing qualifications to tParsAttribute for C++
+fixed bug in parser skeleton for graphical visualization:
+   added missing #include "rSystem.h"
+fixed missing call of MakeArray (yyBuffer, ...) in skeleton file Parser.mi
+fixed bug in LR(k) analysis
+fixed bug in debug output of LR automaton
+
+Ast
+---
+
+added construction of trees using C++ classes (option -c++)
+added support for automatic prefixing of node types for C and simple C++:
+   TREE sql_tree PREFIX sql_ ...
+made function CheckTree to accept NoTree
+added explicit initialization of attributes: [name: type := expression]
+added output of trees in XML format (for C and C++)
+added generation of the graphic tree browser for the implementation language
+   Modula-2.
+
+in graphical tree browser:
+   added repositioning of graphics triggered by clicking into source window
+   added limit for length of lists
+   added filename to goto operation
+   added interactive configuration facility
+   fixed inconsistency of limit for drawing depth
+   improved performance
+
+added configuration facility: procedure ConfigureTREE
+   possible arguments for this procedure are:
+
+                   Parameter              Value            Default
+
+   ConfigureTREE ("CheckReportNoTree"   , "0/1" );      // 1
+   ConfigureTREE ("CheckReportNodes"    , "0/1" );      // 1
+   ConfigureTREE ("DrawBoxHeight"       , "n"   );      // 20   pixels
+   ConfigureTREE ("DrawBoxWidth"        , "n"   );      // 60   pixels
+   ConfigureTREE ("DrawDepth"           , "n"   );      // 6    nodes
+   ConfigureTREE ("DrawLength"          , "n"   );      // 256  nodes
+   ConfigureTREE ("DrawFileName"        , "name");      //
+   ConfigureTREE ("TreatTVAasChild"     , "0/1" );      // 1
+
+added support for I/O of tree-valued attributes:
+   has to be enabled using the preprocessor directive: #define SUPPORT_TVA
+   can be switched on/off using: ConfigureTREE ("TreatTVAasChild", "0/1");
+added specifier static to inline functions (because of bug in gcc)
+fixed bug in generation of procedure readTREE
+
+Ag
+--
+
+fixed bug in semantic analysis of the declaration of inherited attributes
+fixed error in code generated for attribute specific routines
+fixed bugs in code generation for C++
+improved semantic analysis for REMOTE attribute access
+improved output of explanation for cyclic dependencies
+
+Puma
+----
+
+added GLOBAL and LOCAL declarations for variables with node types:
+   GLOBAL e: Expr, s: Stmt;
+   LOCAL  e: Expr, s: Stmt;
+added WHILE loop:
+   WHILE expr DO stmts END
+added keyword PUBLIC attribute to routine declarations:
+   PUBLIC PROCEDURE ...
+added TRIP as new kind of routine providing automatic tree traversal:
+   TRIP t (Expr, p1: int, p2: Stmt)
+allow keyword CONDITION before a match statement:
+   CONDITION Expr ?= Pattern ;
+
+added automatic test whether pointers are not NULL before dereferencing them:
+   a NULL pointer never matches a pattern for a node type
+added warning if keyword CONDITION is missing
+avoid generation of unused labels in C source code
+fixed bug in recursion elimination of predicates
+fixed bug at code generation for FAIL and REJECT inside of IF statement
+fixed bug at empty strings inserted by error repair
+several improvements in semantic analysis
+made output of option -t more pretty
+
+
+Update 0012-6:
+==============
+
+fixed all makefiles for compilation with Microsoft Visual C++ 6.0 (/O2 -> /O)
+
+Lark
+----
+
+added missing check for stack overflow during error repair in parser skeletons
+
+Puma
+----
+
+replaced EXTERN attribute in routine declarations by PUBLIC:
+   PUBLIC PROCEDURE ...
+avoid generation of unused labels in C source code
+
+
+Update 0012-5:
+==============
+
+fixed two makefiles for installation on Windows
+
+
+Update 0012-4:
+==============
+
+Lark
+----
+
+fixed bug in parser skeleton for graphical visualization:
+   added missing #include "rSystem.h"
+
+Ast
+---
+
+added output of trees in XML format (for C and C++)
+
+Ag
+--
+
+fixed error in code generated for attribute specific routines
+
+
+Update 0012-3:
+==============
+
+Cg
+--
+
+fixed bug in generation of procedure readTREE
+
+Puma
+----
+
+omit code for yyAbort (option -f) for TRIPs
+
+
+Update 0012-2:
+==============
+
+Library Reuse
+-------------
+
+StringM
+   fixed bug in function PutWString
+
+Lark
+----
+
+fixed missing call of MakeArray (yyBuffer, ...) in skeleton file Parser.mi
+fixed bug in LR(k) analysis
+fixed bug in debug output of LR automaton
+
+Cg
+--
+
+fixed bugs in code generation for C++
+improved output of explanation for cyclic dependencies
+
+Puma
+----
+
+added GLOBAL and LOCAL declarations for variables with node types:
+   GLOBAL e: Expr, s: Stmt;
+   LOCAL  e: Expr, s: Stmt;
+added WHILE loop:
+   WHILE expr DO stmts END
+added EXTERN attribute to routine declarations:
+   EXTERN PROCEDURE ...
+added TRIP as new kind of routine providing automatic tree traversal:
+   TRIP t (Expr, p1: int, p2: Stmt)
+
+
+Update 0012-1:
+==============
+
+added generation of Java code to the tools ag and puma.
+added and revised support for #line directives in rex, lark, rpp, and lpp.
+fixed use of option -s in Makefiles by introducing macro LDFLAGS.
+
+Library Reuse
+-------------
+
+added creation of shared library for Linux
+
+Position
+   made function WritePosition more robust in case FileName is undefined
+
+Errors
+   made ErrorTable a flexible array so any number of messages can be stored
+
+StringM
+   made function StGetString work for null bytes again
+
+Ast
+---
+
+added generation of the graphic tree browser for the implementation language
+   Modula-2.
+
+in graphical tree browser:
+   added repositioning of graphics triggered by clicking into source window
+   added limit for length of lists
+   added filename to goto operation
+   added interactive configuration facility
+   fixed inconsistency of limit for drawing depth
+   improved performance
+
+Ag
+--
+
+improved semantic analysis for REMOTE attribute access
+
+Puma
+----
+
+fixed bug at code generation for FAIL and REJECT inside of IF statement
+fixed bug at empty strings inserted by error repair
+several improvements in semantic analysis
+made output of option -t more pretty
+
+
+Version 0012:
+=============
+
+The source code generated by Cocktail supports internationalization:
+   all error messages have been moved to the module reuse/Errors
+      by default, all messages are in English
+      the module reuse/Errors is the central location to change the messages
+   the reuse modules StringM, Idents, and Errors can handle wide characters
+      strings
+   the scanner generator rex can generate scanners for Unicode
+      (characters can take up to 4 bytes)
+   the support for internationalization is available for C, C++, and Java
+
+The tools rex, lark, and ast as well as lpp and rpp can generate Java code.
+This is accompanied by a Java version of the library reuse.
+
+All main manuals have been updated. See for the change bars at the right margin.
+The documentation of the reuse library in Java is provided in HTML format.
+
+changed treatment of reuse library during C++ compilation:
+   reuse/c is compiled as C++ code instead of as C code
+improved and purified checking of license file
+added filename to error messages
+added C++ comments to all specification languages
+
+The implementation languages Ada and Eiffel are not supported any longer.
+
+Because of the modifications of the interface of the module reuse/Errors there
+can be a compatibility problem with former versions of Cocktail for some
+existing projects. If a project uses a copy of the module reuse/Errors then this
+copy needs to be updated to the new interface of this module because all
+components generated by Cocktail tools make use of the new extended interface.
+If the file Errors.h and Errors.c are unmodified copies of a former version of
+Cocktail then they should be replaced by copies of the new release. If these
+files have been modified then it is necessary to merge the modifications with
+the files from the new release.
+
+Library Reuse
+-------------
+
+added a version of the reuse library written in Java
+added exception handling to reuse library
+made it compile without warnings with Microsoft Visual C++ 1.52
+new module rString as portable replacement for <string[s].h>
+new module rGetopt for getting options from the command line
+new module rFsearch for searching files
+new module rSrcMem for storing source code
+
+rSystem
+   uses config.h generated by GNU config[ure]
+   added functions rFileSize and rDeleteFile
+
+rMemory
+   BeginrMemory works for alignment of 1
+   fixed bug: MinSizeSmallBlock has to be >= MaxAlign
+
+DynArray
+   made it more robust in case of "out of memory"
+
+StringM
+   added function PutString1 (like PutString, with one argument)
+   added constant NoString representing the empty string
+
+Idents
+   added dynamic hashing mechanism
+   added improved hash function
+   (Now the module Idents can efficiently handle huge amounts of identifiers.)
+   added function MakeIdent1 (like MakeIdent, with one argument)
+   added function GetLength
+   made WriteIdent more robust
+   bug fix in CloseIdents
+
+Source
+   added support for Unicode
+   added decoding of formats UTF8, UTF16, UCS2, and UCS4
+   added possibility to get input from memory
+
+Errors
+   fixed bug in Errors in case of PrevLine=0 and Position=NoPosition
+
+Rex
+---
+
+added scanner generation for Unicode:
+
+   The syntax of a scanner specification has been extended to accept the
+   following notation for describing Unicode characters:
+
+      \uhhhh
+      \Uhhhh
+      \xhhhh
+      \Xhhhh
+      \0xhhhh
+      \0Xhhhh
+
+   The letters hhhh stand for sequences of 2 to 8 hexadecimal digits.
+   There is a slight incompatibility with former versions of rex:
+   The two character sequences
+
+      \u  \U  \x  \X  \0
+
+   have been treated in the past as escape sequences for the characters
+
+       u   U   x   X   0
+
+   respectively. Now they are treated as begin of an Unicode character.
+   The chances are probably very low that an existing scanner specification has
+   to be changed because these escape sequences have probably been used rarely.
+
+the character \127 is reported as triggering the default action
+increased bounds for array TransitionTable
+the scanner test drivers are robust wrt. very long tokens
+
+in the generated scanner:
+   use tolower and toupper from library for GetLower and GetUpper
+   added insertion point BASE_CLASS for C++ to specify a base class
+   added type to const declarations as required by ANSI C++
+   the value of TokenLength is computed for the DEFAULT action
+   code for the FileStack is handled by conditional compilation
+   the type of yySourceFile changed from short to int
+   the call of ResetScanner has been fixed to make the EOF section work
+
+Lark
+----
+
+bug fix in the generation of examples in the .dbg file in order to
+   avoid multiple generation of phrases
+bug fixes in the explanation of conflicts (options -v and -w)
+bug fix: wrong order of rules caused crash in generation of examples
+bug fix in processing of selector names in case rules begin with action
+bug fix in storage management
+small improvements in semantic analysis
+
+in the generated parser:
+   added source window to graphical parser visualizer
+   added constructor with parameters ScannerObj and ErrorsObj
+   added insertion point BASE_CLASS for C++ to specify a base class
+   added type to const declarations as required by ANSI C++
+   added exception handling and checks for "out of memory"
+   improved conditional compilation for error recovery
+   bug fix avoiding loop in error recovery
+
+Ast
+---
+
+added source window to the graphical tree browser
+made the graphical tree browser work with newer version of Tcl/Tk
+improved output of function CheckTREE
+the function QueryTREE has been extended to handle tree-valued attributes
+added insertion point TREE_BASE for C++ to specify a base class
+added macros readSELECTOR and writeSELECTOR for layout control in
+   the functions ReadTREE and WriteTREE
+added version number into the files containing the tree structure (suffix .TS)
+the directory /tmp/cg is not used any more
+instead of /lib/cpp the script gcpp is called
+the function yyWriteNl has been renamed to xxWriteNl in order
+   to avoid name clashes with puma
+bug fixes in ReadTree
+bug fix in type name yytTreeStore
+bug fix: allow names to begin with character _ in target code
+
+Because of the change of the format of the files containing the tree structure
+(extension .TS, for example Tree.TS) copies of these files produced by former
+versions of Cocktail are not compatible with this version of Cocktail.
+Therefore, all of these files have to be regenerated.
+
+Ag
+--
+
+improved support for several attribute evaluators
+
+Puma
+----
+
+extended syntax: accept lists of strings and lists of comma separated
+   expressions
+bug fix in code generation for IF THEN ELSE statement
+bug fix in optimizer in case of a type written as target code
+bug fix concerning handling of VIRTUAL attributes
+bug fix: treat a = b + c; as assignment in C
+
+Lpp
+---
+
+bug fix in case nonterminal is named by a string
+
+Rpp
+---
+
+added arguments for input and output as alternative for stdio
+added more robust code for writing identifiers
+
+
+Version 9804:
+=============
+
+Library Reuse
+-------------
+
+   Almost all modules of the library reuse that store data have now functions
+   for initialization and for finalization. The function names uniformly start
+   with Begin or Close:
+
+      module       initialization          finalization
+
+      Idents       BeginIdents             CloseIdents
+      StringM      BeginStringMemory       CloseStringMemory
+      rMemory      BeginrMemory            CloserMemory
+      Errors       BeginErrors
+      Sets         BeginSets
+
+   In simple cases these functions do not have to be called because the modules
+   are initialized automatically, by default. However, if a parser is to be
+   executed repeatedly within a loop then explicit initialization and
+   finalization is advantageous in order to avoid memory leaks. The order of the
+   calls for initialization and finalization is significant and should be as
+   follows:
+
+      BeginrMemory         ();
+      for (;;) {
+         BeginStringMemory ();
+         BeginIdents       ();
+         Parser            ();
+         CloseIdents       ();
+         CloseStringMemory ();
+      }
+      CloserMemory         ();
+
+   In the following the improvements and bug fixes of the individual modules of
+   the library reuse are described:
+
+DynArray
+   fixed problems with static arrays which are increased using ExtendArray
+
+Errors
+   added function BeginErrors
+   added function GetCount
+   bug fix: added missing initializations
+
+Idents
+   added alias name BeginIdents for function InitIdents
+   added function CloseIdents
+   added function GetCStr
+   bug fix: correction in automatic initialization
+
+Idents2
+   new: identifier table - with dynamic hashing
+
+Position
+   added function FormatPosition
+   changed the type of the field Line in the type tPosition to unsigned long
+   extended the type tPosition by a new field FileName
+   conditional compilation using the cpp variable NO_FILE_NAME
+
+Sets
+   added alias name BeginSets for function InitSets
+
+StringM
+   added alias name BeginStringMemory for function InitStringMemory
+   added function CloseStringMemory
+   added function StGetCStr
+   added null character to strings
+
+rMemory
+   added alias name BeginrMemory for function InitrMemory
+   added function CloserMemory
+   renamed WriteMemory to WriterMemory
+
+rSystem
+   added function rFree
+   added function DirectorySeparator
+   added support for Borland compiler
+
+rTime
+   renamed Time to rTime in order to avoid name clashes
+
+
+Rex
+---
+
+improved error messages
+bug fix: handling of flexible arrays
+
+
+Lark
+----
+
+bug fix: handling of flexible arrays in yyIsContinuation
+bug fix: in error recovery
+
+
+Ast
+---
+
+added function DrawAttr for arbitrary call-backs in the graphic tree browser
+added function SetBoxTree for setting the size of tree nodes in the browser
+added function SetDepthTree for setting the default drawing depth of the browser
+
+ast generates typedef's for t<node_type> for all top-level node types
+
+Attributes can be declared having node types as well as user types:
+
+   [a1: expression]             /* a node type           */
+   [a2: Tree]                   /* set of all node types */
+   [a3: tTree]                  /* user type             */
+   [a4: int]                    /* user type             */
+
+The first three types above are recognized as special cases of attributes and
+treated differently compared to user types by the tools ast and puma. Ast allows
+drawing of these subtrees and subgraphs in the graphic tree browser. Puma does
+type checking on these attributes similarly to the type checking for children.
+
+Because of these additions the format of the files containing the tree structure
+(extension .TS, for example Tree.TS) has been changed. These files are produced
+by ast and consumed by puma. The new format is not compatible with the tools
+prior to version 9804. Therefore, all of these files have to be regenerated.
+
+
+Puma
+----
+
+The tool puma has been extended by a substantial set of new features. Most of
+the improvements have been added so that existing code is compatible with the
+new version of the tool puma. Only a few changes which should occur rarely are
+not compatible with existing code. In these cases a few minor changes might be
+necessary in order make existing code work again. The new features and changes
+are:
+
+The following keywords have been added to the specification language of puma:
+
+   CONDITION DO ELSE ELSIF END FOR GUARD IF THEN
+
+The new keywords are a possible reason for incompatibilities if they have been
+used as identifiers. This would require renaming.
+
+An assignment can be written with the operator = in C and C++ besides := :
+
+   a = b;
+   a := b;
+
+A condition can be marked by the keyword CONDITION. Conditions without this
+keyword do still work:
+
+   CONDITION a == b;
+   a == b;
+
+New statements have been added for branching, repetition, and return:
+
+   IF Expr THEN Statements END;
+   IF Expr THEN Statements ELSE Statements END;
+   IF Expr THEN Statements ELSIF Expr THEN Statements END;
+   IF Expr THEN Statements ELSIF Expr THEN Statements ELSE Statements END;
+   FOR Statement ; Expr ; Statement DO Statements END;
+   RETURN Expr;
+
+The FOR loop has the same semantics as the for loop in C.
+
+The following statements work as in C and C++:
+
+   i ++;
+   i --;
+   ++ i;
+   -- i;
+   i += j;
+   i -= j;    etc. for all assignment operators.
+
+A new statement is available for matching between an expression and a pattern:
+
+   Expr ?= Pattern ;
+
+The statement behaves like a condition. If the match fails then the statement
+fails and the execution of the current rule is terminated. Otherwise, the
+variables in the pattern are bound to the values they match and the execution of
+the current rule continues with the next statement.
+
+The symbol ? as separator between patterns and statements is not supported any
+more. This is an incompatible change. Please use :- instead of ? .
+
+Conditional expressions do work now:
+
+   a == b ? c : d
+
+Some messages that have been classified as warning are now classified as
+information. They can be suppressed using the new option -u.
+
+For user types an escape mechanism is available by enclosing arbitrary text in
+curly brackets:
+
+   PROCEDURE p (arg: {char *})
+
+   x :- var: {int *}; .
+
+Variables declared in a rule can be initialized (using := or =) :
+
+   x :- var: int := 17; expr: Expr := Binary (...); .
+   y :- var: int  = 17; expr: Expr  = Binary (...); .
+
+Usually, puma does type checking during generation time. With the new guard
+expression it is possible to do type checking during runtime:
+
+   x := GUARD y;
+   x := <: y;
+
+The symbol <: has the same meaning as the keyword GUARD. Both indicate type
+checking during runtime or a so-called type-guard. At runtime the type of the
+expression y is checked whether it is a subtype of the type of the variable x
+or of the context of the expression y in general. If the subtype condition does
+not hold then the expression fails and the execution of the current rule is
+terminated.
+
+The type checking of puma has been extended to attribute descriptors and
+attributes having a node type:
+
+   child :: attribute
+
+
+Documentation
+-------------
+
+The documents reuseC, ast, and puma have been updated. All the documents are
+now available in the following formats:
+
+   Postscript, letter format
+   Postscript, A4 format
+   PDF
+   ASCII
+   troff, me macros
+
+
+Version 9706:
+
+- Lark: Bug fix: The code generated for C++ can be compiled with Microsoft
+  Visual C++ even in the presence of several start symbols.
+  Bug fix: Attribute indices out of bounds do not crash the program any more.
+
+- Ast: The arguments of the macros equalTREE are surrounded by parentheses.
+
+- Puma: The arguments of the macros equalTREE are surrounded by parentheses.
+  Puma routines can be passed as arguments to procedures also in the case that
+  all names are checked for a corresponding declaration.
+
+Version 9705:
+
+- Reuse: Bug fix in memory management of module StringM. In the Modula-2 version
+  of the library 'reuse' the modules 'Positions', 'Relations', and 'StringMem'
+  have been renamed to 'Position', 'Relation', and 'StringM' in order to obey
+  the naming conventions of certain operating systems (incompatibility!).
+
+- Lpp: The extension of the output file of lpp has been changed from '.lalr' to
+  '.lrk' in order to obey the naming conventions of some operating systems.
+  The default named changed from 'Parser.lalr' to 'Parser.lrk'. This is an
+  incompatible change which requires changes in existing makefiles.
+
+- Rex and Lark: Update of generation of Ada to latest version of gnat.
+  Bug fixes in cases where ExtendArray was applied to static arrays.
+
+- Lark: Bug fix in error repair in the presence of predicates.
+
+Version 9704:
+
+- Reuse: Renamed arguments in header files in order to avoid name clashes.
+
+- Lark: Bug fix in case of option -k2 and the presence of syntactic predicates.
+
+- Lark and Ast: The graphic visualization for parsing and for trees works under
+  Windows 95 and Windows NT. The font names and sizes have been adjusted.
+
+- Ast: Bug fix: Added missing initialization of yyDummy in procedure DrawTree.
+
+- All tools: The filenames in the generated #line directives now work under
+  Windows 95 and Windows NT.
+
+- Examples/c/c: Bug fix: Added missing initialization in procedure begin_typedef
+  in file typedef.c.
+
+Version 9703:
+
+- Rex, Lark, Ell: Bug fixes.
+
+Version 9702:
+
+- Rex, Lark, Ast, Ag, Lpp: Bug fixes and small improvements.
+
+Version 9701:
+
+- Lark: Implementation of LALR(2) analysis and parser generation.
+
+- Ast: Bug fix regarding abstract node types.
+
+- The Cocktail sources can be compiled with Microsoft Visual C++ version 4.x.
+
+Version 9611:
+
+- Lark: Bug fixes and improvements of the graphic visualization of parsing.
+
+- Ast: Improvements of the graphic tree/graph browser.
+
+Version 9610:
+
+- Ast: Bug fixes regarding the SUBUNITs feature.
+
+- Puma: New options -y and -z that generate more traversal procedures.
+
+Version 9608:
+
+- Ast: Bug fixes for attributes of type tTree in the procedures ReleaseTree,
+  CopyTree, and IsEqualTree.
+
+- Ag: New optimization that eliminates tail recursion (without option -0).
+
+- Puma: New option -x that generates a sample traversal procedure.
+
+- Reuse: Added procedure WriteMemory in module rMemory.
+
+Version 9607:
+
+- All Cocktail tools generate code that can be compiled with Microsoft
+  Visual C++ version 1.52. If C++ is generated then the output contains only
+  constants at global level and (almost) no global variables.
+
+- Ag: Now C++ is supported besides C and Modula-2. The attribute evaluator is
+  generated as a class and therefore multiple instances can be created.
+
+- Lark and Ast: The graphic facilities of these tools have been updated to the
+  latest version of tcl and tk. Now tcl 7.5 and tk 4.1 are required. This works
+  with X Windows under Unix and it should work with Microsoft Windows as well.
+
+Version 9606:
+
+- Specs: New grammar for ANSI C with solution of the typedef problem and
+  construction of abstract syntax tree
+
+- All: some bug fixes
+
+Version 9604:
+
+- Reuse: In the C++ version of the library of reusable modules now the modules
+  StringM, Idents, and Errors are classes, thus allowing for multiple instances.
+
+- Rex: New options have been introduced that allow:
+  . to omit the predefined rules for skipping of white space
+  . to print information about ambiguous rules
+  . to specify a file to be used as skeleton for the scanner
+
+- Ast:
+  . Now C++ is supported besides C and Modula-2. A class is generated from a
+    tree description and therefore multiple instances can be created.
+  . The procedures ReadTree and GetTree have been fixed so that several
+    trees can be read from one file which have been written with the procedures
+    WriteTree and PutTree. At end of file the value NoTree is returned.
+  . Memory leaks in the procedures WriteTree, PutTree, and CopyTree have been
+    fixed.
+
+- Ag and Puma: These tools have been extended to support the C++ classes of Ast.
+
+Version 9603:
+
+- Ast: The new procedure DrawTree provides a graph browser with graphic user
+  interface featuring automatic layout, scrolling, zooming, mouse, and menu
+  operations (requires X windows, tcl 7.3 and tk 3.6).
+
+Version 9602:
+
+- Ast: All procedures that have been recursive in the past are now just "weakly"
+  recursive. There are two exceptions: TraverseTreeBU is not recursive at all
+  and QueryTree is still fully recursive.
+
+Version 9601:
+
+- Rex and Lark: The generation of scanners and parsers has been updated for
+  the languages Eiffel 3 and Ada.
+
+Version 9508:
+
+- Lark: A conflict manager for LR conflicts explains only new conflicts and
+  differences in the grammar with respect to a previous run.
+
+Version 9507:
+
+- Reuse: A first version of the reuse library in C++ treats the modules
+  StringM and Idents as classes, thus allowing for multiple instances.
+
+- Rex and Ast: Unused procedures, array and include files are suppressed
+  in order to generate small object files.
+
+- Lark: The automatic error recovery can be switched off and removed from the
+  object file.
+
+Version 9506:
+
+- Rex: Include files may be nested to arbitrary depth.
+
+- Puma: The patterns generated with option -r use the named style.
+
+Version 9505:
+
+- All Tools: Prototypes of the form '(void)' for functions without arguments
+  are generated in ANSI-C.
+
+Version 9504:
+
+- Rex: Added a stack for start states with operations yyPush and yyPop.
+
+- Reuse: Renamed the modules 'Positions', 'StringMem', and 'Relations' in
+  reuse/c to 'Position', 'StringM', and 'Relation' because of operating systems
+  with filenames of restricted length such as e. g. MVS.
+
+Version 9411:
+
+- Lark: graphic visualization for LR parsing (requires X windows, tcl 7.3 and
+  tk 3.6)
+
+- All Tools: some improvements and bug fixes
+
+Version 9410:
+
+- The definitions in input to 'rex' and 'lark' can be given in any order.
+
+Version 9409:
+
+- The tools 'rex' and 'lark' can now generate Ada code. The most important
+  modules of the library 'reuse' have been translated to Ada.
+
+Version 9408:
+
+- Lark:
+   . the re-parsing feature allows to parse parts of the input several times
+   . arbitrary lookahead tokens can be accessed and e. g. used in predicates
+   . semantic predicates can be negated
+   . user control for execution of semantic actions and error recovery
+
+- Reuse:
+   . added module Relations that handles binary relations of integers
+
+Version 9407:
+
+- Lark:
+   . improved trace of parsing steps during run-time
+   . improved strategy for conflict resolution in case of predicates
+
+- Bnf:
+   . added handling of START phrase
+
+- All Tools:
+   . the sources can be compiled on UNIX as well as on MS-DOS or MS-WINDOWS
+   . the tools run on 64 bit machines such as DEC Alpha
+   . all tools now accept the full ISO 8 bit character set for input
+   . various improvements and bug fixes
+
+Version 9404:
+
+- Lark:
+   + Token declarations can be augmented with cost and representation specs for
+     improved error handling
+   + Parsers can have several start symbols
+   + Yacc input is accepted additionally to Lark input
+   + Parsers in C++ based on classes can be generated
+
+- Rex:
+   + The coding of the character set can be specified thus enabling the
+     generation of scanners for machines with for example EBCDIC code
+   + Scanners in C++ based on classes can be generated
+
+Version 9401:
+
+- New parser generator called 'lark' with the following features:
+
+   + compatible with 'lalr'
+   + processes LALR(1) and LR(1) grammars
+   + fast generation of information about LR-conflicts
+   + trace of parsing steps during run-time available
+   + supports named attributes as well as the $i notation
+   + semantic predicates control parsing by conditions
+   + support for backtracking parsing
+   + includes bnf - no preprocessing necessary
+
+Version 9309:
+
+- The tools 'rex', 'lalr', 'ell', and 'estra' do not generate table files any
+  more for the target language Modula-2. Instead, an initialization code based
+  on compressed strings is used. Consequently, all tools do not need table files
+  any more and the problem whether these files are configured for little-endian
+  or big-endian machines is eliminated. The target 'bin.conv' has been removed
+  from all Makefiles.
+
+Version 9308:
+
+- Ag: Besides evaluators based on recursive procedures it is now possible to
+  generate evaluators based on a stack automaton.
+
+- Lalr: A restriction in the size of the grammars processed by 'lalr' has
+  been removed. Now it is possible to generate parsers for huge grammars.
+
+- Reuse: Renamed the modules 'System' and 'Memory' to 'rSystem' and 'rMemory'.
+
+Version 9305:
+
+- Ag: New optimization that eliminates tail recursion (with option -0).
+
+Version 9304:
+
+- Rex and Lalr: Scanners and parsers can be generated in the language Eiffel.
+
+Version 9302:
+
+- Ast: Added procedure ForallTREE.
+
+- Puma: New optimization that eliminates tail recursion.
+
+Version 9209:
+
+- Port to MS-DOS.
+
+Version 9208:
+
+- The scanner generator 'rex' and the parser generators 'lalr' and 'ell'
+  allow to chose arbitrary names for the generated modules. Therefore, it is
+  possible to have several scanners and parsers in one program.
+
+- The length of a token and the lookahead in scanners generated by 'rex' is no
+  longer restricted to 256 characters. Both, tokens and lookahead can be of
+  arbitrary length. A restriction in the size of the tables generated by 'lalr'
+  has been removed. Now it is possible to generate rather huge parsers.
+
+- The attribute grammar tool 'ag' has been extended to generate attribute
+  evaluators for well-defined attribute grammars (WAGs). The program checks
+  grammars whether they obey this property. It is possible to access
+  non-local attributes and to compute attributes on a restricted form of
+  graphs.
+
+- The auxiliary modules 'Errors' and 'Source' have been included into the
+  library of reusable modules called 'reuse'. The 'Errors' module has been
+  extended to support messages with a string argument. It allows to store
+  the messages and print them sorted by the source position. An extra module
+  named 'Positions' has been introduced in 'reuse', too, for the handling of
+  source positions.
+
+- The program 'cg' which implements 'ast' and 'ag' accepts several input files.
+  Instead of one file that communicates a tree definition to 'puma' with the
+  fixed name 'TREE.TS' it is possible to produce several of those with different
+  names. This is of interest if different "views" have to be communicated.
+
+- The extern declarations for malloc, free, and exit have been removed from
+  the generated C code.
+
+- All tools do not generate # line directives by default, only upon request.
+
+- In case of fatal errors during the execution of generated modules a user
+  defined exception routine can be called instead of the predefined 'exit (1)'.
+
+Version 9202:
+
+- The Toolbox contains a new tool for the transformation of attributed trees
+  called 'puma'. It is based on pattern-matching. It replaces its predecessor
+  'estra' and comes with documentation in English.
+
+- The tool for abstract syntax trees 'ast' has been extended from single to
+  multiple inheritance. So-called "subunits" allow the implementation of one
+  abstract tree by several compilation units. The concept of "views" makes
+  it possible to derive from a common specification several abstract syntax
+  trees which represent subsets.
+
+- The attribute grammar tool 'ag' has analogously been extended to process
+  object-oriented attribute grammars with multiple inheritance. It supports the
+  generation of several attribute evaluators that run one after the other.
+
+- The error handling module for the parser generators 'lalr' and 'ell' are
+  independent of the parser module or the grammar. The manual for these parser
+  generators has been completely rewritten.
+
+- The Modula-2 to C translator 'mtc' has a new code-generator. This brings
+  big efficiency improvements: 30% smaller program, 10% faster, 75% less
+  dynamic memory consumption. It generates ANSI C as well as K&R C.
+
+- The sources of all tools are in ANSI C as well as in K&R C.
+
+- All tools generate modules in the target languages C (ANSI + K&R), C++,
+  and Modula-2.
+
+- The interface to the operating system has been redesigned. It allows to
+  switch IO operations between UNIX system calls and C library calls.
+  This should assure much better portability.

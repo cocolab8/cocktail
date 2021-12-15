@@ -1,0 +1,61 @@
+GLOBAL {
+# define YYDEBUG
+}
+
+EXPORT {
+  boolean isUpper (Ident ident) {
+    String name;
+
+    name = ident.toString ();
+    return ('A' <= name.charAt (0)) && (name.charAt (0) <= 'Z');
+  }
+}
+
+BEGIN {
+  yyDebug = true;
+}
+
+
+
+TOKEN
+   IDENTIFIER	= 1
+   '('		= 2
+   ')'		= 3
+   '++'		= 4
+   ';'		= 5
+   '['		= 6
+   ']'		= 7
+   '{'		= 8
+   '}'		= 9
+
+RULE
+
+compound_statement	: '{' declaration_list statement_list '}'
+			.
+declaration_list	:
+			| declaration_list declaration
+			.
+statement_list		:
+			| statement_list statement
+			.
+declaration		: ? declaration declaration_specifier declarator ';'
+			.
+declaration_specifier	: TYPEDEFname [ System.out.println ("trial action"); ]
+				      { System.out.println ("final action"); }
+			.
+declarator		: IDENTIFIER  [ System.out.println ("trial action"); ]
+				      { System.out.println ("final action"); }
+			| '(' declarator ')'
+			| declarator '[' ']'
+			| compound_statement
+			.
+statement		: expression ';'
+			.
+expression		: expression '++'
+			| TYPEDEFname '(' expression ')'	/* cast */
+			| IDENTIFIER  '(' expression ')'	/* call */
+			| IDENTIFIER
+			.
+TYPEDEFname		: IDENTIFIER$i ? { isUpper (((Scanner.ScanAttribute)$i).ident) }
+			| IDENTIFIER ? IDENTIFIER
+			.

@@ -1,0 +1,490 @@
+!INCLUDE ..\..\config.mak
+
+CFLAGS	= $(CFG_CFLAGS) /W1 /I..\.. $(WIBU_FLAGS)
+
+OBJS	= Checks.obj DynArray.obj Errors.obj General.obj Heap.obj \
+	  HugeSets.obj IO.obj Idents.obj Layout.obj Lists.obj Main.obj \
+	  Pack.obj Position.obj Relation.obj RelatsC.obj Sets.obj SetsC.obj \
+	  Sort.obj Source.obj StdIO.obj StringM.obj Strings.obj TclTk.obj \
+	  TclTkStb.obj Texts.obj Times.obj WStrings.obj rMemory.obj \
+	  rSystem.obj Argument.obj SYSTEM_.obj $(WIBU_OBJ)
+
+SYSTEM	= SYSTEM_.obj $(WIBU_OBJ)
+
+all	: libreuse.lib
+
+libreuse.lib	: $(OBJS)
+	link.exe -lib @<<
+   /nologo /out:libreuse.lib $(OBJS)
+<<
+
+# HEAD
+
+all	: DynArrDr.exe
+all	: ErrorsDr.exe
+all	: IODrv.exe
+all	: Main.exe
+all	: RelDrv.exe
+all	: SetsDrv.exe
+all	: SysIODrv.exe
+all	: rMemoryD.exe
+
+Argument.obj	: Argument.c	\
+	Argument.h
+
+Checks.obj	: Checks.c	\
+	Checks.h	\
+	rSystem.h	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h
+
+DynArrDr.obj	: DynArrDr.c	\
+	IO.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h	\
+	DynArray.h	\
+	rMemory.h
+
+DynArray.obj	: DynArray.c	\
+	DynArray.h	\
+	IO.h	\
+	rSystem.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h
+
+Errors.obj	: Errors.c	\
+	Errors.h	\
+	rSystem.h	\
+	Sort.h	\
+	Sets.h	\
+	DynArray.h	\
+	General.h	\
+	Argument.h	\
+	Idents.h	\
+	WStrings.h	\
+	Strings.h	\
+	StringM.h	\
+	Layout.h	\
+	rMemory.h	\
+	IO.h	\
+	Position.h
+
+ErrorsDr.obj	: ErrorsDr.c	\
+	Errors.h	\
+	rSystem.h	\
+	Sort.h	\
+	StringM.h	\
+	DynArray.h	\
+	General.h	\
+	Argument.h	\
+	Layout.h	\
+	rMemory.h	\
+	Position.h	\
+	Idents.h	\
+	WStrings.h	\
+	Strings.h	\
+	Sets.h	\
+	IO.h
+
+General.obj	: General.c	\
+	General.h	\
+	rSystem.h	\
+	Argument.h
+
+Heap.obj	: Heap.c	\
+	Heap.h	\
+	rMemory.h	\
+	IO.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h
+
+HugeSets.obj	: HugeSets.c	\
+	HugeSets.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	Sets.h	\
+	IO.h
+
+IO.obj	: IO.c	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h
+
+IODrv.obj	: IODrv.c	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h
+
+Idents.obj	: Idents.c	\
+	Idents.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	StringM.h	\
+	WStrings.h	\
+	Strings.h	\
+	IO.h
+
+Layout.obj	: Layout.c	\
+	Layout.h	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h
+
+Lists.obj	: Lists.c	\
+	Lists.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	IO.h
+
+Main.obj	: Main.c	\
+	TclTk.h	\
+	Times.h	\
+	Checks.h	\
+	rSystem.h	\
+	Pack.h	\
+	Source.h	\
+	Sort.h	\
+	Errors.h	\
+	Position.h	\
+	Layout.h	\
+	StdIO.h	\
+	IO.h	\
+	RelatsC.h	\
+	Relation.h	\
+	HugeSets.h	\
+	SetsC.h	\
+	Sets.h	\
+	Idents.h	\
+	StringM.h	\
+	Texts.h	\
+	WStrings.h	\
+	Strings.h	\
+	Lists.h	\
+	DynArray.h	\
+	Heap.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h
+
+Pack.obj	: Pack.c	\
+	Pack.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	IO.h
+
+Position.obj	: Position.c	\
+	Position.h	\
+	Layout.h	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h
+
+RelDrv.obj	: RelDrv.c	\
+	Relation.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	Sets.h	\
+	IO.h
+
+Relation.obj	: Relation.c	\
+	Relation.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	Sets.h	\
+	IO.h
+
+RelatsC.obj	: RelatsC.c	\
+	RelatsC.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	Relation.h	\
+	Sets.h	\
+	SetsC.h	\
+	IO.h
+
+Sets.obj	: Sets.c	\
+	Sets.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	IO.h
+
+SetsC.obj	: SetsC.c	\
+	SetsC.h	\
+	Sets.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	IO.h
+
+SetsDrv.obj	: SetsDrv.c	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h	\
+	Sets.h	\
+	DynArray.h
+
+Sort.obj	: Sort.c	\
+	Sort.h
+
+Source.obj	: Source.c	\
+	Source.h	\
+	rSystem.h
+
+StdIO.obj	: StdIO.c	\
+	StdIO.h	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h
+
+StringM.obj	: StringM.c	\
+	StringM.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	WStrings.h	\
+	Strings.h	\
+	IO.h
+
+Strings.obj	: Strings.c	\
+	Strings.h	\
+	General.h	\
+	rSystem.h	\
+	Argument.h	\
+	IO.h	\
+	rMemory.h
+
+SysIODrv.obj	: SysIODrv.c	\
+	Checks.h	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h
+
+Texts.obj	: Texts.c	\
+	Texts.h	\
+	StringM.h	\
+	DynArray.h	\
+	rMemory.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h	\
+	WStrings.h	\
+	Strings.h	\
+	Lists.h	\
+	IO.h
+
+Times.obj	: Times.c	\
+	Times.h	\
+	IO.h	\
+	rMemory.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h
+
+WStrings.obj	: WStrings.c	\
+	WStrings.h	\
+	General.h	\
+	rSystem.h	\
+	Argument.h	\
+	IO.h	\
+	rMemory.h
+
+rMemory.obj	: rMemory.c	\
+	rMemory.h	\
+	IO.h	\
+	rSystem.h	\
+	General.h	\
+	Argument.h
+
+rMemoryD.obj	: rMemoryD.c	\
+	IO.h	\
+	General.h	\
+	Argument.h	\
+	rSystem.h	\
+	rMemory.h
+
+SYSTEM_.obj	: SYSTEM_.c SYSTEM_.h
+
+DynArrDr_OBJS =	\
+	DynArrDr.obj	\
+	IO.obj	\
+	General.obj	\
+	Argument.obj	\
+	rSystem.obj	\
+	DynArray.obj	\
+	rMemory.obj
+
+DynArrDr.exe	: $(SYSTEM) $(DynArrDr_OBJS)
+	$(CC) /nologo $(DynArrDr_OBJS) $(SYSTEM) /link /out:DynArrDr.exe
+
+ErrorsDr_OBJS =	\
+	ErrorsDr.obj	\
+	Errors.obj	\
+	rSystem.obj	\
+	Sort.obj	\
+	StringM.obj	\
+	DynArray.obj	\
+	General.obj	\
+	Argument.obj	\
+	Layout.obj	\
+	rMemory.obj	\
+	Position.obj	\
+	Idents.obj	\
+	WStrings.obj	\
+	Strings.obj	\
+	Sets.obj	\
+	IO.obj
+
+ErrorsDr.exe	: $(SYSTEM) $(ErrorsDr_OBJS)
+	$(CC) /nologo $(ErrorsDr_OBJS) $(SYSTEM) /link /out:ErrorsDr.exe
+
+IODrv_OBJS =	\
+	IODrv.obj	\
+	IO.obj	\
+	rMemory.obj	\
+	General.obj	\
+	Argument.obj	\
+	rSystem.obj
+
+IODrv.exe	: $(SYSTEM) $(IODrv_OBJS)
+	$(CC) /nologo $(IODrv_OBJS) $(SYSTEM) /link /out:IODrv.exe
+
+Main_OBJS =	\
+	Main.obj	\
+	TclTk.obj	\
+	Times.obj	\
+	Checks.obj	\
+	rSystem.obj	\
+	Pack.obj	\
+	Source.obj	\
+	Sort.obj	\
+	Errors.obj	\
+	Position.obj	\
+	Layout.obj	\
+	StdIO.obj	\
+	IO.obj	\
+	RelatsC.obj	\
+	Relation.obj	\
+	HugeSets.obj	\
+	SetsC.obj	\
+	Sets.obj	\
+	Idents.obj	\
+	StringM.obj	\
+	Texts.obj	\
+	WStrings.obj	\
+	Strings.obj	\
+	Lists.obj	\
+	DynArray.obj	\
+	Heap.obj	\
+	rMemory.obj	\
+	General.obj	\
+	Argument.obj
+
+Main.exe	: $(SYSTEM) $(Main_OBJS)
+	$(CC) /nologo $(Main_OBJS) $(SYSTEM) /link /out:Main.exe
+
+RelDrv_OBJS =	\
+	RelDrv.obj	\
+	Relation.obj	\
+	DynArray.obj	\
+	rMemory.obj	\
+	rSystem.obj	\
+	General.obj	\
+	Argument.obj	\
+	Sets.obj	\
+	IO.obj
+
+RelDrv.exe	: $(SYSTEM) $(RelDrv_OBJS)
+	$(CC) /nologo $(RelDrv_OBJS) $(SYSTEM) /link /out:RelDrv.exe
+
+SetsDrv_OBJS =	\
+	SetsDrv.obj	\
+	IO.obj	\
+	rMemory.obj	\
+	General.obj	\
+	Argument.obj	\
+	rSystem.obj	\
+	Sets.obj	\
+	DynArray.obj
+
+SetsDrv.exe	: $(SYSTEM) $(SetsDrv_OBJS)
+	$(CC) /nologo $(SetsDrv_OBJS) $(SYSTEM) /link /out:SetsDrv.exe
+
+SysIODrv_OBJS =	\
+	SysIODrv.obj	\
+	Checks.obj	\
+	IO.obj	\
+	rMemory.obj	\
+	General.obj	\
+	Argument.obj	\
+	rSystem.obj
+
+SysIODrv.exe	: $(SYSTEM) $(SysIODrv_OBJS)
+	$(CC) /nologo $(SysIODrv_OBJS) $(SYSTEM) /link /out:SysIODrv.exe
+
+rMemoryD_OBJS =	\
+	rMemoryD.obj	\
+	IO.obj	\
+	General.obj	\
+	Argument.obj	\
+	rSystem.obj	\
+	rMemory.obj
+
+rMemoryD.exe	: $(SYSTEM) $(rMemoryD_OBJS)
+	$(CC) /nologo $(rMemoryD_OBJS) $(SYSTEM) /link /out:rMemoryD.exe
+
+install:
+
+# TAIL
+
+clean	:
+	del *.obj *.lib *.exe
+
+.SUFFIXES: .h .c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) /c $*.c

@@ -1,0 +1,1444 @@
+/*
+   Copyright (c) 1998 Dr. Josef Grosch, CoCoLab - Datenverarbeitung
+
+   This file contains proprietary and confidential information and
+   remains the property of CoCoLab. Use, disclosure, or reproduction
+   is prohibited except as permitted by express written license agreement
+   with CoCoLab.
+
+   Phone: +49-7841-669144
+   Fax  : +49-7841-669145
+   Email: grosch@cocolab.com
+*/
+
+/*
+
+			C Grammar
+			=========
+
+		     conforming to:
+
+			 ANSI C
+	 ISO/IEC 9899:1990 Programming languages -- C
+
+
+- handles the typedef problem
+- builds an abstract syntax tree
+- the tree can be visualized if tcl + tk are available
+
+- The cpp variable SHARE in the parser controls, whether for end of list nodes
+  (node types with the prefix 'no') only one node per node type is created or
+  whether always separate nodes are allocated. '# define SHARE' selects
+  "sharing" of nodes. This implies that instead of a tree a simple graph is
+  constructed. This is more efficient in terms of runtime and memory consumption
+  and it should work as long as only good-natured attribute computations are
+  performed. If the syntax tree is to be visualized with the procedure DrawTree
+  it is recommended not to define SHARE because pure trees are more pretty than
+  simple graphs.
+
+*/
+
+/* Ich, Doktor Josef Grosch, Informatiker, July 1996 / Dec. 1998 */
+
+/*
+
+Conventions:
+
+The syllable decl	stands for declaration.
+The syllable wtype	stands for with type.
+The syllable wotype	stands for without type.
+
+*/
+
+PARSER Parser
+
+GLOBAL {
+# include "Tree.h"
+# include "Trafo.h"
+# include "deftab.h"
+
+/* # define SHARE */
+
+# ifdef SHARE
+
+static	tTree
+   sno_expression	,
+   sno_name		,
+   snotype_id		,
+   snobase_class	,
+   snoenumerator	,
+   snoexpression	,
+   snoidentifier	,
+   snospecifier		,
+   snostatement		;
+
+# define dno_expression		sno_expression
+# define dno_name		sno_name
+# define dnotype_id		snotype_id
+# define dnobase_class		snobase_class
+# define dnoenumerator		snoenumerator
+# define dnoexpression		snoexpression
+# define dnoidentifier		snoidentifier
+# define dnospecifier		snospecifier
+# define dnostatement		snostatement
+
+# else
+
+# define dno_expression		mno_expression ()
+# define dno_name		mno_name ()
+# define dnotype_id		mnotype_id ()
+# define dnobase_class		mnobase_class ()
+# define dnoenumerator		mnoenumerator ()
+# define dnoexpression		mnoexpression ()
+# define dnoidentifier		mnoidentifier ()
+# define dnospecifier		mnospecifier ()
+# define dnostatement		mnostatement ()
+
+# endif
+
+# define merge_type(type, specifiers) set_type (type, get_type (specifiers))
+
+static tTree concat
+# ifdef HAVE_ARGS
+  (tTree t1, tTree t2)
+# else
+  (t1, t2) tTree t1; tTree t2;
+# endif
+{
+  register tTree current = t1, previous = NULL;
+  while (current->Kind != knostatement) {
+    previous = current;
+    current = current->statement.next;
+  }
+  if (previous) {
+    previous->statement.next = t2;
+    return t1;
+  } else {
+    return t2;
+  }
+}
+}
+
+BEGIN {
+# ifdef SHARE
+
+   sno_expression	= mno_expression ();
+   sno_name		= mno_name ();
+   snotype_id		= mnotype_id ();
+   snobase_class	= mnobase_class ();
+   snoenumerator	= mnoenumerator ();
+   snoexpression	= mnoexpression ();
+   snoidentifier	= mnoidentifier ();
+   snospecifier		= mnospecifier ();
+   snostatement		= mnostatement ();
+
+# endif
+}
+
+PROPERTY INPUT
+
+RULE
+
+start		= translation_unit
+		{ => TreeRoot = mtranslation_unit (ReverseTree (translation_unit:tree)); } .
+
+/* expressions */
+
+literal		= <
+		= l:integer_literal
+		{ tree := mint_const (l:Position, l:type, l:value); } .
+
+		= l:floating_literal
+		{ tree := mfloat_const (l:Position, l:type, l:value); } .
+
+		= l:character_literal
+		{ tree := mchar_const (l:Position, l:type, l:value); } .
+
+		= l:string_literal_list
+		{ tree := { if (l:tree->Kind == kstring_const) tree = l:tree;
+		     else { tree = ReverseTree (l:tree);
+			tree = mstring_list (
+			   tree->expression_e.expression->string_const.pos,
+			   tree->expression_e.expression->string_const.type,
+			   tree);
+		     }
+	        }; } .
+> .
+string_literal_list	= <
+		= l:string_literal
+		{ tree := { tree = mstring_const (l:Position, l:type, l:value);
+			if (yyTerminal == YYCODE (string_literal))
+			   tree = mexpression_e (dnoexpression, tree); }; } .
+
+		= string_literal_list l:string_literal
+		{ tree := mexpression_e (string_literal_list:tree,
+			mstring_const (l:Position, l:type, l:value)); } .
+> .
+primary_expression	= <
+		= i:identifier
+		{ tree := mident (i:Position, i:ident); } .
+
+		= literal .
+
+		= '(' c:comma_expression ')'
+		{ tree := mparentheses_expr ('(':Position, c:tree); } .
+> .
+postfix_expression	= <
+		= primary_expression .
+
+		= e:postfix_expression '[' c:comma_expression ']'
+		{ tree := msubscript_expr ('[':Position, e:tree, c:tree); } .
+
+		= e:postfix_expression '(' ')'
+		{ tree := mcall_expr ('(':Position, e:tree, dnoexpression); } .
+
+		= e:postfix_expression '(' argument_list ')'
+		{ tree := mcall_expr ('(':Position, e:tree,
+			ReverseTree (argument_list:tree)); } .
+
+		= e:postfix_expression '.' i:identifier_or_typedef_name
+		{ tree := mmem_access_expr ('.':Position, e:tree,
+			op_dot, mident (i:Position, i:ident)); } .
+
+		= e:postfix_expression '->' i:identifier_or_typedef_name
+		{ tree := mmem_access_expr ('->':Position, e:tree,
+			op_arrow, mident (i:Position, i:ident)); } .
+
+		= e:postfix_expression '++'
+		{ tree := munary_expr ('++':Position, op_post_incr, e:tree); } .
+
+		= e:postfix_expression '--'
+		{ tree := munary_expr ('--':Position, op_post_decr, e:tree); } .
+> .
+argument_list	= <
+		= assignment_expression
+		{ tree := mexpression_e (dnoexpression, assignment_expression:tree); } .
+
+		= argument_list ',' assignment_expression
+		{ tree := mexpression_e (argument_list:tree, assignment_expression:tree); } .
+> .
+identifier_or_typedef_name	= <
+		= identifier .
+		= typedef_name .
+> .
+unary_expression	= <
+		= postfix_expression .
+
+		= '++' e:unary_expression
+		{ tree := munary_expr ('++':Position, op_pre_incr, e:tree); } .
+
+		= '--' e:unary_expression
+		{ tree := munary_expr ('--':Position, op_pre_decr, e:tree); } .
+
+		= o:unary_operator e:cast_expression
+		{ tree := munary_expr (o:Position, o:Operator, e:tree); } .
+
+		= sizeof e:unary_expression
+		{ tree := msizeof_expr (sizeof:Position, e:tree); } .
+
+		= sizeof '(' t:type_id ')'
+		{ tree := msizeof_expr (sizeof:Position,
+			mtype_expr (sizeof:Position, t:specifiers, t:tree)); } .
+> .
+unary_operator	= <
+		= '&' { Operator := op_address_of	; } .
+		= '*' { Operator := op_indirect		; } .
+		= '+' { Operator := op_plus		; } .
+		= '-' { Operator := op_negate		; } .
+		= '~' { Operator := op_complement	; } .
+		= '!' { Operator := op_not		; } .
+> .
+cast_expression	= <
+		= unary_expression .
+
+		= '(' t:type_id ')' cast_expression
+		{ tree := mcast_expr ('(':Position, op_none, t:specifiers,
+			t:tree, cast_expression:tree); } .
+> .
+multiplicative_expression	= <
+		= cast_expression .
+
+		= l:multiplicative_expression '*' r:cast_expression
+		{ tree := mbinary_expr ('*':Position, l:tree, op_times, r:tree); } .
+
+		= l:multiplicative_expression '/' r:cast_expression
+		{ tree := mbinary_expr ('/':Position, l:tree, op_divide, r:tree); } .
+
+		= l:multiplicative_expression '%' r:cast_expression
+		{ tree := mbinary_expr ('%':Position, l:tree, op_modulo, r:tree); } .
+> .
+additive_expression	= <
+		= multiplicative_expression .
+
+		= l:additive_expression '+' r:multiplicative_expression
+		{ tree := mbinary_expr ('+':Position, l:tree, op_plus, r:tree); } .
+
+		= l:additive_expression '-' r:multiplicative_expression
+		{ tree := mbinary_expr ('-':Position, l:tree, op_minus, r:tree); } .
+> .
+shift_expression	= <
+		= additive_expression .
+
+		= l:shift_expression '<<' r:additive_expression
+		{ tree := mbinary_expr ('<<':Position, l:tree, op_lshift, r:tree); } .
+
+		= l:shift_expression '>>' r:additive_expression
+		{ tree := mbinary_expr ('>>':Position, l:tree, op_rshift, r:tree); } .
+> .
+relational_expression	= <
+		= shift_expression .
+
+		= l:relational_expression '<' r:shift_expression
+		{ tree := mbinary_expr ('<':Position, l:tree, op_less, r:tree); } .
+
+		= l:relational_expression '>' r:shift_expression
+		{ tree := mbinary_expr ('>':Position, l:tree, op_greater, r:tree); } .
+
+		= l:relational_expression '<=' r:shift_expression
+		{ tree := mbinary_expr ('<=':Position, l:tree, op_less_equal, r:tree); } .
+
+		= l:relational_expression '>=' r:shift_expression
+		{ tree := mbinary_expr ('>=':Position, l:tree, op_greater_equal, r:tree); } .
+> .
+equality_expression	= <
+		= relational_expression .
+
+		= l:equality_expression '==' r:relational_expression
+		{ tree := mbinary_expr ('==':Position, l:tree, op_equal, r:tree); } .
+
+		= l:equality_expression '!=' r:relational_expression
+		{ tree := mbinary_expr ('!=':Position, l:tree, op_not_equal, r:tree); } .
+> .
+and_expression	= <
+		= equality_expression .
+
+		= l:and_expression '&' r:equality_expression
+		{ tree := mbinary_expr ('&':Position, l:tree, op_and, r:tree); } .
+> .
+exclusive_or_expression	= <
+		= and_expression .
+
+		= l:exclusive_or_expression '^' r:and_expression
+		{ tree := mbinary_expr ('^':Position, l:tree, op_xor, r:tree); } .
+> .
+inclusive_or_expression	= <
+		= exclusive_or_expression .
+
+		= l:inclusive_or_expression '|' r:exclusive_or_expression
+		{ tree := mbinary_expr ('|':Position, l:tree, op_or, r:tree); } .
+> .
+logical_and_expression	= <
+		= inclusive_or_expression .
+
+		= l:logical_and_expression '&&' r:inclusive_or_expression
+		{ tree := mbinary_expr ('&&':Position, l:tree, op_and_and, r:tree); } .
+> .
+logical_or_expression	= <
+		= logical_and_expression .
+
+		= l:logical_or_expression '||' r:logical_and_expression
+		{ tree := mbinary_expr ('||':Position, l:tree, op_or_or, r:tree); } .
+> .
+conditional_expression	= <
+		= logical_or_expression .
+
+		= logical_or_expression '?' comma_expression ':' conditional_expression
+		{ tree := mconditional_expr ('?':Position, logical_or_expression:tree,
+			comma_expression:tree, conditional_expression:tree); } .
+> .
+assignment_expression	= <
+		= conditional_expression .
+
+		= unary_expression assignment_operator assignment_expression
+		{ tree := massign_expr (assignment_operator:Position, unary_expression:tree,
+			assignment_operator:Operator, assignment_expression:tree); } .
+> .
+assignment_operator	= <
+		= '='	{ Operator := op_assignment	; } .
+		= '*='	{ Operator := op_times		; } .
+		= '/='	{ Operator := op_divide		; } .
+		= '%='	{ Operator := op_modulo		; } .
+		= '+='	{ Operator := op_plus		; } .
+		= '-='	{ Operator := op_minus		; } .
+		= '<<='	{ Operator := op_lshift		; } .
+		= '>>='	{ Operator := op_rshift		; } .
+		= '&='	{ Operator := op_and		; } .
+		= '^='	{ Operator := op_xor		; } .
+		= '|='	{ Operator := op_or		; } .
+> .
+comma_expression	= <
+		= assignment_expression .
+
+		= l:comma_expression ',' r:assignment_expression
+		{ tree := mbinary_expr (',':Position, l:tree, op_comma, r:tree); } .
+> .
+constant_expression	= conditional_expression .
+
+expression_opt	= <
+		=
+		{ tree := dno_expression; } .
+
+		= comma_expression .
+> .
+
+/* statements */
+
+statement_list	= <
+		= unlabeled_statement
+		{ tree := { tree = unlabeled_statement:tree;
+			tree->statement.next = dnostatement; }; } .
+
+		= statement_list unlabeled_statement
+		{ tree := { tree = unlabeled_statement:tree;
+			tree->statement.next = statement_list:tree; }; } .
+> .
+unlabeled_statement	= <
+		= label_statement .    /* extension: allow missing statements */
+		= expression_statement .
+
+		= c:compound_statement
+		{ tree := mcompound_stmt (NoTree, c:pos, c:tree); } .
+
+		= selection_statement .
+		= iteration_statement .
+		= jump_statement .
+> .
+label_statement	= <
+		= i:identifier_or_typedef_name ':'
+		{ tree := mlabeled_stmt (NoTree, i:Position, i:ident); } .
+
+		= case c:constant_expression ':'
+		{ tree := mcase_stmt (NoTree, case:Position, c:tree); } .
+
+		= default ':'
+		{ tree := mdefault_stmt (NoTree, default:Position); } .
+> .
+statement	= <
+		= labeled_statement .
+
+		= s:expression_statement
+		{ tree := s:tree;
+		  => tree->statement.next = dnostatement; } .
+
+		= c:compound_statement
+		{ tree := mcompound_stmt (dnostatement, c:pos, c:tree); } .
+
+		= s:selection_statement
+		{ tree := s:tree;
+		  => tree->statement.next = dnostatement; } .
+
+		= s:iteration_statement
+		{ tree := s:tree;
+		  => tree->statement.next = dnostatement; } .
+
+		= s:jump_statement
+		{ tree := s:tree;
+		  => tree->statement.next = dnostatement; } .
+> .
+labeled_statement	= <
+		= i:identifier_or_typedef_name ':' statement
+		{ tree := mlabeled_stmt (statement:tree, i:Position, i:ident); } .
+
+		= case c:constant_expression ':' statement
+		{ tree := mcase_stmt (statement:tree, case:Position, c:tree); } .
+
+		= default ':' statement
+		{ tree := mdefault_stmt (statement:tree, default:Position); } .
+> .
+expression_statement	= <
+		= e:comma_expression ';'
+		{ tree := mexpr_stmt (NoTree, get_bpos (e:tree), e:tree); } .
+
+		= ';'
+		{ tree := mnull_stmt (NoTree, ';':Position); } .
+> .
+compound_statement	= <
+		= push '{' pop '}'
+		{ tree := dnostatement;
+		  pos  := '{':Position; } .
+
+		= push '{' declaration_list pop '}'
+		{ tree := ReverseTree (declaration_list:tree);
+		  pos  := '{':Position; } .
+
+		= push '{' statement_list pop '}'
+		{ tree := ReverseTree (statement_list:tree);
+		  pos  := '{':Position; } .
+
+		= push '{' d:declaration_list s:statement_list pop '}'
+		{ tree := concat (ReverseTree (d:tree), ReverseTree (s:tree));
+		  pos  := '{':Position; } .
+> .
+selection_statement	= <
+		= if '(' comma_expression ')' statement
+		{ tree := mif_stmt (NoTree, if:Position, comma_expression:tree,
+			statement:tree, dnostatement); } .
+
+		= if '(' comma_expression ')' statement else s:statement
+		{ tree := mif_stmt (NoTree, if:Position, comma_expression:tree,
+			statement:tree, s:tree); } .
+
+		= switch '(' comma_expression ')' statement
+		{ tree := mswitch_stmt (NoTree, switch:Position,
+			comma_expression:tree, statement:tree); } .
+> .
+iteration_statement	= <
+		= while '(' comma_expression ')' statement
+		{ tree := mwhile_stmt (NoTree, while:Position,
+			comma_expression:tree, statement:tree); } .
+
+		= do statement while '(' comma_expression ')' ';'
+		{ tree := mdo_stmt (NoTree, do:Position, statement:tree,
+			comma_expression:tree); } .
+
+		= for '(' e1:expression_opt ';' e2:expression_opt ';' e3:expression_opt ')' statement
+		{ tree := mfor_stmt (NoTree, for:Position, e1:tree, e2:tree,
+			e3:tree, statement:tree); } .
+> .
+jump_statement	= <
+		= goto i:identifier_or_typedef_name ';'
+		{ tree := mgoto_stmt (NoTree, goto:Position,
+			mident (i:Position, i:ident)); } .
+
+		= continue ';'
+		{ tree := mcontinue_stmt (NoTree, continue:Position); } .
+
+		= break ';'
+		{ tree := mbreak_stmt (NoTree, break:Position); } .
+
+		= return e:expression_opt ';'
+		{ tree := mreturn_stmt (NoTree, return:Position, e:tree); } .
+> .
+
+/* declarations */
+
+declaration_list	= <
+		= declaration
+		{ tree := { typedef_off (); tree = declaration:tree;
+			tree->declaration.next = dnostatement; }; } .
+
+		= declaration_list declaration
+		{ tree := { typedef_off (); tree = declaration:tree;
+			tree->declaration.next = declaration_list:tree; }; } .
+> .
+declaration	= <
+		= s:decl_specifiers_wotype ';'
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, current_type (),
+			dnostatement); } .
+
+		= s:decl_specifiers_wtype ';'
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, current_type (),
+			dnostatement); } .
+
+		= s:decl_specifiers_wotype init_declarator_wotype_list ';'
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, current_type (),
+			ReverseTree (init_declarator_wotype_list:tree)); } .
+
+		= s:decl_specifiers_wtype init_declarator_list ';'
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, current_type (),
+			ReverseTree (init_declarator_list:tree)); } .
+> .
+decl_specifiers_wotype	= decl_specifiers_wotype_l
+		{ tree := ReverseTree (decl_specifiers_wotype_l:tree);
+		  => store_type (tree); } .
+
+decl_specifiers_wotype_l	= <
+		= storage_class_specifier
+		{ tree := { tree = storage_class_specifier:tree;
+			tree->specifier.next = dnospecifier; };
+		  pos := storage_class_specifier:pos; } .
+
+		= type_qualifier
+		{ tree := { tree = type_qualifier:tree;
+			tree->specifier.next = dnospecifier; };
+		  pos := type_qualifier:pos; } .
+
+		= decl_specifiers_wotype_l storage_class_specifier
+		{ tree := { tree = storage_class_specifier:tree;
+			tree->specifier.next = decl_specifiers_wotype_l:tree; };
+		  pos := decl_specifiers_wotype_l:pos; } .
+
+		= decl_specifiers_wotype_l type_qualifier
+		{ tree := { tree = type_qualifier:tree;
+			tree->specifier.next = decl_specifiers_wotype_l:tree; };
+		  pos := decl_specifiers_wotype_l:pos; } .
+> .
+decl_specifiers_wtype	= decl_specifiers_wtype_l
+		{ tree := ReverseTree (decl_specifiers_wtype_l:tree);
+		  => store_type (tree); } .
+
+decl_specifiers_wtype_l	= <
+		= type_specifier
+		{ tree := { tree = type_specifier:tree;
+			tree->specifier.next = dnospecifier; };
+		  pos := type_specifier:pos; } .
+
+		= decl_specifiers_wotype_l type_specifier
+		{ tree := { tree = type_specifier:tree;
+			tree->specifier.next = decl_specifiers_wotype_l:tree; };
+		  pos := decl_specifiers_wotype_l:pos; } .
+
+		= decl_specifiers_wtype_l storage_class_specifier
+		{ tree := { tree = storage_class_specifier:tree;
+			tree->specifier.next = decl_specifiers_wtype_l:tree; };
+		  pos := decl_specifiers_wtype_l:pos; } .
+
+		= decl_specifiers_wtype_l type_specifier_2
+		{ tree := { tree = type_specifier_2:tree;
+			tree->specifier.next = decl_specifiers_wtype_l:tree; };
+		  pos := decl_specifiers_wtype_l:pos; } .
+
+		= decl_specifiers_wtype_l type_qualifier
+		{ tree := { tree = type_qualifier:tree;
+			tree->specifier.next = decl_specifiers_wtype_l:tree; };
+		  pos := decl_specifiers_wtype_l:pos; } .
+> .
+storage_class_specifier	= <
+		= typedef
+		{ tree := ms_typedef	(NoTree); pos := typedef:Position;
+		  => typedef_on (); } .
+
+		= extern
+		{ tree := ms_extern	(NoTree); pos := extern:Position; } .
+
+		= static
+		{ tree := ms_static	(NoTree); pos := static:Position; } .
+
+		= auto
+		{ tree := ms_auto	(NoTree); pos := auto:Position; } .
+
+		= register
+		{ tree := ms_register	(NoTree); pos := register:Position; } .
+> .
+type_specifier	= <
+		= t:typedef_name
+		{ tree := ms_type_name (NoTree, mident (t:Position, t:ident));
+		  pos := t:Position; } .
+
+   type_specifier_2	= <
+		= simple_type_specifier .
+		= type_adjective .
+		= struct_specifier .
+		= union_specifier .
+		= enum_specifier .
+   > .
+> .
+simple_type_specifier	= <
+		= void
+		{ tree := ms_void	(NoTree); pos := void:Position; } .
+
+		= char
+		{ tree := ms_char	(NoTree); pos := char:Position; } .
+
+		= int
+		{ tree := ms_int	(NoTree); pos := int:Position; } .
+
+		= float
+		{ tree := ms_float	(NoTree); pos := float:Position; } .
+
+		= double
+		{ tree := ms_double	(NoTree); pos := double:Position; } .
+> .
+type_adjective	= <
+		= short
+		{ tree := ms_short	(NoTree); pos := short:Position; } .
+
+		= long
+		{ tree := ms_long	(NoTree); pos := long:Position; } .
+
+		= signed
+		{ tree := ms_signed	(NoTree); pos := signed:Position; } .
+
+		= unsigned
+		{ tree := ms_unsigned	(NoTree); pos := unsigned:Position; } .
+> .
+type_qualifier	= <
+		= const
+		{ tree := ms_const	(NoTree); pos := const:Position; } .
+
+		= volatile
+		{ tree := ms_volatile	(NoTree); pos := volatile:Position; } .
+> .
+struct_specifier	= <
+		= struct push_struct '{' struct_declaration_list pop '}'
+		{ tree := ms_class (NoTree, dno_name, NoTree, k_struct,
+			dnobase_class, ReverseTree (struct_declaration_list:tree));
+		  => tree->s_class.type = mclass_type (tree, NoTree);
+		  pos := struct:Position; } .
+
+		= struct i:identifier_or_typedef_name push_struct '{' struct_declaration_list pop '}'
+		{ tree := ms_class (NoTree, mident (i:Position, i:ident), NoTree,
+			k_struct, dnobase_class, ReverseTree (struct_declaration_list:tree));
+		  => tree->s_class.type = mclass_type (tree, NoTree);
+		  pos := struct:Position; } .
+
+		= struct i:identifier_or_typedef_name
+		{ tree := ms_class (NoTree, mident (i:Position, i:ident),
+			NoTree, k_struct, dnobase_class, dnostatement);
+		  => tree->s_class.type = mclass_type (tree, NoTree);
+		  pos := struct:Position; } .
+> .
+union_specifier	= <
+		= union push_struct '{' struct_declaration_list pop '}'
+		{ tree := ms_class (NoTree, dno_name, NoTree, k_union,
+			dnobase_class, ReverseTree (struct_declaration_list:tree));
+		  => tree->s_class.type = mclass_type (tree, NoTree);
+		  pos := union:Position; } .
+
+		= union i:identifier_or_typedef_name push_struct '{' struct_declaration_list pop '}'
+		{ tree := ms_class (NoTree, mident (i:Position, i:ident), NoTree,
+			k_union, dnobase_class, ReverseTree (struct_declaration_list:tree));
+		  => tree->s_class.type = mclass_type (tree, NoTree);
+		  pos := union:Position; } .
+
+		= union i:identifier_or_typedef_name
+		{ tree := ms_class (NoTree, mident (i:Position, i:ident),
+			NoTree, k_union, dnobase_class, dnostatement);
+		  => tree->s_class.type = mclass_type (tree, NoTree);
+		  pos := union:Position; } .
+> .
+struct_declaration_list	= <
+		= struct_declaration
+		{ tree := { tree = struct_declaration:tree;
+			tree->declaration.next = dnostatement; }; } .
+
+		= struct_declaration_list struct_declaration
+		{ tree := { tree = struct_declaration:tree;
+			tree->declaration.next = struct_declaration_list:tree; }; } .
+> .
+struct_declaration	= <
+		= s:specifier_qualifier_wotype_list { => store_type (s:tree); }
+		  struct_declarator_wotype_list ';'
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, current_type (),
+			ReverseTree (struct_declarator_wotype_list:tree)); } .
+
+		= s:specifier_qualifier_wtype_list { => store_type (s:tree); }
+		  struct_declarator_list ';'
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, current_type (),
+			ReverseTree (struct_declarator_list:tree)); } .
+> .
+struct_declarator_list	= <
+		= struct_declarator
+		{ tree := { tree = struct_declarator:tree;
+			tree->declaration.next = dnostatement; }; } .
+
+		= struct_declarator_list ',' struct_declarator
+		{ tree := { tree = struct_declarator:tree;
+			tree->declaration.next = struct_declarator_list:tree; }; } .
+> .
+struct_declarator	= <	/* full declarator for struct_declaration */
+		= d:declarator
+		{ tree := mdata_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ())); } .
+
+		= ':' e:constant_expression
+		{ tree := mbit_field_decl (NoTree, ':':Position,
+			dno_name, current_specifiers (),
+			current_type (), e:tree); } .
+
+		= d:declarator ':' e:constant_expression
+		{ tree := mbit_field_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ()), e:tree); } .
+> .
+struct_declarator_wotype_list	= <
+		= struct_declarator_wotype
+		{ tree := { tree = struct_declarator_wotype:tree;
+			tree->declaration.next = dnostatement; }; } .
+
+		= struct_declarator_wotype_list ',' struct_declarator
+		{ tree := { tree = struct_declarator:tree;
+			tree->declaration.next = struct_declarator_wotype_list:tree; }; } .
+> .
+		    /* declarator for struct_declaration without typedef name */
+struct_declarator_wotype	= <
+		= d:declarator_wotype
+		{ tree := mdata_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ())); } .
+
+		= ':' e:constant_expression
+		{ tree := mbit_field_decl (NoTree, ':':Position,
+			dno_name, current_specifiers (),
+			current_type (), e:tree); } .
+
+		= d:declarator_wotype ':' e:constant_expression
+		{ tree := mbit_field_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ()), e:tree); } .
+
+		= d:component_declarator
+		{ tree := mdata_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ())); } .
+
+		= d:component_declarator ':' e:constant_expression
+		{ tree := mbit_field_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ()), e:tree); } .
+> .
+enum_specifier	= <
+		= enum                            '{' enumerator_list comma_opt '}'
+		{ tree := ms_enum (NoTree, dno_name,
+			NoTree, ReverseTree (enumerator_list:tree));
+		  => tree->s_enum.type = menum_type (tree);
+		  pos := enum:Position; } .
+
+		= enum i:identifier_or_typedef_name '{' enumerator_list comma_opt '}'
+		{ tree := ms_enum (NoTree, mident (i:Position, i:ident),
+			NoTree, ReverseTree (enumerator_list:tree));
+		  => tree->s_enum.type = menum_type (tree);
+		  pos := enum:Position; } .
+
+		= enum i:identifier_or_typedef_name
+		{ tree := ms_enum (NoTree, mident (i:Position, i:ident),
+			NoTree, dnoenumerator);
+		  => tree->s_enum.type = menum_type (tree);
+		  pos := enum:Position; } .
+> .
+comma_opt	= <
+		= ',' .				/* non standard extension */
+		= .
+> .
+enumerator_list	= <
+		= enumerator
+		{ tree := { tree = enumerator:tree;
+			tree->\enumerator.next = dnoenumerator; }; } .
+
+		= enumerator_list ',' enumerator
+		{ tree := { tree = enumerator:tree;
+			tree->\enumerator.next = enumerator_list:tree; }; } .
+> .
+enumerator	= <
+		= i:identifier_or_typedef_name
+		{ tree := menumerator (NoTree, i:ident, i:Position, dno_expression);
+		  => declare_enum (i:ident); } .
+
+		= i:identifier_or_typedef_name
+		{ => declare_enum (i:ident); }
+		  '=' constant_expression
+		{ tree :=  menumerator (NoTree, i:ident, i:Position,
+			constant_expression:tree); } .
+> .
+
+/* declarators */
+
+init_declarator_list	= <
+		= init_declarator
+		{ tree := { tree = init_declarator:tree;
+			tree->declaration.next = dnostatement; }; } .
+
+		= init_declarator_list ',' init_declarator
+		{ tree := { tree = init_declarator:tree;
+			tree->declaration.next = init_declarator_list:tree; }; } .
+> .
+init_declarator	= <		/* full declarator with optional initialisation */
+		= d:declarator
+		{ tree := mdata_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ())); } .
+
+		= d:declarator '=' i:initializer
+		{ tree := minit_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ()), i:tree); } .
+> .
+init_declarator_wotype_list	= <
+		= init_declarator_wotype
+		{ tree := { tree = init_declarator_wotype:tree;
+			tree->declaration.next = dnostatement; }; } .
+
+		= init_declarator_wotype_list ',' init_declarator
+		{ tree := { tree = init_declarator:tree;
+			tree->declaration.next = init_declarator_wotype_list:tree; }; } .
+> .
+	      /* declarator without typedef name with optional initialisation */
+init_declarator_wotype	= <
+		= d:declarator_wotype
+		{ tree := mdata_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ())); } .
+
+		= d:declarator_wotype '=' i:initializer
+		{ tree := minit_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), current_specifiers (),
+			set_type (d:tree, current_type ()), i:tree); } .
+> .
+declarator	= <		/* full declarator with ident or typedef name */
+		= declarator_wotype .
+		= declarator_wtype .
+> .
+declarator_wotype	= <   /* declarator without typedef name (with ident) */
+		= direct_declarator_wotype .
+
+		= pointer declarator_wotype
+		{ tree := mpointer (declarator_wotype:tree, pointer:tree); } .
+> .
+direct_declarator_wotype	= <
+		= identifier
+		{ tree := NoTree;
+		  => declare (identifier:ident); } .
+
+		= '(' declarator_wotype ')'
+		{ Position := declarator_wotype:Position; } .
+
+		= direct_declarator_wotype '[' ']'
+		{ tree := marray (direct_declarator_wotype:tree, dno_expression);
+		  Position := direct_declarator_wotype:Position; } .
+
+		= direct_declarator_wotype '[' constant_expression ']'
+		{ tree := marray (direct_declarator_wotype:tree, constant_expression:tree);
+		  Position := direct_declarator_wotype:Position; } .
+
+		= direct_declarator_wotype '(' ')'
+		{ tree := mfunction (direct_declarator_wotype:tree,
+			dnostatement, dnospecifier, dnotype_id);
+		  Position := direct_declarator_wotype:Position; } .
+
+		= direct_declarator_wotype '(' parameter_type_list ')'
+		{ tree := mfunction (direct_declarator_wotype:tree,
+			ReverseTree (parameter_type_list:tree), dnospecifier,
+			dnotype_id);
+		  Position := direct_declarator_wotype:Position; } .
+
+		= direct_declarator_wotype '(' identifier_list ')'
+		{ tree := mfunction_old (direct_declarator_wotype:tree,
+			ReverseTree (identifier_list:tree));
+		  Position := direct_declarator_wotype:Position; } .
+> .
+declarator_wtype	= <   /* declarator with typedef name (without ident) */
+		= direct_declarator_wtype .
+
+		= pointer declarator_wtype
+		{ tree := mpointer (declarator_wtype:tree, pointer:tree); } .
+> .
+direct_declarator_wtype	= <
+		= typedef_name
+		{ tree := NoTree;
+		  => declare (typedef_name:ident); } .
+
+		= '(' declarator_wtype ')'
+		{ Position := declarator_wtype:Position; } .
+
+		= direct_declarator_wtype '[' ']'
+		{ tree := marray (direct_declarator_wtype:tree, dno_expression);
+		  Position := direct_declarator_wtype:Position; } .
+
+		= direct_declarator_wtype '[' constant_expression ']'
+		{ tree := marray (direct_declarator_wtype:tree, constant_expression:tree);
+		  Position := direct_declarator_wtype:Position; } .
+
+		= direct_declarator_wtype '(' ')'
+		{ tree := mfunction (direct_declarator_wtype:tree, dnostatement,
+			dnospecifier, dnotype_id);
+		  Position := direct_declarator_wtype:Position; } .
+
+		= direct_declarator_wtype '(' parameter_type_list ')'
+		{ tree := mfunction (direct_declarator_wtype:tree,
+			ReverseTree (parameter_type_list:tree), dnospecifier,
+			dnotype_id);
+		  Position := direct_declarator_wtype:Position; } .
+
+		= direct_declarator_wtype '(' identifier_list ')'
+		{ tree := mfunction_old (direct_declarator_wtype:tree,
+			ReverseTree (identifier_list:tree));
+		  Position := direct_declarator_wtype:Position; } .
+> .
+		/* declarator for struct_declaration starting
+		   either with '*' or '(' and with a typedef name */
+component_declarator	= <
+		= direct_component_declarator .
+
+		= pointer declarator_wtype
+		{ tree := mpointer (declarator_wtype:tree, pointer:tree); } .
+> .
+direct_component_declarator	= <
+		= '(' direct_parameter_declarator ')' .
+
+		= '(' component_declarator ')'
+		{ Position := component_declarator:Position; } .
+
+		= direct_component_declarator '[' ']'
+		{ tree := marray (direct_component_declarator:tree, dno_expression);
+		  Position := direct_component_declarator:Position; } .
+
+		= direct_component_declarator '[' constant_expression ']'
+		{ tree := marray (direct_component_declarator:tree, constant_expression:tree);
+		  Position := direct_component_declarator:Position; } .
+
+		= direct_component_declarator '(' ')'
+		{ tree := mfunction (direct_component_declarator:tree,
+			dnostatement, dnospecifier, dnotype_id);
+		  Position := direct_component_declarator:Position; } .
+
+		= direct_component_declarator '(' parameter_type_list ')'
+		{ tree := mfunction (direct_component_declarator:tree,
+			ReverseTree (parameter_type_list:tree), dnospecifier,
+			dnotype_id);
+		  Position := direct_component_declarator:Position; } .
+
+		= direct_component_declarator '(' identifier_list ')'
+		{ tree := mfunction_old (direct_component_declarator:tree,
+			ReverseTree (identifier_list:tree));
+		  Position := direct_component_declarator:Position; } .
+> .
+    /* declarator for parameter with typedef name not enclosed in parentheses */
+parameter_declarator	= <
+		= direct_parameter_declarator .
+
+		= pointer parameter_declarator
+		{ tree := mpointer (parameter_declarator:tree, pointer:tree); } .
+> .
+direct_parameter_declarator	= <
+		= typedef_name
+		{ tree := NoTree; } .
+
+		= direct_parameter_declarator '[' ']'
+		{ tree := marray (direct_parameter_declarator:tree, dno_expression);
+		  Position := direct_parameter_declarator:Position; } .
+
+		= direct_parameter_declarator '[' constant_expression ']'
+		{ tree := marray (direct_parameter_declarator:tree, constant_expression:tree);
+		  Position := direct_parameter_declarator:Position; } .
+
+		= direct_parameter_declarator '(' ')'
+		{ tree := mfunction (direct_parameter_declarator:tree,
+			dnostatement, dnospecifier, dnotype_id);
+		  Position := direct_parameter_declarator:Position; } .
+
+		= direct_parameter_declarator '(' parameter_type_list ')'
+		{ tree := mfunction (direct_parameter_declarator:tree,
+			ReverseTree (parameter_type_list:tree), dnospecifier,
+			dnotype_id);
+		  Position := direct_parameter_declarator:Position; } .
+
+		= direct_parameter_declarator '(' identifier_list ')'
+		{ tree := mfunction_old (direct_parameter_declarator:tree,
+			ReverseTree (identifier_list:tree));
+		  Position := direct_parameter_declarator:Position; } .
+> .
+abstract_declarator	= <	/* declarator without name */
+		= direct_abstract_declarator .
+
+		= pointer
+		{ tree := mpointer (NoTree, pointer:tree); } .
+
+		= pointer abstract_declarator
+		{ tree := mpointer (abstract_declarator:tree, pointer:tree); } .
+> .
+direct_abstract_declarator	= <
+		= '(' abstract_declarator ')' .
+
+		= '[' ']'
+		{ tree := marray (NoTree, dno_expression); } .
+
+		= '[' constant_expression ']'
+		{ tree := marray (NoTree, constant_expression:tree); } .
+
+		= '(' ')'
+		{ tree := mfunction (NoTree, dnostatement, dnospecifier, dnotype_id); } .
+
+		= '(' parameter_type_list ')'
+		{ tree := mfunction (NoTree, ReverseTree (parameter_type_list:tree),
+			dnospecifier, dnotype_id); } .
+
+		= direct_abstract_declarator '[' ']'
+		{ tree := marray (direct_abstract_declarator:tree, dno_expression); } .
+
+		= direct_abstract_declarator '[' constant_expression ']'
+		{ tree := marray (direct_abstract_declarator:tree, constant_expression:tree); } .
+
+		= direct_abstract_declarator '(' ')'
+		{ tree := mfunction (direct_abstract_declarator:tree,
+			dnostatement, dnospecifier, dnotype_id); } .
+
+		= direct_abstract_declarator '(' parameter_type_list ')'
+		{ tree := mfunction (direct_abstract_declarator:tree,
+			ReverseTree (parameter_type_list:tree), dnospecifier,
+			dnotype_id); } .
+> .
+function_declarator	= <	/* declarator for function */
+		= direct_function_declarator
+		{ => typedef_off (); } .
+
+		= pointer function_declarator
+		{ tree := mpointer (function_declarator:tree, pointer:tree);
+		  => typedef_off (); } .
+> .
+direct_function_declarator	= <
+		= direct_declarator_wotype '(' ')'
+		{ tree := mfunction (direct_declarator_wotype:tree,
+			dnostatement, dnospecifier, dnotype_id);
+		  Position := direct_declarator_wotype:Position; } .
+
+		= direct_declarator_wotype '(' parameter_type_list ')'
+		{ tree := mfunction (direct_declarator_wotype:tree,
+			ReverseTree (parameter_type_list:tree), dnospecifier,
+			dnotype_id);
+		  Position := direct_declarator_wotype:Position; } .
+
+		= direct_declarator_wotype '(' identifier_list ')'
+		{ tree := mfunction_old (direct_declarator_wotype:tree,
+			ReverseTree (identifier_list:tree));
+		  Position := direct_declarator_wotype:Position; } .
+> .
+pointer		= <
+		= '*'
+		{ tree := dnospecifier; } .
+
+		= '*' type_qualifier_list
+		{ tree := ReverseTree (type_qualifier_list:tree); } .
+> .
+identifier_list	= <
+		= identifier
+		{ tree := midentifier (dnoidentifier, identifier:ident, identifier:Position); } .
+
+		= identifier_list ',' identifier
+		{ tree := midentifier (identifier_list:tree, identifier:ident, identifier:Position); } .
+> .
+parameter_type_list	= <
+		= push parameter_list pop .
+
+		= push parameter_list ',' '...' pop
+		{ tree := mellipsis_decl (parameter_list:tree, '...':Position); } .
+> .
+parameter_list	= <
+		= parameter_declaration
+		{ tree := { typedef_off (); tree = parameter_declaration:tree;
+			tree->declaration.next = dnostatement; }; } .
+
+		= parameter_list ',' parameter_declaration
+		{ tree := { typedef_off (); tree = parameter_declaration:tree;
+			tree->declaration.next = parameter_list:tree; }; } .
+> .
+parameter_declaration	= <
+		= s:decl_specifiers_wotype
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, get_type (s:tree),
+			mdata_decl (dnostatement, s:pos, dno_name,
+			get_specifiers (s:tree), get_type (s:tree))); } .
+
+		= s:decl_specifiers_wotype d:declarator_wotype
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, get_type (s:tree),
+			mdata_decl (dnostatement, s:pos,
+			mident (d:Position, d:ident), get_specifiers (s:tree),
+			merge_type (d:tree, s:tree))); } .
+
+		= s:decl_specifiers_wotype d:abstract_declarator
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, get_type (s:tree),
+			mdata_decl (dnostatement, s:pos, dno_name,
+			get_specifiers (s:tree), merge_type (d:tree, s:tree))); } .
+
+		= s:decl_specifiers_wtype
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, get_type (s:tree),
+			mdata_decl (dnostatement, s:pos, dno_name,
+			get_specifiers (s:tree), get_type (s:tree))); } .
+
+		= s:decl_specifiers_wtype d:declarator_wotype
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, get_type (s:tree),
+			mdata_decl (dnostatement, s:pos,
+			mident (d:Position, d:ident), get_specifiers (s:tree),
+			merge_type (d:tree, s:tree))); } .
+
+		= s:decl_specifiers_wtype d:abstract_declarator
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, get_type (s:tree),
+			mdata_decl (dnostatement, s:pos, dno_name,
+			get_specifiers (s:tree), merge_type (d:tree, s:tree))); } .
+
+		= s:decl_specifiers_wtype d:parameter_declarator
+		{ tree := mlist_decl (NoTree, s:pos, s:tree, get_type (s:tree),
+			mdata_decl (dnostatement, s:pos,
+			mident (d:Position, d:ident), get_specifiers (s:tree),
+			merge_type (d:tree, s:tree))); } .
+> .
+type_qualifier_list	= <
+		= type_qualifier
+		{ tree := { tree = type_qualifier:tree;
+			tree->specifier.next = dnospecifier; }; } .
+
+		= type_qualifier_list type_qualifier
+		{ tree := { tree = type_qualifier:tree;
+			tree->specifier.next = type_qualifier_list:tree; }; } .
+> .
+type_id		= <
+		= specifier_qualifier_list
+		{ specifiers := specifier_qualifier_list:tree;
+		  tree := get_type (specifiers); } .
+
+		= specifier_qualifier_list abstract_declarator
+		{ specifiers := specifier_qualifier_list:tree;
+		  tree := merge_type (abstract_declarator:tree, specifiers); } .
+> .
+specifier_qualifier_list	= <
+		= specifier_qualifier_wotype_list .
+		= specifier_qualifier_wtype_list .
+> .
+specifier_qualifier_wotype_list	= specifier_qualifier_wotype_l
+		{ tree := ReverseTree (specifier_qualifier_wotype_l:tree); } .
+
+specifier_qualifier_wotype_l	= <
+		= type_qualifier
+		{ tree := { tree = type_qualifier:tree;
+			tree->specifier.next = dnospecifier; };
+		  pos := type_qualifier:pos; } .
+
+		= specifier_qualifier_wotype_l type_qualifier
+		{ tree := { tree = type_qualifier:tree;
+			tree->specifier.next = specifier_qualifier_wotype_l:tree; };
+		  pos := specifier_qualifier_wotype_l:pos; } .
+> .
+specifier_qualifier_wtype_list	= specifier_qualifier_wtype_l
+		{ tree := ReverseTree (specifier_qualifier_wtype_l:tree); } .
+
+specifier_qualifier_wtype_l	= <
+		= type_specifier
+		{ tree := { tree = type_specifier:tree;
+			tree->specifier.next = dnospecifier; };
+		  pos := type_specifier:pos; } .
+
+		= specifier_qualifier_wotype_list type_specifier
+		{ tree := { tree = type_specifier:tree;
+			tree->specifier.next = specifier_qualifier_wotype_list:tree; };
+		  pos := specifier_qualifier_wotype_list:pos; } .
+
+		= specifier_qualifier_wtype_l type_specifier_2
+		{ tree := { tree = type_specifier_2:tree;
+			tree->specifier.next = specifier_qualifier_wtype_l:tree; };
+		  pos := specifier_qualifier_wtype_l:pos; } .
+
+		= specifier_qualifier_wtype_l type_qualifier
+		{ tree := { tree = type_qualifier:tree;
+			tree->specifier.next = specifier_qualifier_wtype_l:tree; };
+		  pos := specifier_qualifier_wtype_l:pos; } .
+> .
+initializer	= <
+		= assignment_expression .
+
+		= '{' initializer_list '}'
+		{ tree := maggregate_expr ('{': Position, ReverseTree (initializer_list:tree)); } .
+
+		= '{' initializer_list ',' '}'
+		{ tree := maggregate_expr ('{': Position, ReverseTree (initializer_list:tree)); } .
+> .
+initializer_list	= <
+		= initializer
+		{ tree := mexpression_e (dnoexpression, initializer:tree); } .
+
+		= initializer_list ',' initializer
+		{ tree := mexpression_e (initializer_list:tree, initializer:tree); } .
+> .
+
+/* external definitions */
+
+function_definition	= <
+		= d:function_declarator c:compound_statement
+		{ tree := mfunction_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), 0, dnospecifier,
+			set_type (d:tree, msimple_type (0)),
+			dnoexpression, c:tree); } .
+
+		= s:decl_specifiers_wotype d:function_declarator c:compound_statement
+		{ tree := mfunction_decl (NoTree, s:pos,
+			mident (d:Position, d:ident), get_specifiers (s:tree), s:tree,
+			merge_type (d:tree, s:tree), dnoexpression, c:tree); } .
+
+		= s:decl_specifiers_wtype d:function_declarator c:compound_statement
+		{ tree := mfunction_decl (NoTree, s:pos,
+			mident (d:Position, d:ident), get_specifiers (s:tree), s:tree,
+			merge_type (d:tree, s:tree), dnoexpression, c:tree); } .
+
+		= d:function_declarator declaration_list c:compound_statement
+		{ tree := mfunction_old_decl (NoTree, d:Position,
+			mident (d:Position, d:ident), 0, dnospecifier,
+			set_type (d:tree, msimple_type (0)), dnoexpression,
+			c:tree, ReverseTree (declaration_list:tree)); } .
+
+		= s:decl_specifiers_wotype d:function_declarator declaration_list c:compound_statement
+		{ tree := mfunction_old_decl (NoTree, s:pos,
+			mident (d:Position, d:ident), get_specifiers (s:tree), s:tree,
+			merge_type (d:tree, s:tree), dnoexpression,
+			c:tree, ReverseTree (declaration_list:tree)); } .
+
+		= s:decl_specifiers_wtype d:function_declarator declaration_list c:compound_statement
+		{ tree := mfunction_old_decl (NoTree, s:pos,
+			mident (d:Position, d:ident), get_specifiers (s:tree), s:tree,
+			merge_type (d:tree, s:tree), dnoexpression,
+			c:tree, ReverseTree (declaration_list:tree)); } .
+> .
+external_definition	= <
+		= function_definition .
+		= declaration		{ => typedef_off (); } .
+		= untyped_declaration .
+> .
+untyped_declaration	= init_declarator_wotype_list ';'
+		{ tree := mlist_decl (NoTree, NoPosition, dnospecifier, mnotype (),
+			ReverseTree (init_declarator_wotype_list:tree)); } .
+
+translation_unit	= <
+		= external_definition
+		{ tree := { tree = external_definition:tree;
+			tree->declaration.next = dnostatement; };
+		  => reset_type (); } .
+
+		= ';'				/* non standard extension */
+		{ tree := dnostatement; } .
+
+		= translation_unit external_definition
+		{ tree := { tree = external_definition:tree;
+			tree->declaration.next = translation_unit:tree; };
+		  => reset_type (); } .
+
+		= translation_unit ';' .	/* non standard extension */
+> .
+push		= { => push (rfalse); } .
+push_struct	= { => push (rtrue); } .
+pop		= { => pop (); } .
+
+
+identifier		: [ident: tIdent    ] { ident := NoIdent	; } .
+typedef_name		: [ident: tIdent    ] { ident := NoIdent	; } .
+constant		: [type : tspecifier] { type  := 0		; } <
+  integer_literal	: [value: us_long   ] { value := 0		; } .
+  character_literal	: [value: tStringRef] { value := PutString ("", 0); } .
+  floating_literal	: [value: tStringRef] { value := PutString ("", 0); } .
+  string_literal	: [value: tStringRef] { value := PutString ("", 0); } .
+> .
+
+MODULE attributes
+
+PROPERTY SYN
+
+DECLARE
+
+abstract_declarator
+additive_expression
+and_expression
+argument_list
+assignment_expression
+cast_expression
+comma_expression
+component_declarator
+compound_statement
+conditional_expression
+constant_expression
+decl_specifiers_wotype
+decl_specifiers_wotype_l
+decl_specifiers_wtype
+decl_specifiers_wtype_l
+declaration
+declaration_list
+declarator
+declarator_wotype
+declarator_wtype
+direct_abstract_declarator
+direct_component_declarator
+direct_declarator_wotype
+direct_declarator_wtype
+direct_function_declarator
+direct_parameter_declarator
+enum_specifier
+enumerator
+enumerator_list
+equality_expression
+exclusive_or_expression
+expression_opt
+expression_statement
+external_definition
+function_declarator
+function_definition
+identifier_list
+inclusive_or_expression
+init_declarator
+init_declarator_list
+init_declarator_wotype
+init_declarator_wotype_list
+initializer
+initializer_list
+iteration_statement
+jump_statement
+label_statement
+labeled_statement
+literal
+logical_and_expression
+logical_or_expression
+multiplicative_expression
+parameter_declaration
+parameter_declarator
+parameter_list
+parameter_type_list
+pointer
+postfix_expression
+primary_expression
+relational_expression
+selection_statement
+shift_expression
+simple_type_specifier
+specifier_qualifier_list
+specifier_qualifier_wotype_l
+specifier_qualifier_wotype_list
+specifier_qualifier_wtype_l
+specifier_qualifier_wtype_list
+statement
+statement_list
+storage_class_specifier
+string_literal_list
+struct_declaration
+struct_declaration_list
+struct_declarator
+struct_declarator_list
+struct_declarator_wotype
+struct_declarator_wotype_list
+struct_specifier
+translation_unit
+type_adjective
+type_id
+type_qualifier
+type_qualifier_list
+type_specifier
+unary_expression
+union_specifier
+unlabeled_statement
+untyped_declaration
+			= [tree		: tTree] .
+
+component_declarator
+declarator
+declarator_wotype
+declarator_wtype
+direct_component_declarator
+direct_declarator_wotype
+direct_declarator_wtype
+direct_function_declarator
+direct_parameter_declarator
+function_declarator
+identifier_or_typedef_name
+parameter_declarator
+			= [ident	: tIdent] [Position: tPosition] .
+
+unary_operator
+assignment_operator
+			= [Operator	: toperator] [Position: tPosition] .
+
+type_id
+			= [specifiers	: tTree] .
+
+compound_statement
+decl_specifiers_wotype
+decl_specifiers_wotype_l
+decl_specifiers_wtype
+decl_specifiers_wtype_l
+enum_specifier
+simple_type_specifier
+specifier_qualifier_wotype_l
+specifier_qualifier_wotype_list
+specifier_qualifier_wtype_l
+specifier_qualifier_wtype_list
+storage_class_specifier
+struct_specifier
+type_adjective
+type_qualifier
+type_specifier
+union_specifier
+			= [pos		: tPosition] .
+
+END attributes

@@ -1,0 +1,126 @@
+# Makefile for Microsoft Visual C++ 1.52
+
+CC	= cl
+DEBUG	= /Od /Zi
+CFLAGS	= /nologo /G2 /Mq /W4 /AH $(DEBUG) /c /I. /I.. /I..\..
+LFLAGS	= /NOLOGO /NOD /PACKC:57344 /ALIGN:16 /ONERROR:NOEXE /STACK:10240
+REUSE	= libreuse.lib
+LIBS	= $(REUSE) oldnames llibcewq libw
+
+OBJS	= DynArray.obj Errors.obj General.obj Idents.obj Position.obj \
+	  Relation.obj rMemory.obj rSystem.obj Sets.obj Source.obj StringM.obj \
+	  rTime.obj rString.obj rGetopt.obj rSrcMem.obj rFsearch.obj
+
+
+libreuse.lib:	$(OBJS)
+	echo >NUL @<<libreuse.crf
+$@ /PAGESIZE:64
+y
++DynArray.obj &
++Errors.obj &
++General.obj &
++Idents.obj &
++Position.obj &
++Relation.obj &
++Sets.obj &
++Source.obj &
++StringM.obj &
++rFsearch.obj &
++rGetopt.obj &
++rMemory.obj &
++rSrcMem.obj &
++rString.obj &
++rSystem.obj &
++rTime.obj &
+;
+<<
+	if exist $@ del $@
+	lib @libreuse.crf
+
+# test programs
+
+test:	DynArrDr.exe ErrorsDr.exe IdentsDr.exe RelDrv.exe rMemoryD.exe \
+	SetsDrv.exe StringMD.exe rStringD.exe \
+	rGetoptD.exe rSrcMemD.exe rFsearD.exe
+
+DynArrDr.exe:	DynArrDr.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+ErrorsDr.exe:	ErrorsDr.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+IdentsDr.exe:	IdentsDr.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+RelDrv.exe:	RelDrv.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+rMemoryD.exe:	rMemoryD.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+SetsDrv.exe:	SetsDrv.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+StringMD.exe:	StringMD.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+rStringD.exe:	rStringD.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+rGetoptD.exe:	rGetoptD.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+rFsearD.exe:	rFsearD.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+rSrcMemD.exe:	rSrcMemD.obj $(REUSE)
+	link $(LFLAGS) $*.obj, $@, NUL, $(LIBS);
+
+
+clean:
+	-del *.exe
+	-del *.dll
+	-del *.res
+	-del *.obj
+	-del *.lib
+	-del *.pdb
+	-del *.map
+	-del *.sbr
+	-del *.vcw
+	-del *.wsp
+	-del *.bsc
+
+.SUFFIXES:	.c .obj
+
+.c.obj:
+	$(CC) $(CFLAGS) $*.c
+
+# dependencies
+
+rSystem.obj: rSystem.c rSystem.h ratc.h rString.h
+General.obj: General.c General.h ratc.h
+rMemory.obj: rMemory.c rMemory.h ratc.h rSystem.h General.h Errors.h Position.h Idents.h StringM.h
+DynArray.obj: DynArray.c DynArray.h ratc.h General.h rMemory.h
+StringM.obj: StringM.c StringM.h ratc.h rString.h General.h rMemory.h Errors.h Position.h Idents.h
+Idents.obj: Idents.c Idents.h ratc.h StringM.h rString.h DynArray.h Sets.h Errors.h Position.h
+Sets.obj: Sets.c Sets.h ratc.h DynArray.h General.h
+Relation.obj: Relation.c Relation.h ratc.h Sets.h General.h DynArray.h
+rTime.obj: rTime.c rTime.h ratc.h rSystem.h
+Errors.obj: Errors.c Errors.h ratc.h Position.h Idents.h StringM.h rString.h rSystem.h rMemory.h Sets.h
+Position.obj: Position.c Position.h ratc.h Idents.h StringM.h rString.h
+Source.obj: Source.c Source.h ratc.h rSystem.h rString.h
+rString.obj: rString.c rString.h ratc.h
+rGetopt.obj: rGetopt.c rGetopt.h
+rFsearch.obj: rFsearch.c rString.h rMemory.h ratc.h rSystem.h DynArray.h rFsearch.h
+rSrcMem.obj: rSrcMem.c rSrcMem.h ratc.h Position.h Idents.h StringM.h DynArray.h rMemory.h
+rMemoryD.obj: rMemoryD.c rMemory.h ratc.h
+DynArrDr.obj: DynArrDr.c rMemory.h ratc.h DynArray.h
+SetsDrv.obj: SetsDrv.c Sets.h ratc.h
+RelDrv.obj: RelDrv.c Relation.h ratc.h Sets.h
+IdentsDr.obj: IdentsDr.c Idents.h ratc.h StringM.h rMemory.h
+StringMD.obj: StringMD.c rString.h StringM.h ratc.h
+ErrorsDr.obj: ErrorsDr.c Position.h ratc.h Idents.h StringM.h Errors.h Sets.h
+rStringD.obj: rStringD.c rString.h ratc.h
+rGetoptD.obj: rGetoptD.c rGetopt.h
+rFsearD.obj: rFsearD.c rMemory.h ratc.h rFsearch.h rTime.h
+rSrcMemD.obj: rSrcMemD.c rMemory.h ratc.h rSrcMem.h Position.h Idents.h StringM.h

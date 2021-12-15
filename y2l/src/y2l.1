@@ -1,0 +1,15 @@
+.TH y2l 1 "" GMD
+.SH NAME
+y2l - transform YACC specifications to LALR specifications
+.SH SYNOPSIS
+y2l
+.SH DESCRIPTION
+Y2l transforms a YACC specification to a LALR specification.
+Input is read from stdin, output is written to stdout.
+.SH RESTRICIONS
+Error handling in the way of yacc is not supported by lalr.
+Since the access to the scanner in LALR differs from that in YACC, some
+further processing might be necessary. Eof is coded as 0 in LALR, in YACC
+it may be any number <= 0.
+.SH SEE ALSO
+yacc(1), lalr(1)

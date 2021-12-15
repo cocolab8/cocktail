@@ -1,0 +1,31 @@
+REUSE	= ../../../reuse/ada
+ADA	= ADA_INCLUDE_PATH=$(REUSE) gcc -c -g
+SOURCES	= scanner.ads scanner.adb parser.ads parser.adb parserdrv.adb
+
+ParserDrv:	parserdrv.ali parser.ali scanner.ali
+	ADA_OBJECTS_PATH=$(REUSE) gnatbl parserdrv.ali $(REUSE)/rSystem.o -o ParserDrv
+
+scanner.ali:	scanner.ads scanner.adb
+parser.ali:	parser.ads parser.adb scanner.ads
+parserdrv.ali:	parserdrv.adb parser.ads scanner.ads
+
+Scanner.rpp parser.lrk:	modula.prs
+	lpp --xzj modula.prs
+
+modula.rex:	modula.scn Scanner.rpp
+	rpp < modula.scn > modula.rex
+
+scanner.ads scanner.adb:	modula.rex
+	rex -du modula.rex
+
+parser.ads parser.adb parserdrv.adb:	parser.lrk
+	lark -dip3s parser.lrk
+
+clean:
+	rm -f scanner.ad? parser.ad? parserdrv.adb
+	rm -f core* *.o *.ali *.dbg ParserDrv modula.rex parser.lrk Scanner.rpp
+
+.SUFFIXES: .ali .adb
+
+.adb.ali:
+	$(ADA) $*.adb

@@ -1,0 +1,86 @@
+lpp -cxzj minilax.pars; 
+minilax.pars:  16,  1: Information copy rule insertions synthesized: 1
+minilax.pars:  16,  1: Information grammar is in normal form
+minilax.pars:  16,  1: Information grammar is SAG
+lark -cdi Parser.lalr; 
+          Information shift reduce conflict explicitly repaired at state: 62
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 86
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 87
+                      on lookahead: < + * 
+          Information shift reduce conflict explicitly repaired at state: 88
+                      on lookahead: < + * 
+          Information grammar is LALR(1) after explicit repair
+
+ conflict repair   explicit implicit  LALR(2)  dynamic unsolved    total
+------------------------------------------------------------------------
+ shift-reduce             4        0        0        0        0        4
+------------------------------------------------------------------------
+ total                    4        0        0        0        0        4
+cg -cdimRDIL minilax.cg; 
+minilax.cg:  35,  1: Information copy rule insertions inherited: 35
+minilax.cg:  35,  1: Information copy rule insertions threaded: 6
+minilax.cg:  35,  1: Information grammar is not in normal form
+minilax.cg:  35,  1: Information grammar is OAG
+echo SELECT AbstractSyntax Output | cat - minilax.cg | cg -cL4
+puma -cdipk Types.puma; 
+ 144,  4: Warning     unreachable code
+ 151,  4: Warning     unreachable code
+ 157,  4: Warning     unreachable code
+ 163,  4: Warning     unreachable code
+ 163,  4: Warning     unreachable code
+puma -cdi ICode.puma; 
+  40, 38: Warning     user-type required
+ 127, 34: Warning     user-type required
+ 130, 37: Warning     user-type required
+cc -g -I/home/grosch/lib/include -c minilax.c
+rpp < minilax.scan > minilax.rex; 
+rex -cd minilax.rex; 
+Warning: in start state STD the default action may be triggered by:
+ \0 \1 \2 \3 \4 \5 \6 \7 \8 \11 \12 \13 \14 \15 \16 \17
+ \18 \19 \20 \21 \22 \23 \24 \25 \26 \27 \28 \29 \30 \31 '!' '"'
+ '#' '$' '%' '&' ''' '-' '/' '=' '>' '?' '@' '\' '^' '_' '`' '{'
+ '|' '}' '~'
+cc -g -I/home/grosch/lib/include -c Scanner.c
+cc -g -I/home/grosch/lib/include -c Parser.c
+cc -g -I/home/grosch/lib/include -c Tree.c
+cc -g -I/home/grosch/lib/include -c Types.c
+cc -g -I/home/grosch/lib/include -c Semantics.c
+cc -g -I/home/grosch/lib/include -c ICode.c
+cc -g -I/home/grosch/lib/include -c ICodeInter.c
+cc -g -I/home/grosch/lib/include -o minilax minilax.o Scanner.o Parser.o Tree.o Types.o Semantics.o ICode.o ICodeInter.o /home/grosch/lib/libreuse.a -lm
+time minilax < in1
+Memory   51224  Tree   20484
+Memory   51224  Tree   20484
+    3.14000E+00
+    4.14000E+00
+    5.14000E+00
+    2.14000E+00
+    1.14000E+00
+    1.14000E+00
+    4.14000E+00
+    5.14000E+00
+    2.14000E+00
+    3.14000E+00
+    1.14000E+00
+    2.14000E+00
+    5.14000E+00
+    4.14000E+00
+    3.14000E+00
+    1.14000E+00
+    2.14000E+00
+    3.14000E+00
+    4.14000E+00
+    5.14000E+00
+    1.14000E+00
+    2.14000E+00
+    3.14000E+00
+    4.14000E+00
+    5.14000E+00
+    1
+        0.1 real         0.0 user         0.0 sys  
+time minilax < in5
+Memory  973184  Tree  942264
+Memory 1055136  Tree 1024200
+        2.5 real         2.1 user         0.3 sys  

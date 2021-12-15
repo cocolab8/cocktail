@@ -1,0 +1,23 @@
+TREE de.cocolab.test.myTree
+
+RULE
+
+R	= F [n] -> [r OUT] .
+F	= [n] [r] [i: Integer] [a: myTree] [b: F] -> [c: myTree] [d: F] <
+  P1	= F G:F .
+  P2	= .
+> .
+
+wrtlbrnft	= <
+  wrtlbrnft00	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft01	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft02	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft03	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft04	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft05	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft06	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft07	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft08	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+  wrtlbrnft09	= [a] [b] [c] [d] [e] [f] [g] [h] [i] [j] [k] [l] [n] [m] [o] .
+> .
+

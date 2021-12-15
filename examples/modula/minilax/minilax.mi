@@ -1,0 +1,39 @@
+MODULE minilax;
+
+FROM rMemory	IMPORT MemoryUsed;
+FROM IO		IMPORT StdOutput, StdError, CloseIO;
+FROM Errors	IMPORT StoreMessages, WriteMessages;
+FROM Parser	IMPORT Parser, CloseParser;
+FROM Tree	IMPORT TreeRoot, HeapUsed;
+FROM Semantic	IMPORT BeginSemantic, Eval;
+FROM ICode	IMPORT Code;
+FROM ICodeInt	IMPORT WriteCode, Interpret;
+IMPORT IO, Defs;
+
+VAR ErrorCount : CARDINAL;
+
+BEGIN
+   StoreMessages (TRUE);
+   ErrorCount := Parser ();
+
+   IO.WriteS  (StdError, "Memory"); IO.WriteI (StdError, MemoryUsed, 8);
+   IO.WriteS  (StdError, "  Tree"); IO.WriteI (StdError, HeapUsed  , 8);
+   IO.WriteS  (StdError, "  Defs"); IO.WriteI (StdError, Defs.HeapUsed, 8);
+   IO.WriteNl (StdError);
+
+   BeginSemantic;
+   Eval (TreeRoot);
+
+   IO.WriteS  (StdError, "Memory"); IO.WriteI (StdError, MemoryUsed, 8);
+   IO.WriteS  (StdError, "  Tree"); IO.WriteI (StdError, HeapUsed  , 8);
+   IO.WriteS  (StdError, "  Defs"); IO.WriteI (StdError, Defs.HeapUsed, 8);
+   IO.WriteNl (StdError);
+
+   IF ErrorCount = 0 THEN
+      Code (TreeRoot);
+(*    WriteCode; *)
+      Interpret;
+   END;
+   WriteMessages (StdError);
+   CloseIO;
+END minilax.

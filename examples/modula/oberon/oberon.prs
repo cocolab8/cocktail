@@ -1,0 +1,260 @@
+PREC
+   LEFT	 '=' '#' '<' '<=' '>' '>=' 'IN' IS
+   LEFT	 MONOP
+   LEFT	 '+' '-' OR
+   LEFT	 '*' '/' DIV MOD '&'
+   LEFT	 '~'
+
+RULE
+
+compilation_unit	= <
+		= definition_part .
+		= implementation_part .
+> .
+qualident	= Ident ident_list_2 .
+ident_list_2	= <
+		= ident_list_2 '.' Ident .
+		= .
+> .
+ident_list	= Ident ident_list_3 .
+ident_list_3	= <
+		= ident_list_3 ',' Ident .
+		= .
+> .
+constant_declaration	= Ident '=' expression .
+type_declaration	= Ident '=' type .
+type		= <
+		= qualident .
+		= ARRAY expression length_list OF type .
+		= RECORD field_list_sequence 'END' .
+		= RECORD '(' qualident ')' field_list_sequence 'END' .
+		= POINTER TO type .
+		= PROCEDURE .
+		= PROCEDURE '(' ')' .
+		= PROCEDURE '(' ')' ':' qualident .
+		= PROCEDURE '(' formal_type_list ')' .
+		= PROCEDURE '(' formal_type_list ')' ':' qualident .
+> .
+length_list	= <
+		= length_list ',' expression .
+		= .
+> .
+field_list_sequence	= <
+		= field_list .
+		= field_list_sequence ';' field_list .
+> .
+field_list	= <
+		= ident_list ':' type .
+		= .
+> .
+formal_type_list	= <
+		= formal_type .
+		= VAR formal_type .
+		= formal_type_list ',' formal_type .
+		= formal_type_list ',' VAR formal_type .
+> .
+variable_declaration	= ident_list ':' type .
+designator	= qualident selector_list .
+selector_list	= <
+		= '[' exp_list ']' selector_list_2 .
+		= '(' exp_list ')' selector_list_2 .
+		= '(' ')' .
+		= '^' selector_list_2 .
+		= .
+> .
+selector_list_2	= <
+		= '.' Ident selector_list_2 .
+		= '[' exp_list ']' selector_list_2 .
+		= '(' exp_list ')' selector_list_2 .
+		= '(' ')' .
+		= '^' selector_list_2 .
+		= .
+> .
+exp_list	= expression expression_list .
+expression_list	= <
+		= expression_list ',' expression .
+		= .
+> .
+expression	= <
+		= expression '=' expression .
+		= expression '#' expression .
+		= expression '<' expression .
+		= expression '<=' expression .
+		= expression '>' expression .
+		= expression '>=' expression .
+		= expression 'IN' expression .
+		= expression IS expression .
+		= '+' expression PREC MONOP .
+		= '-' expression PREC MONOP .
+		= expression '+' expression .
+		= expression '-' expression .
+		= expression OR expression .
+		= expression '*' expression .
+		= expression '/' expression .
+		= expression DIV expression .
+		= expression MOD expression .
+		= expression '&' expression .
+		= '~' expression .
+		= IntConst .
+		= RealConst .
+		= CharConst .
+		= StringConst .
+		= NIL .
+		= procedure_call .
+		= '(' expression ')' .
+		= '{' '}' .
+		= '{' element_list '}' .
+> .
+element_list	= <
+		= element .
+		= element_list ',' element .
+> .
+element		= <
+		= expression .
+		= expression '..' expression .
+> .
+statement	= <
+		= designator ':=' expression .
+		= procedure_call .
+		= IF expression THEN statement_sequence elsif_list else_option_2 'END' .
+		= CASE expression OF case_list else_option_2 'END' .
+		= WHILE expression DO statement_sequence elsif_list_2 'END' .
+		= REPEAT statement_sequence UNTIL expression .
+		= LOOP statement_sequence 'END' .
+		= WITH qualident ':' qualident DO statement_sequence 'END' .
+		= EXIT .
+		= RETURN .
+		= RETURN expression .
+		= .
+> .
+procedure_call	= designator .
+statement_sequence	= statement statement_list .
+statement_list	= <
+		= statement_list ';' statement .
+		= .
+> .
+elsif_list	= <
+		= elsif_list ELSIF expression THEN statement_sequence .
+		= .
+> .
+elsif_list_2	= <
+		= elsif_list_2 ELSIF expression DO statement_sequence .
+		= .
+> .
+else_option_2	= <
+		= ELSE statement_sequence .
+		= .
+> .
+case_list	= <
+		= case_list '|' case .
+		= case .
+> .
+case		= <
+		= case_label_list ':' statement_sequence .
+		= .
+> .
+case_label_list	= <
+		= case_label_list ',' case_labels .
+		= case_labels .
+> .
+case_labels	= <
+		= expression .
+		= expression '..' expression .
+> .
+procedure_declaration	= <
+		= procedure_heading ';' procedure_body Ident ';' .
+		= PROCEDURE '^' Ident ';' .
+		= PROCEDURE '^' Ident formal_parameters ';' .
+> .
+procedure_heading	= <
+		= PROCEDURE Ident .
+		= PROCEDURE Ident formal_parameters .
+		= PROCEDURE '*' Ident .
+		= PROCEDURE '*' Ident formal_parameters .
+> .
+procedure_body	= <
+		= declaration_sequence 'END' .
+		= declaration_sequence 'BEGIN' statement_sequence 'END' .
+> .
+declaration_sequence	= const_part type_part var_part procedure_declaration_list .
+const_part	= <
+		= CONST constant_declaration_list .
+		= .
+> .
+type_part	= <
+		= TYPE type_declaration_list .
+		= .
+> .
+var_part	= <
+		= VAR variable_declaration_list .
+		= .
+> .
+procedure_declaration_list	= <
+		= procedure_declaration_list procedure_declaration .
+		= .
+> .
+constant_declaration_list	= <
+		= constant_declaration_list constant_declaration ';' .
+		= .
+> .
+type_declaration_list	= <
+		= type_declaration_list type_declaration ';' .
+		= .
+> .
+variable_declaration_list	= <
+		= variable_declaration_list variable_declaration ';' .
+		= .
+> .
+formal_parameters	= <
+		= '(' ')' .
+		= '(' ')' ':' qualident .
+		= '(' f_p_section_list ')' .
+		= '(' f_p_section_list ')' ':' qualident .
+> .
+f_p_section_list	= <
+		= f_p_section_list ';' f_p_section .
+		= f_p_section .
+> .
+f_p_section	= <
+		= ident_list ':' formal_type .
+		= VAR ident_list ':' formal_type .
+> .
+formal_type	= open_array_list qualident .
+open_array_list	= <
+		= open_array_list ARRAY OF .
+		= .
+> .
+definition_part	= DEFINITION Ident ';' import_part definition_sequence 'END' Ident '.' .
+import_part	= <
+		= 'IMPORT' import import_list ';' .
+		= .
+> .
+import_list	= <
+		= import_list ',' import .
+		= .
+> .
+import		= <
+		= Ident .
+		= Ident ':' Ident .
+> .
+definition_sequence	= const_part type_part var_part procedure_heading_list .
+procedure_heading_list	= <
+		= procedure_heading_list procedure_heading ';' .
+		= .
+> .
+implementation_part	= IMPLEMENTATION Ident ';' import_part declaration_sequence begin_part close_part 'END' Ident '.' .
+begin_part	= <
+		= 'BEGIN' statement_sequence .
+		= .
+> .
+close_part	= <
+		= 'CLOSE' statement_sequence .
+		= .
+> .
+
+Ident		: [Ident  : tIdent	] { Ident	:= NoIdent	; } .
+IntConst	: [Integer: INTEGER	] { Integer	:= 0		; } .
+RealConst	: [Real	  : REAL	] { Real	:= 0.0		; } .
+CharConst	: [Char	  : CHAR	] { Char	:= '?'		; } .
+StringConst	: [String : tStringRef	] { String	:= {
+			AssignEmpty (Word); String := PutString (Word);}; } .

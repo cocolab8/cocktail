@@ -1,0 +1,15 @@
+"":   1,  1: fred identifier
+"":   1,  6: "£250 for Barney" string
+"":   1, 24: numberten tag
+"":   2,  1: £10 pounds
+"":   2, 11: 99 decimal
+"":   3,  1: jim identifier
+"":   3,  5: end tag
+"":   4,  4: Upper: {ABCABC!"£$%}
+"":   4, 18: 5H=abcde
+"":   4, 33: Lower: [lkadq124()*£]
+"":   5,  3: 3X=123
+"":   5,  8: 4H=AB£1
+"":   8,  9: eight tag
+"":   9,  7: line9col7 identifier
+7

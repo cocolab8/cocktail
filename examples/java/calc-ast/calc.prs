@@ -1,0 +1,87 @@
+PARSER
+
+EXPORT {
+   public Tree tree;
+}
+
+LOCAL {
+   int base = 10;
+}
+
+BEGIN {
+#ifdef YYDEBUG
+   yyDebug = true;
+#endif
+}
+
+PREC
+        LEFT    '+'     '-'
+        LEFT    '*'     '/'     '%'
+        LEFT    UNARY
+
+PROPERTY INPUT
+
+
+RULE
+
+list    = stats {=>{
+		tree = stats:Stats.reverse ();
+		try {
+		   tree.forall (new Tree.ProcTree () {
+		      public void proc (Tree yyt) {
+		         try {yyt.execute ();}
+		         catch (java.io.IOException e) {throw new MaskedException (e);}
+		      }
+		   });
+		} catch (MaskedException e) {
+		   throw (java.io.IOException)(e.exception);
+		}
+	};}.
+
+stats   = <
+	= { Stats := new Tree.NoStat (); }.
+	= stats expr '.' { Stats := new Tree.Print (stats:Stats, expr:value); }.
+	= stats LETTER '=' expr '.'
+		{ Stats := new Tree.Assign (stats:Stats, LETTER:value, expr:value); }.
+>.
+
+expr    = <
+	= '(' expr ')'		{ value := expr:value; }.
+	= l:expr '+' r:expr	{ value := new Tree.Add (l:value, r:value); }.
+        = l:expr '-' r:expr	{ value := new Tree.Subtract (l:value, r:value); }.
+        = l:expr '*' r:expr	{ value := new Tree.Multiply (l:value, r:value); }.
+        = l:expr '/' r:expr	{ value := new Tree.Divide (l:value, r:value); }.
+        = l:expr '%' r:expr	{ value := new Tree.Remainder (l:value, r:value); }.
+        = '-' PREC UNARY expr	{ value := new Tree.UMinus (expr:value); }.
+        = LETTER		{ value := new Tree.Var (LETTER:value); }.
+        = number		{ value := new Tree.Number (number:value); }.
+>.
+
+number  = <
+	= DIGIT			{ value := {
+				    if (DIGIT:value == 0) base = 8;
+				    else base = 10; value = DIGIT:value;}; }.
+
+        = number DIGIT		{ value := base * number:value + DIGIT:value; }.
+>.
+
+MODULE Att
+PROPERTY SYN
+DECLARE
+  stats		= [ Stats: Tree.Statements ] .
+  expr		= [ value: Tree.Expression ].
+  number	= [ value ].
+END Att
+
+MODULE Terminals
+
+PROPERTY INPUT
+
+RULE
+
+DIGIT	: $5 [ value: int ] { value := 99; }.
+
+LETTER	: [ value: int ] { value := 25; }.
+
+END Terminals
+

@@ -1,0 +1,24 @@
+awk '
+/Alloc/	{ line_no ++;
+	  n ++; size [n] = $2; addr [n] = $3; line [n] = line_no; next;
+	}
+/Free/	{ line_no ++;
+	  for (i = 1; i <= n; i ++)
+	    if (addr [i] == $3) {
+	      if (size [i] != $2)
+	        print line_no ": at", $3, "alloc", size [i], "free", $2, "(" line [i] ")";
+	      size [i] = size [n]; addr [i] = addr [n]; line [i] = line [n];
+	      n --; next;
+	    }
+	  print line_no ": not allocated:", $3, "size", $2;
+	  next;
+	}
+	{ line_no ++;
+	  next;
+	}
+END	{
+	  for (i = 1; i <= n; i ++) {
+	    print "not freed:", addr [i], "size", size [i], "(" line [i] ")";
+	  }
+	}
+'
