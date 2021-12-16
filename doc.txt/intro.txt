@@ -148,60 +148,9 @@ toolbox  as first document.  Those who want to learn about the toolbox and its
 contents in general are referred to the document "A Toolbox for Compiler  Con-
 struction".
 
-This  document  gives  an  overview about the documentation of the toolbox. It
-describes how the individual tools interact in order to  generate  a  complete
-compiler.  The  general  structure  of a makefile to control the tools is dis-
-cussed.
-
-1.  Document Overview
-
-The documentation of the Karlsruhe Toolbox for Compiler Construction  consists
-of  separate  user's  manuals  for  the individual tools and additional papers
-describing further aspects  such  as  implementation  details,  examples,  and
-applications.  The  documents  are written in English. For a few of them there
-are German versions as well.
-
-1.1.  Format
-
-The documents exist in several formats:  Postscript,  PDF,  troff,  and  ASCII
-text.   The  documentation  of the Java version of the library reuse is in the
-format HTML.  The formats are distinguished by the file  suffixes  .ps,  .pdf,
-.me,  .txt, and The Postscript files are formatted for two paper sizes: letter
-format and A4 format.  The troff files need processing with  the  program  pic
-and  the device independent version of troff called ditroff using me-macros or
-even better the GNU version of troff using commands such as
-
-
-    pic | tbl | eqn | ditroff -me
-    groff -pte -me | lpr
-
-Depending on the format, the documents are located in the directories  doc.ps,
-doca4.ps,  doc.pdf,  doc.me, doc.txt, or doc.html. The pictures are missing in
-the ASCII text format because of obvious limitations.
-
-1.2.  Documents
-
-Table 1 lists the titles of the documents, the corresponding filenames  (with-
-out suffix), and the number of pages.
-
-1.3.  Outlines
-
-In the following the contents of every document is outlined shortly:
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                                                             2
-
+This document gives an overview about the documentation of the toolbox. It de-
+scribes how the individual tools interact in order to generate a complete com-
+piler. The general structure of a makefile to control the tools is discussed.
 
 
                             Table 1: Document Set
@@ -239,14 +188,63 @@ In the following the contents of every document is outlined shortly:
 |faq       | Cocktail FAQ - Frequently Asked Questions                             |   9   |
 +----------+-----------------------------------------------------------------------+-------+
 
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                             2
+
+
+1.  Document Overview
+
+The  documentation of the Karlsruhe Toolbox for Compiler Construction consists
+of separate user's manuals for the individual tools and additional papers  de-
+scribing  further aspects such as implementation details, examples, and appli-
+cations. The documents are written in English. For a few  of  them  there  are
+German versions as well.
+
+1.1.  Format
+
+The  documents  exist  in  several  formats: Postscript, PDF, troff, and ASCII
+text.  The documentation of the Java version of the library reuse  is  in  the
+format  HTML.   The  formats are distinguished by the file suffixes .ps, .pdf,
+.me, .txt, and The Postscript files are formatted for two paper sizes:  letter
+format  and  A4  format.  The troff files need processing with the program pic
+and the device independent version of troff called ditroff using me-macros  or
+even better the GNU version of troff using commands such as
+
+    pic | tbl | eqn | ditroff -me
+    groff -pte -me | lpr
+
+Depending  on the format, the documents are located in the directories doc.ps,
+doca4.ps, doc.pdf, doc.me, doc.txt, or doc.html. The pictures are  missing  in
+the ASCII text format because of obvious limitations.
+
+1.2.  Documents
+
+Table  1 lists the titles of the documents, the corresponding filenames (with-
+out suffix), and the number of pages.
+
+1.3.  Outlines
+
+In the following the contents of every document is outlined shortly:
+
 Toolbox Introduction
-     An  introduction  for effective users of the toolbox which should be con-
-     sulted first.  It gives an overview about the document set and  describes
+     An introduction for effective users of the toolbox which should  be  con-
+     sulted  first.  It gives an overview about the document set and describes
      how the tools interact.
 
 A Tool Box for Compiler Construction
      Explains the contents of the toolbox and the underlying design. The indi-
-     vidual tools are sketched shortly and some  application  experiences  are
+     vidual  tools  are  sketched shortly and some application experiences are
      reported.
 
 Werkzeuge fuer den Uebersetzerbau
@@ -254,7 +252,9 @@ Werkzeuge fuer den Uebersetzerbau
 
 Reusable Software - A Collection of Modula-2-Modules
      Describes a library of useful routines written in Modula-2 which are ori-
-     ented towards compiler construction. The output of some tools has  to  be
+     ented  towards  compiler construction. The output of some tools has to be
+     linked with this library.
+
 
 
 
@@ -269,22 +269,19 @@ Reusable Software - A Collection of Modula-2-Modules
                                                                              3
 
 
-     linked with this library.
-
 Reusable Software - A Collection of C-Modules
-     Describes  a  library  of useful routines written in C which are oriented
-     towards compiler construction. The output of some tools has to be  linked
+     Describes a library of useful routines written in C  which  are  oriented
+     towards  compiler construction. The output of some tools has to be linked
      with this library.
 
 Reusable Software - A Java Package
-     A  brief  description  of a useful package of reusable classes written in
+     A brief description of a useful package of reusable  classes  written  in
      Java is given. The package is oriented towards compiler construction.
 
 Preprocessors
-     Describes several preprocessors for the extraction of scanner  specifica-
-     tions  out  of  parser  specifications and for the conversion of lex/yacc
-     input to rex/lark input or vice versa. There are eight preprocessors:
-
+     Describes  several preprocessors for the extraction of scanner specifica-
+     tions out of parser specifications and for the conversion of lex/yacc in-
+     put to rex/lark input or vice versa. There are eight preprocessors:
 
          lpp -z    converts an attribute grammar to lark input
          rpp  combines a grammar and a scanner specification to rex input
@@ -304,23 +301,26 @@ Selected Examples of Scanner Specifications
      logical cases.
 
 Efficient Generation of Table-Driven Scanners
-     Describes  internals of the scanner generator rex like the so-called tun-
-     nel automaton and the linear time algorithm for constant regular  expres-
+     Describes internals of the scanner generator rex like the so-called  tun-
+     nel  automaton and the linear time algorithm for constant regular expres-
      sions.                                                                    |
 
 Lark - A LALR(2) Parser Generator With Backtracking
-     The  user's manual for the LR(1) and LALR(2) parser generator lark.  This |
-     tool is able to parse non-LR(k) languages with its backtracking  capabil-
+     The user's manual for the LR(1) and LALR(2) parser generator lark.   This |
+     tool  is able to parse non-LR(k) languages with its backtracking capabil-
      ity.
 
 The Parser Generator Ell
-     The  user's manual for the LL(1) parser generator ell (recursive descent)
+     The user's manual for the LL(1) parser generator ell (recursive  descent)
      and the grammar transformation tool bnf.  It describes the input language
      common to both tools.
 
 Lalr - A Generator for Efficient Parsers
-     Describes  details of the implementation of the parsers generated by lark
-     and lalr (a predecessor of lark)  and  further  outstanding  features  of
+     Describes details of the implementation of the parsers generated by  lark
+     and  lalr  (a  predecessor  of  lark) and further outstanding features of
+     these tools.
+
+
 
 
 
@@ -335,48 +335,46 @@ Lalr - A Generator for Efficient Parsers
                                                                              4
 
 
-     these tools.
-
 Efficient and Comfortable Error Recovery in Recursive Descent Parsers
-     Describes  the  implementation of the parsers generated by ell especially
+     Describes the implementation of the parsers generated by  ell  especially
      with respect to automatic error recovery.
 
 Generators for High-Speed Front-Ends
-     A summary of the highlights of the scanner and parser  generators  and  a
+     A  summary  of  the highlights of the scanner and parser generators and a
      comparison to lex/yacc and flex/bison.
 
 Automatische Generierung effizienter Compiler
      A German version of the previous document.
 
 Ast - A Generator for Abstract Syntax Trees
-     The  user's manual of ast, a tool supporting the definition and manipula-
+     The user's manual of ast, a tool supporting the definition and  manipula-
      tion of attributed trees and graphs.
 
 Tool Support for Data Structures
      Also describes ast, but less precise than the previous document.
 
 Ag - An Attribute Evaluator Generator
-     The user's manual of ag, a generator for evaluators of ordered  attribute
+     The  user's manual of ag, a generator for evaluators of ordered attribute
      grammars (OAG).
 
 Object-Oriented Attribute Grammars
-     Also  describes  ag,  like  the  previous  document, with emphasis on the
-     object-oriented features.
+     Also describes ag, like the previous document, with emphasis on  the  ob-
+     ject-oriented features.
 
 Multiple Inheritance in Object-Oriented Attribute Grammars
-     Extends the object-oriented attribute grammars described in the  previous
+     Extends  the object-oriented attribute grammars described in the previous
      document to multiple inheritance.
 
 Object-Orientation in the Cocktail Toolbox
-     Surveyes  the aspects of object-orientation that appear at the specifica-
+     Surveyes the aspects of object-orientation that appear at the  specifica-
      tion level of several tools.
 
 Puma - A Generator for the Transformation of Attributed Trees
-     The user's manual of puma, a tool for the  transformation  of  attributed
+     The  user's  manual  of puma, a tool for the transformation of attributed
      trees which is based on pattern matching and unification.
 
 Transformation of Attributed Trees Using Pattern Matching
-     Also  describes  puma  using a more introductory style and compares it to
+     Also describes puma using a more introductory style and  compares  it  to
      similar tools.
 
 Specification of a MiniLAX-Interpreter
@@ -384,9 +382,11 @@ Specification of a MiniLAX-Interpreter
      LAX.
 
 Semantic Analysis Cookbook - Part 1: Declarations
-     A  collection  of  recipes  for  name  analysis  and  symbol tables using
-     attribute grammars.
+     A collection of recipes for name analysis and symbol tables using  attri-
+     bute grammars.
 
+Cocktail FAQ - Frequently Asked Questions
+     This  list answers some frequently asked questions primarily with respect
 
 
 
@@ -401,13 +401,10 @@ Semantic Analysis Cookbook - Part 1: Declarations
                                                                              5
 
 
-Cocktail FAQ - Frequently Asked Questions
-     This list answers some frequently asked questions primarily with  respect
      to efficiency.
 
-For  readers intending to use the tools the following documents are of primary
+For readers intending to use the tools the following documents are of  primary
 interest:
-
 
     intro       Toolbox Introduction
     toolbox     A Tool Box for Compiler Construction
@@ -421,34 +418,37 @@ interest:
 
 Of secondary interest might be:
 
-
     reuseC      Reusable Software - A Collection of C-Modules
     reuseJava   Reusable Software - A Java Package
     reuse       Reusable Software - A Collection of Modula-2-Modules
     scanex      Selected Examples of Scanner Specifications
     faq         Cocktail FAQ - Frequently Asked Questions
 
-The other documents either describe internals of the tools or are excerpts  of
+The  other documents either describe internals of the tools or are excerpts of
 the above.
 
 2.  Generating a Compiler
 
-A  compiler  usually  consists of several modules where every module handles a
-certain task.  The toolbox gives very much freedom for the design  of  a  com-
+A compiler usually consists of several modules where every  module  handles  a
+certain  task.   The  toolbox gives very much freedom for the design of a com-
 piler and supports various structures.
 
-     Figure  1  presents our preferred compiler structure. In the right column
-are the main modules that constitute a compiler. The left column contains  the
-necessary  specifications. In between there are the tools which are controlled
-by the specifications and which produce the modules. The arrows represent  the
-data  flow  in  part during generation time and in part during run time of the
+     Figure 1 presents our preferred compiler structure. In the  right  column
+are  the main modules that constitute a compiler. The left column contains the
+necessary specifications. In between there are the tools which are  controlled
+by  the specifications and which produce the modules. The arrows represent the
+data flow in part during generation time and in part during run  time  of  the
 compiler.
 
-     In principle the compiler model works as follows: A scanner and a  parser
-read  the  source, check the concrete syntax, and construct an abstract syntax
+     In  principle the compiler model works as follows: A scanner and a parser
+read the source, check the concrete syntax, and construct an  abstract  syntax
 tree. They may perform several normalizations, simplifications, or transforma-
-tions  in order to keep the abstract syntax relatively simple. Semantic analy-
-sis is performed on the abstract syntax tree. Optionally attributes  for  code
+tions in order to keep the abstract syntax relatively simple. Semantic  analy-
+sis  is  performed on the abstract syntax tree. Optionally attributes for code
+generation may be computed. Afterwards the abstract syntax tree is transformed
+into  an intermediate representation. The latter is the input of the code gen-
+erator which finally produces the machine code.
+
 
                           Fig. 1: Compiler Structure
 
@@ -467,22 +467,18 @@ sis is performed on the abstract syntax tree. Optionally attributes  for  code
                                                                              6
 
 
-generation may be computed. Afterwards the abstract syntax tree is transformed
-into an intermediate representation. The latter is the input of the code  gen-
-erator which finally produces the machine code.
-
-     The  picture  in Figure 1 is relatively abstract by just listing the main
-tasks of a compiler.  Every task is generated by a  tool  out  of  a  separate
-specification  which  is  oriented towards the problem at hand. The generation
+     The picture in Figure 1 is relatively abstract by just listing  the  main
+tasks  of  a  compiler.   Every  task is generated by a tool out of a separate
+specification which is oriented towards the problem at  hand.  The  generation
 processes seem to be independent of each other.
 
      For a real user a more closer look than the one of Figure 1 is necessary.
-Figure  2  describes the actual interaction among the tools.  It describes the
-data flow starting from specifications and ending in an  executable  compiler.
+Figure 2 describes the actual interaction among the tools.  It  describes  the
+data  flow  starting from specifications and ending in an executable compiler.
 Boxes represent files, circles represent tools, and arrows show the data flow.
-The input specifications are contained in the files  at  the  left-hand  side.
-The  tools  generate modules containing source code in the implementation lan-
-guages C or Modula-2. This modules are shown at  the  right-hand  side.  Every
+The  input  specifications  are  contained in the files at the left-hand side.
+The tools generate modules containing source code in the  implementation  lan-
+guages  C  or  Modula-2.  This modules are shown at the right-hand side. Every
 module conists of two files with the following suffixes:
 
 implementation language C:
@@ -493,11 +489,15 @@ implementation language Modula-2:
      .md     definition module
      .mi     implementation module
 
-     Files  outside the left- and right-hand side columns contain intermediate
+     Files outside the left- and right-hand side columns contain  intermediate
 data.  The various kinds of information in the files are distinguished by dif-
 ferent file types as explained in Table 2.  The few dependencies between tools
-are shown by the data flow via intermediate  files.   These  dependencies  are
-explained in more detail in the next sections.
+are shown by the data flow via intermediate files.  These dependencies are ex-
+plained in more detail in the next sections.
+
+
+
+
 
 
 
@@ -559,32 +559,32 @@ explained in more detail in the next sections.
 
 2.1.  Scanning and Parsing
 
-Three  parser generators are contained in the toolbox.  First, the user has to
-decide which one to use.  I will not start arguing here in favour  of  one  or
-the  other  grammar class.  If I am asked, I recommend to use LALR(1) grammars
-and the tool lark.  The parser generators  and  their  common  input  language
+Three parser generators are contained in the toolbox.  First, the user has  to
+decide  which  one  to use.  I will not start arguing here in favour of one or
+the other grammar class.  If I am asked, I recommend to use  LALR(1)  grammars
+and  the  tool  lark.   The  parser generators and their common input language
 (types .lrk and .ell) are documented in "The Parser Generator Ell" and "Lark - |
-A LALR(2) Parser Generator With Backtracking".  From the  syntactic  point  of
-view  all  three  tools  understand  almost  the same input language. The only
-incompatibility concerns the different notation to access attributes. From the
-semantic  point  of  view  there are of course differences with respect to the
-grammar class and the kind of attribution evaluable  during  parsing.  Whereas
-lark  accepts  LALR(2) grammars and is able to evaluate an S-attribution (SAG)
+A  LALR(2)  Parser  Generator With Backtracking".  From the syntactic point of
+view all three tools understand almost the same input language. The  only  in-
+compatibility  concerns  the different notation to access attributes. From the
+semantic point of view there are of course differences  with  respect  to  the
+grammar  class  and  the kind of attribution evaluable during parsing. Whereas
+lark accepts LALR(2) grammars and is able to evaluate an  S-attribution  (SAG)
 during parsing, ell accepts LL(1) grammars and is able to evaluate an L-attri-
 bution (LAG). All, lark and ell generate a module with the default name Parser
-which serves as basename for the file name, too. This module name can be  cho-
-sen  freely  using an appropriate directive in the input of the parser genera-
-tors.  Both parser generators can also supply a module called Errors. This  is
-a  simple prototype for handling error messages that just prints the messages.
-However, it is recommended to use the more comfortable module Errors from  the
+which  serves as basename for the file name, too. This module name can be cho-
+sen freely using an appropriate directive in the input of the  parser  genera-
+tors.   Both parser generators can also supply a module called Errors. This is
+a simple prototype for handling error messages that just prints the  messages.
+However,  it is recommended to use the more comfortable module Errors from the
 library reuse.  In simple cases, this module is just linked to the user's pro-
-gram. If modifications are necessary this module should  be  copied  from  the
-library  along  with  its companion module Position into the user's directory.
-The module Position defines a data structure to describe source positions.
+gram. If modifications are necessary this module should be copied from the li-
+brary along with its companion module Position into the user's directory.  The
+module Position defines a data structure to describe source positions.
 
-     The scanner generator rex and its input language (type  .rex)  are  docu-
-mented  in  "Rex  -  A  Scanner  Generator".   rex generates a module with the
-default name Scanner which serves as basename for the file name, too.  rex can
+     The  scanner  generator  rex and its input language (type .rex) are docu-
+mented in "Rex - A Scanner Generator".  rex generates a module  with  the  de-
+fault  name  Scanner which serves as basename for the file name, too.  rex can
 
 
 
@@ -599,57 +599,57 @@ default name Scanner which serves as basename for the file name, too.  rex can
                                                                              8
 
 
-also  generate  a  module  called  Source which isolates the task of providing
-input for the scanner.  By default it reads  from  a  file  or  from  standard
-input.  Again, it is recommended to use the module Source from the library re-
-use.  In simple cases, this module is just linked to the  user's  program.  If
-modifications  are  necessary or the module should provide input for a scanner
-with a name different to Scanner then this module must be requested from rex.
+also generate a module called Source which isolates the task of providing  in-
+put  for the scanner.  By default it reads from a file or from standard input.
+Again, it is recommended to use the module Source from the library reuse.   In
+simple  cases,  this module is just linked to the user's program. If modifica-
+tions are necessary or the module should provide input for a  scanner  with  a
+name different to Scanner then this module must be requested from rex.
 
-     It is possible to combine several scanners and parsers  either  generated
+     It  is  possible to combine several scanners and parsers either generated
 by lark or ell into one program as long as different module names are chosen.
 
      If the parser generator ell is to be used, the inputs of rex and ell have
-to be specified in the languages directly understood  by  these  tools  (types
-.rex  and  .ell).   If the LALR(2) parser generator lark is to be used, a more
-comfortable kind of input language is available. It  is  possible  to  extract
+to  be  specified  in  the languages directly understood by these tools (types
+.rex and .ell).  If the LALR(2) parser generator lark is to be  used,  a  more
+comfortable  kind  of  input  language is available. It is possible to extract
 most of a scanner specification out of a parser grammar.  Therefore it is rec-
-ommended to specify scanner and parser by two files of types  .scn  and  .prs.
-Further  advantageous of this approach are that concrete syntax, abstract syn-
-tax, and attribute grammar are written in one common language (types .prs  and
-.cg)  and that the attribution to be evaluated during parsing is written using
+ommended  to  specify  scanner and parser by two files of types .scn and .prs.
+Further advantageous of this approach are that concrete syntax, abstract  syn-
+tax,  and attribute grammar are written in one common language (types .prs and
+.cg) and that the attribution to be evaluated during parsing is written  using
 named attributes.  This attribution is checked for completeness and whether it
 obeys the SAG property.  The language to describe concrete and abstract syntax
 is documented in: "Ast - A Generator for Abstract Syntax Trees".  The addition
-of  attribute declarations and attribute computations are documented in: "Ag -
-An Attribute Evaluator Generator".  The use of  this  language  especially  as
-input  for  scanner  and  parser generation is documented in: "Preprocessors".
-This document also describes the preprocessors lpp and rpp. lpp converts input
-of  type  .prs  into  input  directly  understood  by  lark (type .lrk) and it
-extracts most of the scanner specification which is written on the  intermedi-
-ate  file  named  Scanner.rpp.  The rex preprocessor rpp merges this extracted
-scanner specification with additional parts provided by the user  (type  .scn)
-and  produces  input directly understood by rex. The language in files of type
-.scn is an extension of the input language of rex. These extensions  are  also
-documented in: "Preprocessors".
+of attribute declarations and attribute computations are documented in: "Ag  -
+An Attribute Evaluator Generator".  The use of this language especially as in-
+put for scanner and parser generation is documented in: "Preprocessors".  This
+document  also  describes the preprocessors lpp and rpp. lpp converts input of
+type .prs into input directly understood by lark (type .lrk) and  it  extracts
+most  of  the  scanner specification which is written on the intermediate file
+named Scanner.rpp. The rex preprocessor  rpp  merges  this  extracted  scanner
+specification  with additional parts provided by the user (type .scn) and pro-
+duces input directly understood by rex. The language in files of type .scn  is
+an  extension  of  the  input language of rex. These extensions are also docu-
+mented in: "Preprocessors".
 
 2.2.  Semantic Analysis and Transformation
 
 Our preferred compiler design constructs an abstract syntax tree as underlying
-data structure for semantic analysis. Afterwards this tree is  usually  mapped
+data  structure  for semantic analysis. Afterwards this tree is usually mapped
 to some kind of intermediate language by a phase termed transformation.
 
-     The  syntax tree as central data structure is managed by the module Tree.
-This module is generated by the tool ast out of a specification in a  file  of
-type  .cg.   The  tool  ast and its input language are documented in: "Ast - A
-Generator for Abstract Syntax Trees".  The construction of  trees  is  usually
-done  during parsing. It is specified within the semantic actions of the input
+     The syntax tree as central data structure is managed by the module  Tree.
+This  module  is generated by the tool ast out of a specification in a file of
+type .cg.  The tool ast and its input language are documented  in:  "Ast  -  A
+Generator  for  Abstract  Syntax Trees".  The construction of trees is usually
+done during parsing. It is specified within the semantic actions of the  input
 of the parser generator.
 
-     One possibility for the specification of semantic analysis is the use  of
-an  attribute  grammar.  The tool ag generates an evaluator module (named Eval
-by default) out of an attribute grammar. As this tool also  has  to  know  the
-structure  of  the  abstract  syntax tree both, ast and ag usually process the
+     One  possibility for the specification of semantic analysis is the use of
+an attribute grammar.  The tool ag generates an evaluator module  (named  Eval
+by  default)  out  of  an attribute grammar. As this tool also has to know the
+structure of the abstract syntax tree both, ast and  ag  usually  process  the
 
 
 
@@ -766,23 +766,23 @@ structure  of  the  abstract  syntax tree both, ast and ag usually process the
 |rSrcMem  | storage for source code                                  | y |    -     |
 +---------+----------------------------------------------------------+---+----------+
 
-same input file.  The tool ag and the extensions to the input language of  ast
+same  input file.  The tool ag and the extensions to the input language of ast
 for attribute grammars are documented in: "Ag - An Attribute Evaluator Genera-
 tor".
 
-     The optimizer of ag decides how to  implement  attributes.  They  can  be
-either stored in the tree or in global stacks or global variables. This infor-
-mation is communicated from ag to ast in files of type .ST. (This  feature  is
-not implemented yet.)
+     The  optimizer of ag decides how to implement attributes. They can be ei-
+ther stored in the tree or in global stacks or global variables. This informa-
+tion is communicated from ag to ast in files of type .ST. (This feature is not
+implemented yet.)
 
-     The  tool  puma  generates transformers (named Trafo by default) that map
-attributed trees to arbitrary output. As this tool also has to know about  the
-structure  of the tree this information is communicated from ast to puma via a
-file of type .TS. The tool puma and its  input  language  are  documented  in:
+     The tool puma generates transformers (named Trafo by  default)  that  map
+attributed  trees to arbitrary output. As this tool also has to know about the
+structure of the tree this information is communicated from ast to puma via  a
+file  of  type  .TS.  The  tool puma and its input language are documented in:
 "Puma - A Generator for the Transformation of Attributed Trees".
 
-     The  names  of the modules produced by the tools ast, ag, and puma can be
-controlled by directives in the input. Figure 2 uses  the  default  names.  By
+     The names of the modules produced by the tools ast, ag, and puma  can  be
+controlled  by  directives  in  the input. Figure 2 uses the default names. By
 
 
 
@@ -797,36 +797,36 @@ controlled by directives in the input. Figure 2 uses  the  default  names.  By
                                                                             11
 
 
-chosing  different  names  it  is  possible  to  combine several tree modules,
-attribute evaluators, and transformers in one program.
+chosing different names it is possible to combine several tree modules, attri-
+bute evaluators, and transformers in one program.
 
 2.3.  Compiling and Linking
 
-All the source modules generated by the tools have to be compiled  by  a  com-
-piler  appropriate for the implementation language (C or Modula-2). Additional
+All  the  source  modules generated by the tools have to be compiled by a com-
+piler appropriate for the implementation language (C or Modula-2).  Additional
 hand-written modules can be added as necessary. In Figure 2 the module Support
-indicates  this  possibility.  In the last step all binaries have to be linked
-together with a few modules of the library reuse to yield an  executable  com-
+indicates this possibility.  In the last step all binaries have to  be  linked
+together  with  a few modules of the library reuse to yield an executable com-
 piler.
 
-     The  use  of modules from the library reuse depends on the implementation
-language and the used tools. There is a C  and  a  Modula-2  version  of  this
-library.   The  Modula-2 version is documented in: "Reusable Software - A Col-
-lection of Modula-2-Modules".  The C version is documented in: "Reusable Soft-
-ware  - A Collection of C-Modules".  Table 3 lists the library units needed by
-tool generated modules.  Additionally the user may engage further modules from
-this  library  for  various tasks.  Table 4 lists the modules that might be of
-interest. The right-hand side columns describe the availability of the modules
-with regard to the implementation language.
+     The use of modules from the library reuse depends on  the  implementation
+language  and  the used tools. There is a C and a Modula-2 version of this li-
+brary.  The Modula-2 version is documented in: "Reusable Software - A  Collec-
+tion of Modula-2-Modules".  The C version is documented in: "Reusable Software
+- A Collection of C-Modules".  Table 3 lists the library units needed by  tool
+generated modules.  Additionally the user may engage further modules from this
+library for various tasks.  Table 4 lists the modules that might be of  inter-
+est. The right-hand side columns describe the availability of the modules with
+regard to the implementation language.
 
 3.  Makefile
 
-The  tools  of the toolbox are conveniently controlled by an appropriate make- |
-file.  This eases the invocation of the tools  and  minimizes  the  amount  of
-regeneration  after changes. Figure 2 can be used to derive a makefile because
-it describes most of the dependencies among tools  and  files.  The  following
-makefiles control the generation of compilers for the example language MiniLAX |
-in the target languages C, C++, and Modula-2.  The annotated specification  of
+The tools of the toolbox are conveniently controlled by an  appropriate  make- |
+file.   This eases the invocation of the tools and minimizes the amount of re-
+generation after changes. Figure 2 can be used to derive a makefile because it
+describes  most of the dependencies among tools and files. The following make-
+files control the generation of compilers for the example language MiniLAX  in |
+the  target  languages  C,  C++, and Modula-2.  The annotated specification of
 this language is documented in: "Specification of a MiniLAX-Interpreter".  The
 makefiles are examples a user can start with.
 
@@ -837,17 +837,17 @@ damental structure presented in Figure 2:
 
 -    The transformation module is called ICode instead of Trafo.
 
--    The  hand-written  modules  are  called ICodeInt and minilax.  The latter
+-    The hand-written modules are called ICodeInt  and  minilax.   The  latter
      constitutes the main program.
 
--    There are two support modules  for  semantic  analysis  called  Defs  and
+-    There  are  two  support  modules  for  semantic analysis called Defs and
      Types. These are generated by tools (ast/cg and puma), too.
 
 3.1.  C
 
-The  macro  LIB  specifies  the  directory where the compiled library reuse is
-located. The name of this library is libreuse.a.  The -I  flag  in  the  macro
-CFLAGS  specifies  the directory where the header files of the library modules
+The macro LIB specifies the directory where the compiled library reuse is  lo-
+cated.  The  name  of  this  library  is libreuse.a.  The -I flag in the macro
+CFLAGS specifies the directory where the header files of the  library  modules
 are located.
 
 
@@ -864,8 +864,8 @@ are located.
 
 
      The first command (target minilax) is for linking the compiled modules to
-an  executable compiler. The succeeding entries describe the dependencies dur-
-ing the generation phase and the invocation of the  tools.   The  dependencies |
+an executable compiler. The succeeding entries describe the dependencies  dur-
+ing  the  generation  phase and the invocation of the tools.  The dependencies |
 before the target clean are those needed during compilation.                   |
 
 
@@ -973,14 +973,14 @@ clean:
 
 3.2.  C++                                                                      |
 
-The  macro  LIB  specifies  the  directory where the compiled library reuse is |
-located. The name of this library is librucpp.a.  The -I  flag  in  the  macro |
-CFLAGS  specifies  the directory where the header files of the library modules |
+The macro LIB specifies the directory where the compiled library reuse is  lo- |
+cated.  The  name  of  this  library  is librucpp.a.  The -I flag in the macro |
+CFLAGS specifies the directory where the header files of the  library  modules |
 are located.                                                                   |
 
      The first command (target minilax) is for linking the compiled modules to |
-an  executable compiler. The succeeding entries describe the dependencies dur- |
-ing the generation phase and the invocation of the  tools.   The  dependencies |
+an executable compiler. The succeeding entries describe the dependencies  dur- |
+ing  the  generation  phase and the invocation of the tools.  The dependencies |
 
 
 
@@ -1064,11 +1064,11 @@ clean:                                                                         |
 3.3.  Modula-2
 
 The first command (target minilax) describes compilation and linking using the
-GMD Modula-2 compiler MOCKA. This compiler does its  own  dependency  analysis
-among  the  sources.  Therefore  the  makefile does not contain any dependency
-descriptions between sources and binaries.  The -d flag of the  compiler  call
-mc  specifies  the  directory where the library  reuse is located. The rest of
-the makefile describes the generation phase and the invocation of the tools.
+GMD  Modula-2  compiler  MOCKA. This compiler does its own dependency analysis
+among the sources. Therefore the makefile does not contain any dependency  de-
+scriptions  between sources and binaries.  The -d flag of the compiler call mc
+specifies the directory where the library  reuse is located. The rest  of  the
+makefile describes the generation phase and the invocation of the tools.
 
 SOURCES = Scanner.md Scanner.mi Parser.md Parser.mi \
           Tree.md Tree.mi Semantic.md Semantic.mi \
@@ -1130,10 +1130,10 @@ clean:
 Contents
 
         Abstract ........................................................    1
-1.      Document Overview ...............................................    1
-1.1.    Format ..........................................................    1
-1.2.    Documents .......................................................    1
-1.3.    Outlines ........................................................    1
+1.      Document Overview ...............................................    2
+1.1.    Format ..........................................................    2
+1.2.    Documents .......................................................    2
+1.3.    Outlines ........................................................    2
 2.      Generating a Compiler ...........................................    5
 2.1.    Scanning and Parsing ............................................    7
 2.2.    Semantic Analysis and Transformation ............................    8
