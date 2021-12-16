@@ -67,8 +67,8 @@ The commands for building Cocktail on Linux are as follows:
     [github](https://github.com/cocolab8/cocktail) and unpack:
 
     ```
-    unzip cocktail.zip
-    cd cocktail
+    unzip cocktail-master.zip
+    cd cocktail-master
     ```
 
 2. Run config script:
@@ -101,13 +101,13 @@ The commands for building Cocktail on Linux are as follows:
     make install DIR=/usr/local
     ```
 
-5. Optionally, test the Cocktail tools.
+5. Optionally, test the Cocktail tools:
 
     ```
     make test DIR=/usr/local
     ```
 
-6. Optionally, clean the file tree.
+6. Optionally, clean the file tree:
 
     ```
     make clean
@@ -207,8 +207,8 @@ follows:
 2. Unpack the source code archive of Cocktail:
 
     ```
-    7z x cocktail.zip
-    cd cocktail
+    7z x cocktail-master.zip
+    cd cocktail-master
     ```
 
 3. Compile the Cocktail tools (build from the C sources):
