@@ -7,6 +7,12 @@ Version 2110:
 made the Cocktail Toolbox open source under the Apache License, Version 2.0
 added building of the Cocktail Toolbox on Windows
 
+Estra
+-----
+
+added handling of CR LF as line terminator
+(Note: Estra is not part of Cocktail, but used to build Ell)
+
 
 Version 1907:
 =============
