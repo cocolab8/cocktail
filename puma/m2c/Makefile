@@ -50,8 +50,8 @@ image	: puma puma.sh $(LIB)/puma
 
 # installation directories
 
-$(LIB)/puma:	$(LIB)
-	sh -c "if test ! -d $(LIB)/puma; then mkdir -p $(LIB)/puma; else true; fi"
+$(LIB)/puma:
+	mkdir -p $(LIB)/puma
 
 lint	:
 	lint -I$(REUSE) -u *.c

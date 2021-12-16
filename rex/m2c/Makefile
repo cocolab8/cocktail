@@ -39,8 +39,8 @@ image	:	rex rex.sh $(LIB)/rex
 
 # installation directories
 
-$(LIB)/rex	: $(LIB)
-	sh -c "if test ! -d $(LIB)/rex; then mkdir -p $(LIB)/rex; else true; fi"
+$(LIB)/rex:
+	mkdir -p $(LIB)/rex
 
 lint	:
 	lint -I$(REUSE) -u *.c

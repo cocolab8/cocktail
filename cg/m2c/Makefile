@@ -59,8 +59,8 @@ image	:	cg cg.sh lpp $(LIB)/cg
 
 # installation directories
 
-$(LIB)/cg:	$(LIB)
-	sh -c "if test ! -d $(LIB)/cg; then mkdir -p $(LIB)/cg; else true; fi"
+$(LIB)/cg:
+	mkdir -p $(LIB)/cg
 
 lint	:
 	lint -I$(REUSE) -u *.c

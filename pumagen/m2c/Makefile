@@ -38,8 +38,8 @@ $(REUSE)/libreuse.a:
 
 # installation directories
 
-$(LIB)/pumagen:	$(LIB)
-	sh -c "if test ! -d $(LIB)/pumagen; then mkdir -p $(LIB)/pumagen; else true; fi"
+$(LIB)/pumagen:
+	mkdir -p $(LIB)/pumagen
 
 lint	:
 	lint -I$(REUSE) -u *.c

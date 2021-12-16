@@ -16,8 +16,8 @@ image:	bnf.cat bnf.syn $(LIB)/lalr
 
 # installation directories
 
-$(LIB)/lalr:	$(LIB)
-	sh -c "if test ! -d $(LIB)/lalr; then mkdir -p $(LIB)/lalr; else true; fi"
+$(LIB)/lalr:
+	mkdir -p $(LIB)/lalr
 
 bnf.cat:	bnf.1
 	nroff -man < bnf.1 | $(FIX_NROFF) | col > bnf.cat

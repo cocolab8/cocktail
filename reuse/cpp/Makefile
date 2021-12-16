@@ -51,7 +51,7 @@ install:	$(REUSE) $(INCDIR)
 image:	install
 
 $(INCDIR):
-	sh -c "if test ! -d $(INCDIR); then mkdir -p $(INCDIR); else true; fi"
+	mkdir -p $(INCDIR)
 
 clean:	test-clean
 	rm -f *.o *Drv *Dr rMemoryD StringMD rStringD rGetoptD rGetoptLD \

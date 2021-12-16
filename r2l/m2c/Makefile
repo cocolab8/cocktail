@@ -31,8 +31,8 @@ image:	r2l r2l.sh $(LIB)/r2l
 
 # installation directories
 
-$(LIB)/r2l:	$(LIB)
-	sh -c "if test ! -d $(LIB)/r2l; then mkdir -p $(LIB)/r2l; else true; fi"
+$(LIB)/r2l:
+	mkdir -p $(LIB)/r2l
 
 lint	:
 	lint -I$(REUSE) -u *.c

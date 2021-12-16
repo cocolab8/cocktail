@@ -78,7 +78,7 @@ install:	$(LIB_FILE) $(INC_DIR)
 image:	install
 
 $(INC_DIR):
-	sh -c "if test ! -d $(INC_DIR); then mkdir -p $(INC_DIR); else true; fi"
+	mkdir -p $(INC_DIR)
 
 # exploring gettext
 

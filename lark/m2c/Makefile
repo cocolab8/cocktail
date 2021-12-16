@@ -40,8 +40,8 @@ image	:	lark lark.sh $(LIB)/lark
 
 # installation directories
 
-$(LIB)/lark:	$(LIB)
-	sh -c "if test ! -d $(LIB)/lark; then mkdir -p $(LIB)/lark; else true; fi"
+$(LIB)/lark:
+	mkdir -p $(LIB)/lark
 
 lint	:
 	lint -I$(REUSE) -u *.c

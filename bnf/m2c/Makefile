@@ -34,8 +34,8 @@ image	:	bnf bnf.sh $(LIB)/lalr
 
 # installation directories
 
-$(LIB)/lalr:	$(LIB)
-	sh -c "if test ! -d $(LIB)/lalr; then mkdir -p $(LIB)/lalr; else true; fi"
+$(LIB)/lalr:
+	mkdir -p $(LIB)/lalr
 
 lint	:
 	lint -I$(FRONT) -I$(REUSE) -u *.c
