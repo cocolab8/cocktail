@@ -464,18 +464,18 @@ clean_ex:
 	-cd examples/java/calc-lpp-package && $(MAKE) clean
 	-cd examples/java/integer-calc	&& $(MAKE) clean
 
-config:	config.in
-	autoconf config.in | \
-	sed -e 's;$$ac_aux_dir/install-sh;`pwd`/inst-sh;g' \
-	    -e 's;install-sh;inst-sh;g' \
-	    -e 's;CXX="gcc";CXX=":";' > config
-	chmod +x config
-
-config.status: config
-	config
-
-Makefile config.h: Makefile.in config.hin config.status
-	config.status
+#config:	config.in
+#	autoconf config.in | \
+#	sed -e 's;$$ac_aux_dir/install-sh;`pwd`/inst-sh;g' \
+#	    -e 's;install-sh;inst-sh;g' \
+#	    -e 's;CXX="gcc";CXX=":";' > config
+#	chmod +x config
+#
+#config.status: config
+#	config
+#
+#Makefile config.h: Makefile.in config.hin config.status
+#	config.status
 
 
 support: c_reuse c_common c_mpp c_estra c_mtc2
