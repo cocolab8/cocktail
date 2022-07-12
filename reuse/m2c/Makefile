@@ -20,8 +20,10 @@ libreuse.a	: $(OBJS)
 
 rSystem.o	: rSystem.h rSystem.c
 	mv StdIO.h StdIO.i
+	mv Strings.h Strings.i
 	$(CC) $(CFLAGS) -c rSystem.c
 	mv StdIO.i StdIO.h
+	mv Strings.i Strings.h
 
 SYSTEM_.o	:
 	mv StdIO.h StdIO.i
