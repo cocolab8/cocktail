@@ -2,7 +2,7 @@
 if [ -x /usr/bin/cpp ] ; then
   if [ `uname` = "Linux" ] ; then
     FLAG=-traditional
-    VERS=`gcc -dumpversion | \
+    VERS=`gcc -dumpfullversion | \
     sed -e 's/\([0-9]*\.[0-9]*\)\.[0-9]*/\1/' \
 	-e 's/\.\([0-9][0-9]\)/\1/' \
 	-e 's/\.\([0-9]\)/0\1/'`
