@@ -86,7 +86,7 @@ void get_put ()	/* this procedure has a side-effect */
   put_name (Attribute.string);
 }
 
-char v [256], w [256];
+char v [1024], w [1024];
 int i, l = 0;
 tStringRef r;
 }
@@ -104,7 +104,8 @@ DEFINE
   comment	= "/*" - {*} * "*" + (- {*/} - {*} * "*" +) * "/" .
   ToSkip	= ( {\ \t\n\f\r} | comment ) * .
 
-START Block Code Union RulePart Action String1 String2 Str2 Comment SubPart
+START Block Code Union RulePart Action String1 String2 Str2 Comment LineCmt
+      SubPart
 
 RULES
 
@@ -115,15 +116,15 @@ RULES
 				  { get_put (); return t_identifier; }
 #STD, RulePart# ' - {'\\\n} + '	: { get_put ();
 				    if (yyStartState == RulePart)
-				      put_token (Attribute.string, 0); 
+				      put_token (Attribute.string, 0);
 				    return t_identifier; }
 #STD, RulePart# ' \\ Octal + '	: { get_put ();
 				    if (yyStartState == RulePart)
-				      put_token (Attribute.string, 0); 
+				      put_token (Attribute.string, 0);
 				    return t_identifier; }
 #STD, RulePart# ' \\ ANY + '	: { get_put ();
 				    if (yyStartState == RulePart)
-				      put_token (Attribute.string, 0); 
+				      put_token (Attribute.string, 0);
 				    return t_identifier; }
 #STD, RulePart# Digit +		: { GetWord (v);
 				    Attribute.number = atoi (v);
@@ -140,6 +141,11 @@ RULES
 #STD# "%pure_parser"	: { return t_percent_pure_parser; }
 #STD# "%code"		: { return t_percent_code	; }
 #STD# "%destructor"	: { return t_percent_destructor	; }
+#STD# "%define"		: { return t_percent_define	; }
+#STD# "%lex-param"	: { return t_percent_lex_param	; }
+#STD# "%parse-param"	: { return t_percent_parse_param; }
+
+#STD# \.		: { return t_dot		; }
 
 #STD# "%union"		: { yyStart (Union); level = 0; l = 0;
 			    put_global (PutString (UNION1, strlen (UNION1))); }
@@ -148,7 +154,7 @@ RULES
 #Union# \r		: { l += GetWord (& v [l]); }
 #Union# \r ? \n		: { yyEol (0); l += GetWord (& v [l]);
 			    put_global (PutString (v, l)); l = 0; }
-#Union# \}		: { if (-- level) 
+#Union# \}		: { if (-- level)
 			      l += GetWord (& v [l]);
 			    else {
 			      put_global (PutString (v, l)); l = 0;
@@ -240,7 +246,9 @@ RULES
 #String2# \"		: { yyPrevious; l += GetWord (& v [l]); }
 
 #STD#    "/*"		: { yyStart (Comment); l = GetWord (v); }
+#STD#    "//"		: { yyStart (LineCmt); l = GetWord (v); }
 #Action# "/*"		: { yyStart (Comment); l += GetWord (& v [l]); }
+#Action# "//"		: { yyStart (LineCmt); l += GetWord (& v [l]); }
 #Comment# - {\n\r*} + | {*\r} : { l += GetWord (& v [l]); }
 #Comment# \r ? \n	: { yyEol (0); l += GetWord (& v [l]);
 			    if (yyPreviousStart == Action) {
@@ -255,6 +263,17 @@ RULES
 			      v [l ++] = '\n'; put_global (PutString (v, l));
 			      l = 0;
 			    } }
+#LineCmt# - {\n\r} +	: { l += GetWord (& v [l]); }
+#LineCmt# \r ? \n	: { yyEol (0); l += GetWord (& v [l]);
+			    if (yyPreviousStart == Action) {
+			      put_action  (PutString (v, l)); l = 0;
+			    } else if (yyPreviousStart == STD) {
+			      put_global  (PutString (v, l)); l = 0;
+			    } else {
+			      append_text (PutString (v, l)); l = 0;
+			    }
+			    yyPrevious;
+			  }
 
 #String1, String2, Comment# ANY : { v [l ++] = '\\'; l += GetWord (& v [l]); }
 
@@ -274,6 +293,7 @@ RULES
 
 /* scan white space and comments between rules */
 #RulePart# "/*"		: { yyStart (Comment); l += GetWord (& v [l]); }
+#RulePart# "//"		: { yyStart (LineCmt); l += GetWord (& v [l]); }
 #RulePart# " " +	: { l += GetWord (& v [l]); }
 #RulePart# \t		: { yyTab; v [l ++] = '\t'; }
 #RulePart# \r ? \n	: { yyEol (0); l += GetWord (& v [l]);

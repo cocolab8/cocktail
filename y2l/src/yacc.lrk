@@ -65,10 +65,13 @@ TOKEN
 	code_block
 	'%%'
 	'%code'
+	'%define'
 	'%destructor'
 	'%expect'
 	'%left'
+	'%lex-param'
 	'%nonassoc'
+	'%parse-param'
 	'%prec'
 	'%pure_parser'
 	'%right'
@@ -76,6 +79,7 @@ TOKEN
 	'%token'
 	'%type'
 	'%union'
+	'.'
 	','
 	':'
 	';'
@@ -97,6 +101,10 @@ def	: '%start' identifier opt_semicolon { start_symbol = $2.Scan.string; }
 	| '%pure_parser' opt_semicolon
 	| '%code' identifier code_block opt_semicolon
 	| '%destructor' code_block tag opt_semicolon
+	| '%define' identifier opt_semicolon
+	| '%define' identifier '.' identifier opt_semicolon
+	| '%lex-param' code_block opt_semicolon
+	| '%parse-param' code_block opt_semicolon
 	.
 
 rword	: '%token'	{ rword = 0; }

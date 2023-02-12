@@ -70,27 +70,27 @@ typedef unsigned short	yyStateRange	;
 typedef unsigned short	yySymbolRange	;
 typedef struct { yyStateRange Check, Next; } yytComb;
 typedef enum {
-yyNT0_intern	= 27,
-yyNTspec	= 28,
-yyNTspec_4	= 29,
-yyNTspec_3	= 30,
-yyNTspec_2	= 31,
-yyNTspec_1	= 32,
-yyNTdef	= 33,
-yyNTrword	= 34,
-yyNTtag	= 35,
-yyNTnlist	= 36,
-yyNTnmno	= 37,
-yyNTopt_semicolon	= 38,
-yyNTopt_string	= 39,
-yyNTrules	= 40,
-yyNTrules_1	= 41,
-yyNTrule	= 42,
-yyNTrule_2	= 43,
-yyNTrule_1	= 44,
-yyNTrbody	= 45,
-yyNTact	= 46,
-yyNTprec	= 47
+yyNT0_intern	= 31,
+yyNTspec	= 32,
+yyNTspec_4	= 33,
+yyNTspec_3	= 34,
+yyNTspec_2	= 35,
+yyNTspec_1	= 36,
+yyNTdef	= 37,
+yyNTrword	= 38,
+yyNTtag	= 39,
+yyNTnlist	= 40,
+yyNTnmno	= 41,
+yyNTopt_semicolon	= 42,
+yyNTopt_string	= 43,
+yyNTrules	= 44,
+yyNTrules_1	= 45,
+yyNTrule	= 46,
+yyNTrule_2	= 47,
+yyNTrule_1	= 48,
+yyNTrbody	= 49,
+yyNTact	= 50,
+yyNTprec	= 51
 } yytNonterminal;
 typedef struct { short yyMode; rbool yyActions, yyMessages; } yytControl;
 
@@ -98,21 +98,21 @@ static	yytControl	yyControl	= { 0, rtrue, rtrue };
 	rbool		Debug	= rfalse;
 
 # define yyFirstTerminal	0
-# define yyLastTerminal	26
-# define yySetSize	27
+# define yyLastTerminal	30
+# define yySetSize	31
 # define yyFirstSymbol	0
-# define yyLastSymbol	47
-# define yyTTableMax	161
-# define yyNTableMax	82
+# define yyLastSymbol	51
+# define yyTTableMax	181
+# define yyNTableMax	89
 # define yyStartState	1
 # define yyFirstReadState	1
-# define yyLastReadState	44
-# define yyFirstReadReduceState	45
-# define yyLastReadReduceState	56
-# define yyFirstReduceState	57
-# define yyLastReduceState	102
-# define yyLastState	102
-# define yyLastStopState	57
+# define yyLastReadState	52
+# define yyFirstReadReduceState	53
+# define yyLastReadReduceState	64
+# define yyFirstReduceState	65
+# define yyLastReduceState	114
+# define yyLastState	114
+# define yyLastStopState	65
 # define YYTDefault
 # define YYNDefault
 
@@ -206,6 +206,10 @@ static	char *		yyRule		[] = { 0,
 "def : '%pure_parser' opt_semicolon ",
 "def : '%code' identifier code_block opt_semicolon ",
 "def : '%destructor' code_block tag opt_semicolon ",
+"def : '%define' identifier opt_semicolon ",
+"def : '%define' identifier '.' identifier opt_semicolon ",
+"def : '%lex-param' code_block opt_semicolon ",
+"def : '%parse-param' code_block opt_semicolon ",
 "rword : '%token' ",
 "rword : '%left' ",
 "rword : '%right' ",
@@ -249,10 +253,13 @@ static	char *		yyRule		[] = { 0,
 "code_block",
 "%%",
 "%code",
+"%define",
 "%destructor",
 "%expect",
 "%left",
+"%lex-param",
 "%nonassoc",
+"%parse-param",
 "%prec",
 "%pure_parser",
 "%right",
@@ -260,6 +267,7 @@ static	char *		yyRule		[] = { 0,
 "%token",
 "%type",
 "%union",
+".",
 ",",
 ":",
 ";",
@@ -271,87 +279,96 @@ static	char *		yyRule		[] = { 0,
 ""
 };
 static	yytComb		yyTComb		[yyTTableMax + 1] = {
-{   2,   57}, {  30,   86}, {  25,   24}, {  17,   23}, {  30,   53}, 
-{  18,   24}, {  30,   86}, {  30,   86}, {  30,   86}, {  30,   86}, 
-{  30,   86}, {  30,   86}, {  38,   43}, {  30,   86}, {  30,   86}, 
-{  30,   86}, {  30,   86}, {  30,   86}, {  30,   86}, {  30,   86}, 
-{  25,   31}, {  30,   86}, {  14,   78}, {  14,   78}, {  14,   78}, 
-{  14,   78}, {  14,   78}, {  14,   78}, {   9,   16}, {  14,   78}, 
-{  14,   78}, {  14,   78}, {  14,   78}, {  14,   78}, {  14,   78}, 
-{  31,   24}, {   5,   13}, {  14,   78}, {  14,   17}, {  10,   84}, 
-{  10,   84}, {  10,   84}, {  10,   84}, {  10,   84}, {  10,   84}, 
-{  12,   19}, {  10,   84}, {  10,   84}, {  10,   84}, {  10,   84}, 
-{  10,   84}, {  10,   84}, {   4,   62}, {  11,   78}, {  10,   52}, 
-{   1,   63}, {   1,   63}, {   1,   63}, {   1,   63}, {   1,   63}, 
-{   1,   63}, {  24,   30}, {   1,   63}, {   1,   63}, {   1,   63}, 
-{   1,   63}, {   1,   63}, {   1,   63}, {   3,    4}, {   3,    5}, 
-{   3,    6}, {   3,    7}, {   3,   47}, {   3,   49}, {  11,   17}, 
-{   3,    8}, {   3,   48}, {   3,    9}, {   3,   46}, {   3,   50}, 
-{   3,   10}, {  32,   97}, {  32,   97}, {  32,   97}, {   7,   15}, 
-{  29,   59}, {   6,   14}, {  32,   97}, {  28,   93}, {  28,   93}, 
-{  28,   93}, {  29,   45}, {  13,   21}, {  32,   97}, {  28,   93}, 
-{  41,  102}, {  41,   54}, {  41,  102}, {  19,   90}, {  33,   36}, 
-{  28,   93}, {  41,  102}, {  32,   97}, {  27,   94}, {  26,   32}, 
-{  32,   97}, {  32,   97}, {  41,   38}, {  43,   99}, {  28,   93}, 
-{  43,   99}, {  23,   51}, {  28,   93}, {  28,   93}, {  43,   99}, 
-{  44,   91}, {  41,  102}, {  44,   91}, {  39,   55}, {   0,    0}, 
-{  41,  102}, {  44,   91}, {  40,   88}, {   0,    0}, {  40,   88}, 
-{  20,   61}, {   0,    0}, {  20,   27}, {  40,   88}, {  43,   99}, 
-{   0,    0}, {  20,   61}, {  43,   39}, {  43,   99}, {   0,    0}, 
-{  42,   92}, {  44,   56}, {  42,   92}, {   0,    0}, {   0,    0}, 
-{  44,   91}, {  42,   92}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {  40,   88}, {   0,    0}, {   0,    0}, 
-{  20,   28}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
+{   2,   65}, {  38,   98}, {  32,   31}, {  39,   31}, {  38,   61}, 
+{   5,   16}, {  38,   98}, {  38,   98}, {  38,   98}, {  38,   98}, 
+{  38,   98}, {  38,   98}, {  38,   98}, {  38,   98}, {  38,   98}, 
+{  24,   31}, {  38,   98}, {  38,   98}, {  38,   98}, {  38,   98}, 
+{  38,   98}, {  38,   98}, {  23,   30}, {  38,   98}, {  32,   39}, 
+{  38,   98}, {  18,   90}, {  18,   90}, {  18,   90}, {  18,   90}, 
+{  18,   90}, {  18,   90}, {  18,   90}, {  18,   90}, {  18,   90}, 
+{  12,   22}, {  18,   90}, {  18,   90}, {  18,   90}, {  18,   90}, 
+{  18,   90}, {  18,   90}, {   6,   17}, {  28,   37}, {  46,   51}, 
+{  18,   90}, {  18,   23}, {  37,   96}, {  37,   96}, {  37,   96}, 
+{  37,   96}, {  37,   96}, {  37,   96}, {  37,   96}, {  37,   96}, 
+{  37,   96}, {   4,   70}, {  37,   96}, {  37,   96}, {  37,   96}, 
+{  37,   96}, {  37,   96}, {  37,   96}, {  15,   25}, {  31,   38}, 
+{   8,   19}, {  37,   60}, {   3,    4}, {   3,    5}, {   3,    6}, 
+{   3,    7}, {   3,    8}, {   3,   55}, {   3,    9}, {   3,   57}, 
+{   3,   10}, {  10,   21}, {   3,   11}, {   3,   56}, {   3,   12}, 
+{   3,   54}, {   3,   58}, {   3,   13}, {   1,   71}, {   1,   71}, 
+{   1,   71}, {   1,   71}, {   1,   71}, {   1,   71}, {   1,   71}, 
+{   1,   71}, {   1,   71}, {   9,   20}, {   1,   71}, {   1,   71}, 
+{   1,   71}, {   1,   71}, {   1,   71}, {   1,   71}, {  35,  105}, 
+{  35,  105}, {  35,  105}, {  16,   27}, {   7,   18}, {  36,   67}, 
+{  35,  105}, {  40,  109}, {  40,  109}, {  40,  109}, {  26,   69}, 
+{  36,   53}, {  26,   34}, {  40,  109}, {  17,   28}, {  35,  105}, 
+{  26,   69}, {  14,   90}, {  49,  114}, {  49,   62}, {  49,  114}, 
+{  51,  111}, {  40,  109}, {  51,  111}, {  49,  114}, {  35,  105}, 
+{  41,   44}, {  51,  111}, {  35,  105}, {  35,  105}, {  25,  102}, 
+{  34,  106}, {  40,  109}, {  49,   46}, {  33,   40}, {  40,  109}, 
+{  40,  109}, {  30,   59}, {  52,  103}, {  26,   35}, {  52,  103}, 
+{  47,   63}, {  14,   23}, {  49,  114}, {  52,  103}, {   0,    0}, 
+{  51,  111}, {  49,  114}, {   0,    0}, {  51,   47}, {  51,  111}, 
+{  48,  100}, {  50,  104}, {  48,  100}, {  50,  104}, {   0,    0}, 
+{   0,    0}, {  48,  100}, {  50,  104}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {  52,   64}, {   0,    0}, {   0,    0}, 
+{   0,    0}, {  52,  103}, {   0,    0}, {   0,    0}, {   0,    0}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{  42,   92}, {   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {  48,  100}, 
+{  50,  104}, {   0,    0}, 
 };
 static	yytNComb	yyNComb		[yyNTableMax - yyLastTerminal] = {
-{   0,    0}, {   1,    2}, {   0,    0}, {  20,   29}, {   0,    0}, 
+{   0,    0}, {   1,    2}, {   0,    0}, {  26,   36}, {   0,    0}, 
 {   1,    3}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{  25,   80}, {  25,   67}, {  18,   25}, {  18,   79}, {   0,    0}, 
-{  20,   89}, {   3,   64}, {   3,   11}, {   0,    0}, {  37,   96}, 
-{  37,   42}, {  35,   40}, {  41,   44}, {  43,  100}, {  28,   34}, 
-{  32,   35}, {  10,   66}, {  14,   22}, {  29,   58}, {  30,   83}, 
-{  11,   18}, {  22,   71}, {  21,   70}, {  34,   37}, {  16,   65}, 
-{  36,   41}, {  31,   81}, {  15,   68}, {  12,   20}, {   4,   12}, 
-{  24,   82}, {   8,   69}, {  27,   33}, {  19,   26}, {   0,    0}, 
+{  32,   92}, {  32,   75}, {  24,   32}, {  24,   91}, {   0,    0}, 
+{  26,  101}, {   0,    0}, {   0,    0}, {   0,    0}, {  45,  108}, 
+{  45,   50}, {   3,   72}, {   3,   14}, {  43,   48}, {  49,   52}, 
+{  51,  112}, {  40,   43}, {  35,   42}, {  37,   81}, {  18,   29}, 
+{  36,   66}, {  38,   95}, {  14,   24}, {  42,   45}, {  39,   93}, 
+{  29,   79}, {  13,   74}, {  11,   77}, {  27,   78}, {  22,   73}, 
+{  21,   83}, {  19,   76}, {   4,   15}, {  15,   26}, {  31,   94}, 
+{  20,   82}, {  44,   49}, {  34,   41}, {  25,   33}, {  17,   80}, 
 {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
-{   0,    0}, 
+{   0,    0}, {   0,    0}, {   0,    0}, {   0,    0}, 
 };
 static	yytComb *	yyTBasePtr	[yyLastReadState + 1] = { 0,
-& yyTComb [  49], & yyTComb [   0], & yyTComb [  62], & yyTComb [  50], 
-& yyTComb [  35], & yyTComb [  81], & yyTComb [  81], & yyTComb [   0], 
-& yyTComb [  27], & yyTComb [  33], & yyTComb [  52], & yyTComb [  43], 
-& yyTComb [  87], & yyTComb [  16], & yyTComb [   0], & yyTComb [   0], 
-& yyTComb [   2], & yyTComb [   4], & yyTComb [  78], & yyTComb [ 125], 
-& yyTComb [   0], & yyTComb [   0], & yyTComb [  88], & yyTComb [  58], 
-& yyTComb [   1], & yyTComb [  84], & yyTComb [  83], & yyTComb [  88], 
-& yyTComb [  85], & yyTComb [   0], & yyTComb [  34], & yyTComb [  81], 
-& yyTComb [  79], & yyTComb [   0], & yyTComb [   0], & yyTComb [   0], 
-& yyTComb [   0], & yyTComb [  11], & yyTComb [  92], & yyTComb [ 122], 
-& yyTComb [  95], & yyTComb [ 135], & yyTComb [ 108], & yyTComb [ 115], 
+& yyTComb [  77], & yyTComb [   0], & yyTComb [  61], & yyTComb [  54], 
+& yyTComb [   4], & yyTComb [  41], & yyTComb [  98], & yyTComb [  62], 
+& yyTComb [  87], & yyTComb [  71], & yyTComb [   0], & yyTComb [  34], 
+& yyTComb [   0], & yyTComb [ 115], & yyTComb [  61], & yyTComb [  97], 
+& yyTComb [  91], & yyTComb [  20], & yyTComb [   0], & yyTComb [   0], 
+& yyTComb [   0], & yyTComb [   0], & yyTComb [  21], & yyTComb [  14], 
+& yyTComb [ 105], & yyTComb [ 109], & yyTComb [   0], & yyTComb [  42], 
+& yyTComb [   0], & yyTComb [ 109], & yyTComb [  61], & yyTComb [   1], 
+& yyTComb [ 109], & yyTComb [ 106], & yyTComb [  99], & yyTComb [ 104], 
+& yyTComb [  41], & yyTComb [   0], & yyTComb [   2], & yyTComb [ 106], 
+& yyTComb [ 101], & yyTComb [   0], & yyTComb [   0], & yyTComb [   0], 
+& yyTComb [   0], & yyTComb [  43], & yyTComb [ 110], & yyTComb [ 150], 
+& yyTComb [ 117], & yyTComb [ 151], & yyTComb [ 120], & yyTComb [ 137], 
 };
 static	yytNComb *	yyNBasePtr	[yyLastReadState + 1] = { 0,
-& yyNComb [ -27], & yyNComb [ -27], & yyNComb [ -17], & yyNComb [   8], 
-& yyNComb [ -27], & yyNComb [ -27], & yyNComb [ -27], & yyNComb [   3], 
-& yyNComb [ -27], & yyNComb [ -12], & yyNComb [  -5], & yyNComb [  -2], 
-& yyNComb [ -27], & yyNComb [  -8], & yyNComb [  -1], & yyNComb [  -4], 
-& yyNComb [ -27], & yyNComb [ -24], & yyNComb [   2], & yyNComb [ -27], 
-& yyNComb [  -6], & yyNComb [  -7], & yyNComb [ -27], & yyNComb [   1], 
-& yyNComb [ -27], & yyNComb [ -27], & yyNComb [  -2], & yyNComb [ -19], 
-& yyNComb [  -1], & yyNComb [ -10], & yyNComb [  -1], & yyNComb [ -20], 
-& yyNComb [ -27], & yyNComb [ -12], & yyNComb [ -26], & yyNComb [ -10], 
-& yyNComb [ -27], & yyNComb [ -27], & yyNComb [ -27], & yyNComb [ -27], 
-& yyNComb [ -25], & yyNComb [ -27], & yyNComb [ -23], & yyNComb [ -27], 
+& yyNComb [ -31], & yyNComb [ -31], & yyNComb [ -16], & yyNComb [   7], 
+& yyNComb [ -31], & yyNComb [ -31], & yyNComb [ -31], & yyNComb [ -31], 
+& yyNComb [ -31], & yyNComb [ -31], & yyNComb [  -5], & yyNComb [ -31], 
+& yyNComb [  -6], & yyNComb [  -7], & yyNComb [  -1], & yyNComb [ -31], 
+& yyNComb [   7], & yyNComb [ -10], & yyNComb [  -1], & yyNComb [   3], 
+& yyNComb [  -2], & yyNComb [  -3], & yyNComb [ -31], & yyNComb [ -28], 
+& yyNComb [   3], & yyNComb [ -31], & yyNComb [  -4], & yyNComb [ -31], 
+& yyNComb [  -7], & yyNComb [ -31], & yyNComb [   1], & yyNComb [ -31], 
+& yyNComb [ -31], & yyNComb [  -1], & yyNComb [ -20], & yyNComb [  -3], 
+& yyNComb [ -14], & yyNComb [ -12], & yyNComb [  -7], & yyNComb [ -23], 
+& yyNComb [ -31], & yyNComb [ -16], & yyNComb [ -28], & yyNComb [  -3], 
+& yyNComb [ -31], & yyNComb [ -31], & yyNComb [ -31], & yyNComb [ -31], 
+& yyNComb [ -27], & yyNComb [ -31], & yyNComb [ -25], & yyNComb [ -31], 
 };
 # ifdef YYTDefault
 static	unsigned short	yyTDefault	[yyLastReadState + 1] = { 0,
-    0,     0,     0,     0,     0,     0,     0,    10,     0,     0, 
-    0,     0,     0,     0,    10,    10,     0,     0,     0,     0, 
-   10,    10,     0,    30,    10,     0,     0,     0,     0,     0, 
-    0,     0,     0,    32,    41,    32,    41,     0,     0,    44, 
-   43,    44,     0,     0, 
+    0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
+   37,     0,    37,     0,     0,     0,    37,     0,    37,    37, 
+   37,    37,     0,     0,     0,     0,    37,     0,    37,     0, 
+   38,    37,     0,     0,     0,     0,     0,     0,     0,     0, 
+    0,    40,    49,    40,    49,     0,     0,    52,    51,    52, 
+    0,     0, 
 };
 # endif
 # ifdef YYNDefault
@@ -359,18 +376,19 @@ static	unsigned short	yyNDefault	[yyLastReadState + 1] = { 0,
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
-    0,     0,     0,     0,    37,     0,     0,     0,     0,     0, 
-   37,     0,     0,     0, 
+    0,     0,     0,     0,     0,     0,     0,     0,     0,     0, 
+    0,     0,    45,     0,     0,     0,     0,     0,    45,     0, 
+    0,     0, 
 };
 # endif
 # if ! defined NO_RECOVER | defined YYDEC_TABLE | defined YYCSTree
 static	unsigned char	yyLength	[yyLastReduceState - yyFirstReduceState
 							+ 1] = {
     2,     6,     0,     1,     0,     0,     0,     2,     3,     2, 
-    4,     3,     2,     4,     4,     1,     1,     1,     1,     1, 
-    3,     0,     1,     2,     3,     2,     3,     0,     1,     0, 
-    1,     5,     2,     0,     5,     4,     0,     0,     2,     2, 
-    0,     2,     2,     3,     2,     0, 
+    4,     3,     2,     4,     4,     3,     5,     3,     3,     1, 
+    1,     1,     1,     1,     3,     0,     1,     2,     3,     2, 
+    3,     0,     1,     0,     1,     5,     2,     0,     5,     4, 
+    0,     0,     2,     2,     0,     2,     2,     3,     2,     0, 
 };
 # endif
 # if ! defined NO_RECOVER | defined YYDEC_TABLE
@@ -384,6 +402,10 @@ yyNTspec_3,
 yyNTspec_2,
 yyNTspec_1,
 yyNTspec_1,
+yyNTdef,
+yyNTdef,
+yyNTdef,
+yyNTdef,
 yyNTdef,
 yyNTdef,
 yyNTdef,
@@ -426,11 +448,12 @@ yyNTprec,
 # endif
 # ifndef NO_RECOVER
 static	yySymbolRange	yyContinuation	[yyLastReadState + 1] = { 0,
-    6,     0,     6,     2,     1,     5,     3,     6,     1,     6, 
-    1,     2,     5,     6,     6,     6,     1,     1,    20,     0, 
-    6,     6,    23,     1,     6,    20,    20,     0,     0,     1, 
-    1,     0,    20,     0,     0,     0,     0,     1,    26,     0, 
-    0,     0,     0,     0, 
+    6,     0,     6,     2,     1,     1,     5,     3,     5,     5, 
+    6,     1,     6,     1,     2,     5,     6,     6,     6,     6, 
+    6,     6,     1,     1,    24,     0,     6,     1,     6,    27, 
+    1,     6,    24,    24,     0,     0,     6,     1,     1,     0, 
+   24,     0,     0,     0,     0,     1,    30,     0,     0,     0, 
+    0,     0, 
 };
 static	unsigned short	yyCondition	[yyLastState - yyLastReduceState + 1] =
 { 0,
@@ -438,13 +461,13 @@ static	unsigned short	yyCondition	[yyLastState - yyLastReduceState + 1] =
 # endif
 static	unsigned short	yyFinalToProd	[yyLastReadReduceState -
 						yyFirstReadReduceState + 2] = {
-   60,    72,    73,    74,    75,    76,    77,    85,    87,    95, 
-   98,   101, 
+   68,    84,    85,    86,    87,    88,    89,    97,    99,   107, 
+  110,   113, 
 0
 };
 static	unsigned short	yyStartLine	[yyLastStopState - yyFirstReduceState
 							+ 2] = { 0,
-59,
+63,
 };
 # ifdef YYaccDefault
 
@@ -1183,145 +1206,161 @@ static int yyParse
 	       }
 # endif
 switch (yyState) {
-case 57:
+case 65:
 YYACCEPT;
-case 58: /* spec : spec_1 '%%' spec_2 rules spec_3 spec_4 */
+case 66: /* spec : spec_1 '%%' spec_2 rules spec_3 spec_4 */
 yyDecrement (6) yySetNT (yyNTspec) {
-/* line 1191 "Parser.c" */
-} break;
-case 59: /* spec_4 : */
-yySetNT (yyNTspec_4) {
-/* line 1195 "Parser.c" */
-} break;
-case 60:
-case 45: /* spec_4 : '%%' */
-yyDecrement (1) yySetNT (yyNTspec_4) {
-/* line 1200 "Parser.c" */
-} break;
-case 61: /* spec_3 : */
-yySetNT (yyNTspec_3) {
-/* line 62 "-" */
-/* line 90 "yacc.lrk" */
- yacc_globals (); 
-/* line 1207 "Parser.c" */
-} break;
-case 62: /* spec_2 : */
-yySetNT (yyNTspec_2) {
-/* line 64 "-" */
-/* line 90 "yacc.lrk" */
- put_text (text_list); 
 /* line 1214 "Parser.c" */
 } break;
-case 63: /* spec_1 : */
-yySetNT (yyNTspec_1) {
+case 67: /* spec_4 : */
+yySetNT (yyNTspec_4) {
 /* line 1218 "Parser.c" */
 } break;
-case 64: /* spec_1 : spec_1 def */
-yyDecrement (2) yySetNT (yyNTspec_1) {
-/* line 1222 "Parser.c" */
+case 68:
+case 53: /* spec_4 : '%%' */
+yyDecrement (1) yySetNT (yyNTspec_4) {
+/* line 1223 "Parser.c" */
 } break;
-case 65: /* def : '%start' identifier opt_semicolon */
-yyDecrement (3) yySetNT (yyNTdef) {
-/* line 69 "-" */
-/* line 93 "yacc.lrk" */
- start_symbol = yyA [1].Scan.string; 
-/* line 1229 "Parser.c" */
+case 69: /* spec_3 : */
+yySetNT (yyNTspec_3) {
+/* line 66 "-" */
+/* line 94 "yacc.lrk" */
+ yacc_globals (); 
+/* line 1230 "Parser.c" */
 } break;
-case 66: /* def : '%union' opt_semicolon */
-yyDecrement (2) yySetNT (yyNTdef) {
-/* line 1233 "Parser.c" */
-} break;
-case 67: /* def : rword tag nlist opt_semicolon */
-yyDecrement (4) yySetNT (yyNTdef) {
+case 70: /* spec_2 : */
+yySetNT (yyNTspec_2) {
+/* line 68 "-" */
+/* line 94 "yacc.lrk" */
+ put_text (text_list); 
 /* line 1237 "Parser.c" */
 } break;
-case 68: /* def : '%expect' number opt_semicolon */
-yyDecrement (3) yySetNT (yyNTdef) {
+case 71: /* spec_1 : */
+yySetNT (yyNTspec_1) {
 /* line 1241 "Parser.c" */
 } break;
-case 69: /* def : '%pure_parser' opt_semicolon */
-yyDecrement (2) yySetNT (yyNTdef) {
+case 72: /* spec_1 : spec_1 def */
+yyDecrement (2) yySetNT (yyNTspec_1) {
 /* line 1245 "Parser.c" */
 } break;
-case 70: /* def : '%code' identifier code_block opt_semicolon */
+case 73: /* def : '%start' identifier opt_semicolon */
+yyDecrement (3) yySetNT (yyNTdef) {
+/* line 73 "-" */
+/* line 97 "yacc.lrk" */
+ start_symbol = yyA [1].Scan.string; 
+/* line 1252 "Parser.c" */
+} break;
+case 74: /* def : '%union' opt_semicolon */
+yyDecrement (2) yySetNT (yyNTdef) {
+/* line 1256 "Parser.c" */
+} break;
+case 75: /* def : rword tag nlist opt_semicolon */
 yyDecrement (4) yySetNT (yyNTdef) {
-/* line 1249 "Parser.c" */
+/* line 1260 "Parser.c" */
 } break;
-case 71: /* def : '%destructor' code_block tag opt_semicolon */
+case 76: /* def : '%expect' number opt_semicolon */
+yyDecrement (3) yySetNT (yyNTdef) {
+/* line 1264 "Parser.c" */
+} break;
+case 77: /* def : '%pure_parser' opt_semicolon */
+yyDecrement (2) yySetNT (yyNTdef) {
+/* line 1268 "Parser.c" */
+} break;
+case 78: /* def : '%code' identifier code_block opt_semicolon */
 yyDecrement (4) yySetNT (yyNTdef) {
-/* line 1253 "Parser.c" */
+/* line 1272 "Parser.c" */
 } break;
-case 72:
-case 46: /* rword : '%token' */
-yyDecrement (1) yySetNT (yyNTrword) {
-/* line 78 "-" */
-/* line 102 "yacc.lrk" */
- rword = 0; 
-/* line 1261 "Parser.c" */
+case 79: /* def : '%destructor' code_block tag opt_semicolon */
+yyDecrement (4) yySetNT (yyNTdef) {
+/* line 1276 "Parser.c" */
 } break;
-case 73:
-case 47: /* rword : '%left' */
-yyDecrement (1) yySetNT (yyNTrword) {
-/* line 80 "-" */
-/* line 103 "yacc.lrk" */
- rword = 1; put_oper (left_str); 
-/* line 1269 "Parser.c" */
+case 80: /* def : '%define' identifier opt_semicolon */
+yyDecrement (3) yySetNT (yyNTdef) {
+/* line 1280 "Parser.c" */
 } break;
-case 74:
-case 48: /* rword : '%right' */
-yyDecrement (1) yySetNT (yyNTrword) {
-/* line 82 "-" */
-/* line 104 "yacc.lrk" */
- rword = 1; put_oper (right_str); 
-/* line 1277 "Parser.c" */
+case 81: /* def : '%define' identifier '.' identifier opt_semicolon */
+yyDecrement (5) yySetNT (yyNTdef) {
+/* line 1284 "Parser.c" */
 } break;
-case 75:
-case 49: /* rword : '%nonassoc' */
-yyDecrement (1) yySetNT (yyNTrword) {
-/* line 84 "-" */
-/* line 105 "yacc.lrk" */
- rword = 1; put_oper (none_str); 
-/* line 1285 "Parser.c" */
+case 82: /* def : '%lex-param' code_block opt_semicolon */
+yyDecrement (3) yySetNT (yyNTdef) {
+/* line 1288 "Parser.c" */
 } break;
-case 76:
-case 50: /* rword : '%type' */
+case 83: /* def : '%parse-param' code_block opt_semicolon */
+yyDecrement (3) yySetNT (yyNTdef) {
+/* line 1292 "Parser.c" */
+} break;
+case 84:
+case 54: /* rword : '%token' */
 yyDecrement (1) yySetNT (yyNTrword) {
 /* line 86 "-" */
-/* line 106 "yacc.lrk" */
- rword = 2; type = 1; 
-/* line 1293 "Parser.c" */
-} break;
-case 77:
-case 51: /* tag : '<' identifier '>' */
-yyDecrement (3) yySetNT (yyNTtag) {
-/* line 89 "-" */
-/* line 109 "yacc.lrk" */
- tag = yyA [1].Scan.string; 
-/* line 1301 "Parser.c" */
-} break;
-case 78: /* tag : */
-yySetNT (yyNTtag) {
-/* line 91 "-" */
 /* line 110 "yacc.lrk" */
- tag = 0; 
+ rword = 0; 
+/* line 1300 "Parser.c" */
+} break;
+case 85:
+case 55: /* rword : '%left' */
+yyDecrement (1) yySetNT (yyNTrword) {
+/* line 88 "-" */
+/* line 111 "yacc.lrk" */
+ rword = 1; put_oper (left_str); 
 /* line 1308 "Parser.c" */
 } break;
-case 79: /* nlist : nmno */
-yyDecrement (1) yySetNT (yyNTnlist) {
-/* line 1312 "Parser.c" */
-} break;
-case 80: /* nlist : nlist nmno */
-yyDecrement (2) yySetNT (yyNTnlist) {
+case 86:
+case 56: /* rword : '%right' */
+yyDecrement (1) yySetNT (yyNTrword) {
+/* line 90 "-" */
+/* line 112 "yacc.lrk" */
+ rword = 1; put_oper (right_str); 
 /* line 1316 "Parser.c" */
 } break;
-case 81: /* nlist : nlist ',' nmno */
-yyDecrement (3) yySetNT (yyNTnlist) {
-/* line 1320 "Parser.c" */
+case 87:
+case 57: /* rword : '%nonassoc' */
+yyDecrement (1) yySetNT (yyNTrword) {
+/* line 92 "-" */
+/* line 113 "yacc.lrk" */
+ rword = 1; put_oper (none_str); 
+/* line 1324 "Parser.c" */
 } break;
-case 82: /* nmno : identifier opt_string */
-yyDecrement (2) yySetNT (yyNTnmno) {
+case 88:
+case 58: /* rword : '%type' */
+yyDecrement (1) yySetNT (yyNTrword) {
+/* line 94 "-" */
+/* line 114 "yacc.lrk" */
+ rword = 2; type = 1; 
+/* line 1332 "Parser.c" */
+} break;
+case 89:
+case 59: /* tag : '<' identifier '>' */
+yyDecrement (3) yySetNT (yyNTtag) {
+/* line 97 "-" */
+/* line 117 "yacc.lrk" */
+ tag = yyA [1].Scan.string; 
+/* line 1340 "Parser.c" */
+} break;
+case 90: /* tag : */
+yySetNT (yyNTtag) {
 /* line 99 "-" */
-/* line 119 "yacc.lrk" */
+/* line 118 "yacc.lrk" */
+ tag = 0; 
+/* line 1347 "Parser.c" */
+} break;
+case 91: /* nlist : nmno */
+yyDecrement (1) yySetNT (yyNTnlist) {
+/* line 1351 "Parser.c" */
+} break;
+case 92: /* nlist : nlist nmno */
+yyDecrement (2) yySetNT (yyNTnlist) {
+/* line 1355 "Parser.c" */
+} break;
+case 93: /* nlist : nlist ',' nmno */
+yyDecrement (3) yySetNT (yyNTnlist) {
+/* line 1359 "Parser.c" */
+} break;
+case 94: /* nmno : identifier opt_string */
+yyDecrement (2) yySetNT (yyNTnmno) {
+/* line 107 "-" */
+/* line 127 "yacc.lrk" */
  switch (rword) {
 	  case 1 : put_oper (yyA [0].Scan.string);
 	  case 0 : put_token (yyA [0].Scan.string, 0); break;
@@ -1329,12 +1368,12 @@ yyDecrement (2) yySetNT (yyNTnmno) {
 	  }
 	  if (tag) put_type (yyA [0].Scan.string, tag);
 	
-/* line 1333 "Parser.c" */
+/* line 1372 "Parser.c" */
 } break;
-case 83: /* nmno : identifier number opt_string */
+case 95: /* nmno : identifier number opt_string */
 yyDecrement (3) yySetNT (yyNTnmno) {
-/* line 109 "-" */
-/* line 128 "yacc.lrk" */
+/* line 117 "-" */
+/* line 136 "yacc.lrk" */
  switch (rword) {
 	  case 1 : put_oper (yyA [0].Scan.string);
 	  case 0 : put_token (yyA [0].Scan.string, yyA [1].Scan.number); break;
@@ -1342,135 +1381,135 @@ yyDecrement (3) yySetNT (yyNTnmno) {
 	  }
 	  if (tag) put_type (yyA [0].Scan.string, tag);
 	
-/* line 1346 "Parser.c" */
+/* line 1385 "Parser.c" */
 } break;
-case 84: /* opt_semicolon : */
+case 96: /* opt_semicolon : */
 yySetNT (yyNTopt_semicolon) {
-/* line 1350 "Parser.c" */
+/* line 1389 "Parser.c" */
 } break;
-case 85:
-case 52: /* opt_semicolon : ';' */
+case 97:
+case 60: /* opt_semicolon : ';' */
 yyDecrement (1) yySetNT (yyNTopt_semicolon) {
-/* line 1355 "Parser.c" */
+/* line 1394 "Parser.c" */
 } break;
-case 86: /* opt_string : */
+case 98: /* opt_string : */
 yySetNT (yyNTopt_string) {
-/* line 1359 "Parser.c" */
+/* line 1398 "Parser.c" */
 } break;
-case 87:
-case 53: /* opt_string : string */
+case 99:
+case 61: /* opt_string : string */
 yyDecrement (1) yySetNT (yyNTopt_string) {
-/* line 1364 "Parser.c" */
+/* line 1403 "Parser.c" */
 } break;
-case 88: /* rules : C_IDENT rules_1 ':' rbody prec */
+case 100: /* rules : C_IDENT rules_1 ':' rbody prec */
 yyDecrement (5) yySetNT (yyNTrules) {
-/* line 126 "-" */
-/* line 149 "yacc.lrk" */
+/* line 134 "-" */
+/* line 157 "yacc.lrk" */
  if (has_rhs && ! has_action) put_whole_action (& default_action, rtrue);
 	    if (prec) { put_delim (prec_str); put_delim (prec); }
 	    if (yyTerminal != t_bar) put_delim (dot_str);
 	    put_rule (rule_elmts_list); put_text (text_list); 
-/* line 1374 "Parser.c" */
+/* line 1413 "Parser.c" */
 } break;
-case 89: /* rules : rules rule */
+case 101: /* rules : rules rule */
 yyDecrement (2) yySetNT (yyNTrules) {
-/* line 1378 "Parser.c" */
+/* line 1417 "Parser.c" */
 } break;
-case 90: /* rules_1 : */
+case 102: /* rules_1 : */
 yySetNT (yyNTrules_1) {
-/* line 134 "-" */
-/* line 146 "yacc.lrk" */
+/* line 142 "-" */
+/* line 154 "yacc.lrk" */
  rule_elmts_list = NULL; prec = NULL; has_rhs = has_action = 0; lhs = yyA [-1].Scan.string;
 	    put_lhs (lhs); put_delim (lhs); put_delim (colon_str); 
-/* line 1386 "Parser.c" */
+/* line 1425 "Parser.c" */
 } break;
-case 91: /* rule : C_IDENT rule_1 ':' rbody prec */
+case 103: /* rule : C_IDENT rule_1 ':' rbody prec */
 yyDecrement (5) yySetNT (yyNTrule) {
-/* line 140 "-" */
-/* line 160 "yacc.lrk" */
- if (has_rhs && ! has_action) put_whole_action (& default_action, rtrue);
-	    if (prec) { put_delim (prec_str); put_delim (prec); }
-	    if (yyTerminal != t_bar) put_delim (dot_str);
-	    put_rule (rule_elmts_list); put_text (text_list); 
-/* line 1396 "Parser.c" */
-} break;
-case 92: /* rule : '|' rule_2 rbody prec */
-yyDecrement (4) yySetNT (yyNTrule) {
-/* line 147 "-" */
+/* line 148 "-" */
 /* line 168 "yacc.lrk" */
  if (has_rhs && ! has_action) put_whole_action (& default_action, rtrue);
 	    if (prec) { put_delim (prec_str); put_delim (prec); }
 	    if (yyTerminal != t_bar) put_delim (dot_str);
 	    put_rule (rule_elmts_list); put_text (text_list); 
-/* line 1406 "Parser.c" */
+/* line 1435 "Parser.c" */
 } break;
-case 93: /* rule_2 : */
+case 104: /* rule : '|' rule_2 rbody prec */
+yyDecrement (4) yySetNT (yyNTrule) {
+/* line 155 "-" */
+/* line 176 "yacc.lrk" */
+ if (has_rhs && ! has_action) put_whole_action (& default_action, rtrue);
+	    if (prec) { put_delim (prec_str); put_delim (prec); }
+	    if (yyTerminal != t_bar) put_delim (dot_str);
+	    put_rule (rule_elmts_list); put_text (text_list); 
+/* line 1445 "Parser.c" */
+} break;
+case 105: /* rule_2 : */
 yySetNT (yyNTrule_2) {
-/* line 154 "-" */
-/* line 165 "yacc.lrk" */
+/* line 162 "-" */
+/* line 173 "yacc.lrk" */
  rule_elmts_list = NULL; prec = NULL; has_rhs = has_action = 0;
 	    put_lhs (lhs); put_delim (bar_str); 
-/* line 1414 "Parser.c" */
+/* line 1453 "Parser.c" */
 } break;
-case 94: /* rule_1 : */
+case 106: /* rule_1 : */
 yySetNT (yyNTrule_1) {
-/* line 159 "-" */
-/* line 157 "yacc.lrk" */
+/* line 167 "-" */
+/* line 165 "yacc.lrk" */
  rule_elmts_list = NULL; prec = NULL; has_rhs = has_action = 0; lhs = yyA [-1].Scan.string;
 	    put_lhs (lhs); put_delim (lhs); put_delim (colon_str); 
-/* line 1422 "Parser.c" */
+/* line 1461 "Parser.c" */
 } break;
-case 95:
-case 54: /* rbody : rbody identifier */
+case 107:
+case 62: /* rbody : rbody identifier */
 yyDecrement (2) yySetNT (yyNTrbody) {
-/* line 164 "-" */
-/* line 174 "yacc.lrk" */
+/* line 172 "-" */
+/* line 182 "yacc.lrk" */
  put_symbol (yyA [1].Scan.string); has_rhs = 1; 
-/* line 1430 "Parser.c" */
+/* line 1469 "Parser.c" */
 } break;
-case 96: /* rbody : rbody act */
+case 108: /* rbody : rbody act */
 yyDecrement (2) yySetNT (yyNTrbody) {
-/* line 1434 "Parser.c" */
+/* line 1473 "Parser.c" */
 } break;
-case 97: /* rbody : */
+case 109: /* rbody : */
 yySetNT (yyNTrbody) {
-/* line 1438 "Parser.c" */
+/* line 1477 "Parser.c" */
 } break;
-case 98:
-case 55: /* act : '{' '}' */
+case 110:
+case 63: /* act : '{' '}' */
 yyDecrement (2) yySetNT (yyNTact) {
-/* line 171 "-" */
-/* line 181 "yacc.lrk" */
+/* line 179 "-" */
+/* line 189 "yacc.lrk" */
  has_action = 1;
 						/* is it last action ? */
 		    put_whole_action (yyA [1].Scan.action, (rbool) (has_rhs &
 		    (yyTerminal == t_bar ||
 		     yyTerminal == t_semicolon ||
 		     yyTerminal == t__EOF_))); 
-/* line 1451 "Parser.c" */
+/* line 1490 "Parser.c" */
 } break;
-case 99: /* prec : '%prec' identifier */
+case 111: /* prec : '%prec' identifier */
 yyDecrement (2) yySetNT (yyNTprec) {
-/* line 180 "-" */
-/* line 189 "yacc.lrk" */
+/* line 188 "-" */
+/* line 197 "yacc.lrk" */
  prec = yyA [1].Scan.string; 
-/* line 1458 "Parser.c" */
+/* line 1497 "Parser.c" */
 } break;
-case 100: /* prec : '%prec' identifier act */
+case 112: /* prec : '%prec' identifier act */
 yyDecrement (3) yySetNT (yyNTprec) {
-/* line 182 "-" */
-/* line 190 "yacc.lrk" */
+/* line 190 "-" */
+/* line 198 "yacc.lrk" */
  prec = yyA [1].Scan.string; 
-/* line 1465 "Parser.c" */
+/* line 1504 "Parser.c" */
 } break;
-case 101:
-case 56: /* prec : prec ';' */
+case 113:
+case 64: /* prec : prec ';' */
 yyDecrement (2) yySetNT (yyNTprec) {
-/* line 1470 "Parser.c" */
+/* line 1509 "Parser.c" */
 } break;
-case 102: /* prec : */
+case 114: /* prec : */
 yySetNT (yyNTprec) {
-/* line 1474 "Parser.c" */
+/* line 1513 "Parser.c" */
 } break;
 default: switch (yyState) {
 case 1: goto yyAbort;
@@ -1908,7 +1947,7 @@ prec_str	= PutString ("PREC", 4);
 dot_str		= PutString ("\n\t.", 3);
 default_action.car = action_str;
 
-/* line 1912 "Parser.c" */
+/* line 1951 "Parser.c" */
    }
 
 void CloseParser ARGS ((void))
