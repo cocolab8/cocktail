@@ -593,7 +593,7 @@ $L	/* LOCAL section is inserted here */
 	 }
 
 	 if (yyState == yyNoState ||			/* syntax error ? */
-	    yyIsRepairing && yyState >= yyFirstReduceState) { /* repair mode */
+	   (yyIsRepairing && yyState >= yyFirstReduceState)) { /* repair mode */
 	    yySymbolRange yyRepairToken;
 
 	    if (yyState == yyNoState && ! yyIsRepairing) { /* syntax error */
